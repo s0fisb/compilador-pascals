@@ -1,0 +1,14 @@
+Código de saída: 1
+
+Erro semântico (linha 4): variável 'valor' declarada mais de uma vez no mesmo escopo (1ª declaração na linha 3).
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo     offset  linha 
+  valor             integer  0       3     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

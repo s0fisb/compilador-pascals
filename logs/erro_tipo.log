@@ -1,0 +1,16 @@
+Código de saída: 1
+
+Erro semântico (linha 8): atribuição incompatível: 'cont' é integer, mas a expressão é real.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo     offset  linha 
+  cont              integer  0       3     
+  acumulador        real     4       4     
+  taxa              real     12      4     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

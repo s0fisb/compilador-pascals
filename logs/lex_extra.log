@@ -1,0 +1,23 @@
+Código de saída: 1
+
+Erro semântico (linha 6): atribuição incompatível: 'x_1' é integer, mas a expressão é real.
+Erro semântico (linha 7): atribuição incompatível: 'x_1' é integer, mas a expressão é boolean.
+Erro sintático [linha 7, coluna 46]: token inesperado GE ('>=').
+    [modo pânico] 1 token(s) descartado(s).
+Recuperação sintática: análise retomada no sincronizador.
+Erro Léxico [linha 8, coluna 3]: caractere ilegal '$'.
+Erro Léxico [linha 8, coluna 5]: caractere ilegal '#'.
+Erro Léxico [linha 8, coluna 7]: caractere ilegal '!'.
+Erro Léxico [linha 10, coluna 1]: comentário '{' não fechado.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo     offset  linha 
+  x_1               integer  0       4     
+  Y                 integer  4       4     
+
+Erros léxicos: 4
+Erros sintáticos: 1
+Erros semânticos: 2
+
+Resultado: FALHA
