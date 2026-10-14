@@ -1,8 +1,7 @@
 """
 lex.py - Analisador léxico do Pascal-S (TP1) com PLY.
 
-Sob demanda: nada é pré-tokenizado. O parser (yacc.py) chama
-lexer.token() -- o equivalente do getNextToken() -- uma vez por lookahead.
+Sob demanda: nada é pré-tokenizado. O parser (yacc.py) chama getNextToken() uma vez por lookahead.
 
 Uso isolado (para testar só o léxico):
     python lex.py testes/sucesso_semantico.pas
@@ -127,6 +126,7 @@ def build_lexer(symtab=None):
     lx.lineno = 1
     lx.errors = []
     lx.symtab = symtab
+    lx.getNextToken = lx.token
     return lx
 
  
@@ -142,7 +142,7 @@ if __name__ == "__main__":
     lx.input(data)
     print(f"{'LINHA':<6}{'COL':<5}{'TOKEN':<11}VALOR")
     while True:
-        tok = lx.token()                       # = getNextToken()
+        tok = lx.getNextToken()
         if tok is None:
             break
         col = find_column(data, tok.lexpos)
