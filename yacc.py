@@ -39,10 +39,10 @@ class TokenStream:
         self.lexer = lx
         self.pushback = []
 
-    def token(self):
+    def getNextToken(self):
         if self.pushback:
             return self.pushback.pop()
-        return self.lexer.token()
+        return self.lexer.getNextToken()
 
 
 def semantic_error(message, lineno=None):
@@ -354,7 +354,7 @@ def p_error(p):
     # 'error' e retomam a análise a partir dele.
     descartados = 0
     while True:
-        tok = stream.token()
+        tok = stream.getNextToken()
         if tok is None:
             break
         if tok.type in SYNC_TOKENS:
@@ -373,7 +373,7 @@ def run_file(path):
     lexer = build_lexer(symtab)
     stream = TokenStream(lexer)
     PARSER = yacc.yacc(start=start, debug=True, write_tables=False, errorlog=yacc.NullLogger())
-    PARSER.parse(source, lexer=lexer, tokenfunc=stream.token)
+    PARSER.parse(source, lexer=lexer, tokenfunc=stream.getNextToken)
     print(symtab.dump())
    
     print(f"\nErros léxicos: {len(lexer.errors)}")
