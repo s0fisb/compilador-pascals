@@ -1,11 +1,8 @@
-# Compilador Pascal-S (front-end) — TP1 de Compiladores
+# Compilador Pascal-S (front-end)- TP1 de Compiladores
 
 Front-end completo para **Pascal-S** (subconjunto de Pascal) em Python com **PLY**:
 análise léxica sob demanda, tabela de símbolos com ponteiros, parser LALR(1),
 verificação semântica de tipagem forte e recuperação de erros em modo pânico.
-
-FURG · Centro de Ciências Computacionais (C3) · Compiladores 2026/2 · Prof. Dr. Gerson Alberto Leiria Nunes
-Grupo: **[Nome Completo 1]** e **[Nome Completo 2]**
 
 ## Requisitos
 
@@ -16,10 +13,8 @@ Grupo: **[Nome Completo 1]** e **[Nome Completo 2]**
 
 ```bash
 python yacc.py testes/sucesso_semantico.pas              # compila um arquivo
-python yacc.py --fail-fast testes/erro_tipo.pas          # aborta no 1º erro semântico
 python lex.py testes/sucesso_semantico.pas               # só o analisador léxico
 python run_tests.py                                      # roda todos os testes e regrava logs/
-python testes_unitarios.py                               # testes da tabela de símbolos (sem PLY)
 ```
 
 Código de saída: `0` = sucesso; `1` = houve erro léxico, sintático ou semântico.
@@ -50,8 +45,7 @@ Código de saída: `0` = sucesso; `1` = houve erro léxico, sintático ou semân
   resolvido como *shift* por precedência (`IFX < ELSE`).
 - **Modo pânico:** descarta tokens até `;` **ou `end`**. O `end` foi acrescentado porque o último
   comando de um bloco não termina em `;` (ver `testes/sync_end.pas`).
-- **Escopos:** o Pascal-S só tem um bloco declarativo, então só o escopo global é usado;
-  `enter_scope`/`exit_scope` implementam os ambientes aninhados e são testados em `testes_unitarios.py`.
+
 
 ## Testes
 
