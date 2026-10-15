@@ -1,0 +1,17 @@
+Código de saída: 1
+
+Erro semântico (linha 5): o operador 'and' exige operandos booleanos (recebeu integer e integer).
+Erro semântico (linha 6): o operador 'not' exige operando booleano (recebeu integer).
+Erro semântico (linha 7): o operador 'or' exige operandos booleanos (recebeu integer e integer).
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo     offset  linha 
+  a                 integer  0       2     
+  b                 integer  4       2     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 3
+
+Resultado: FALHA

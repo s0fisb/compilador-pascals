@@ -1,0 +1,14 @@
+Código de saída: 1
+
+Erro sintático [linha 6]: fim inesperado do arquivo.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo     offset  linha 
+  a                 integer  0       2     
+
+Erros léxicos: 0
+Erros sintáticos: 1
+Erros semânticos: 0
+
+Resultado: FALHA
