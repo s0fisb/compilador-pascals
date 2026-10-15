@@ -32,7 +32,6 @@ Código de saída: `0` = sucesso; `1` = houve erro léxico, sintático ou semân
 | `symtab.py` | `Symbol`, `SymbolTable` (ambientes encadeados por `parent`) e `ScopeManager` |
 | `yacc.py` | Gramática LALR(1), verificação de tipos, `p_error` com modo pânico e `main` |
 | `run_tests.py` | Executa `testes/*.pas` e grava a saída real em `logs/*.log` |
-| `testes_unitarios.py` | Testes unitários dos ambientes aninhados da tabela de símbolos |
 | `testes/` | Programas de entrada (sucesso, erro léxico, sintático e semântico) |
 | `logs/` | Saída do compilador para cada teste |
 | `parser.out` | Tabelas LALR geradas pelo PLY (usado na análise de conflitos) |
