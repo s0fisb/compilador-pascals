@@ -22,6 +22,7 @@ PARSER = None
 errors = []
 syntax_errors = 0
 semantic_errors = 0
+last_error_pos = None
 
 # Sincronizadores do modo pânico: ';' (definido no enunciado) e 'end' (para o
 # último comando do bloco, que não termina com ';').
@@ -341,7 +342,12 @@ def p_factor_not(p):
 # Erros sintáticos: modo pânico
  
 def p_error(p):
-    global syntax_errors
+    global syntax_errors, last_error_pos
+    if p is not None and p.lexpos == last_error_pos:
+        # sem progresso: o parser voltou ao mesmo token ofensor (ex.: 'else' solto,
+        # que não é sincronizador) -> descarta-o em silêncio para não entrar em loop
+        PARSER.errok()
+        return None
     syntax_errors += 1
     if p is None:
         col = find_column(lexer.lexdata, len(lexer.lexdata))
@@ -354,6 +360,7 @@ def p_error(p):
     msg = f"Erro sintático [linha {p.lineno}, coluna {col}]: token inesperado {p.type} ({value!r})."
     errors.append(msg)
     print(msg)
+    last_error_pos = p.lexpos
     if p.type in SYNC_TOKENS:
         return                          # já estamos no sincronizador
     # Modo pânico: descarta tokens até o próximo sincronizador e o devolve ao
@@ -372,9 +379,10 @@ def p_error(p):
 
 
 def run_file(path):
-    global symtab, lexer, stream, PARSER, errors, syntax_errors, semantic_errors
+    global symtab, lexer, stream, PARSER, errors, syntax_errors, semantic_errors, last_error_pos
     symtab = ScopeManager()
     errors, syntax_errors, semantic_errors = [], 0, 0
+    last_error_pos = None
     with open(path, encoding="utf-8") as source_file:
         source = source_file.read()
     lexer = build_lexer(symtab)
