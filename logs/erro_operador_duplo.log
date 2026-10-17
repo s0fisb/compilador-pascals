@@ -7,6 +7,7 @@ Erro sintático [linha 7, coluna 16]: token inesperado DIVIDE ('/').
     [modo pânico] 1 token(s) descartado(s).
 Recuperação sintática: análise retomada no sincronizador.
 Erro semântico (linha 8): atribuição incompatível: 'valor' é integer, mas a expressão é real.
+Compilação abortada no primeiro erro de tipo.
 
 TABELA DE SIMBOLOS
 [escopo 'global' nivel 0]

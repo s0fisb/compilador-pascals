@@ -45,13 +45,19 @@ class TokenStream:
         return self.lexer.getNextToken()
 
 
-def semantic_error(message, lineno=None):
+class CompilationAbort(Exception):
+    pass
+
+
+def semantic_error(message, lineno=None, fatal=False):
     global semantic_errors
     semantic_errors += 1
     where = f"linha {lineno}" if lineno is not None else "local desconhecido"
     msg = f"Erro semântico ({where}): {message}"
     errors.append(msg)
     print(msg)
+    if fatal:
+        raise CompilationAbort(msg)
 
 
 # Tipos: 'integer', 'real', 'boolean'. None = subexpressão que já gerou erro
@@ -62,21 +68,21 @@ def check_operands(op, t1, t2, lineno):
     if op in ("and", "or"):
         if t1 == "boolean" and t2 == "boolean":
             return "boolean"
-        semantic_error(f"o operador '{op}' exige operandos booleanos (recebeu {t1} e {t2}).", lineno)
+        semantic_error(f"o operador '{op}' exige operandos booleanos (recebeu {t1} e {t2}).", lineno, fatal=True)
         return None
     if t1 not in NUMERIC or t2 not in NUMERIC:
-        semantic_error(f"o operador '{op}' exige operandos numéricos (recebeu {t1} e {t2}).", lineno)
+        semantic_error(f"o operador '{op}' exige operandos numéricos (recebeu {t1} e {t2}).", lineno, fatal=True)
         return None
     if t1 != t2:
         semantic_error(f"operandos incompatíveis para '{op}' ({t1} e {t2}); "
-                       f"não há conversão implícita entre integer e real.", lineno)
+                       f"não há conversão implícita entre integer e real.", lineno, fatal=True)
         return None
     return "boolean" if op in RELOPS else t1       # '/' mantém o tipo dos operandos
 
 
 def check_condition(kw, t, lineno):
     if t is not None and t != "boolean":
-        semantic_error(f"a condição do '{kw}' deve ser booleana (recebeu {t}).", lineno)
+        semantic_error(f"a condição do '{kw}' deve ser booleana (recebeu {t}).", lineno, fatal=True)
 
 
  
@@ -210,7 +216,7 @@ def p_assign_stmt(p):
         semantic_error(f"variável '{symbol.name}' usada em atribuição sem declaração.", p.lineno(1))
     elif rhs is not None and symbol.type != rhs:
         semantic_error(f"atribuição incompatível: '{symbol.name}' é {symbol.type}, "
-                       f"mas a expressão é {rhs}.", p.lineno(2))
+                       f"mas a expressão é {rhs}.", p.lineno(2), fatal=True)
     p[0] = None
 
 
@@ -325,7 +331,7 @@ def p_factor_not(p):
     if t is None:
         p[0] = None
     elif t != "boolean":
-        semantic_error(f"o operador 'not' exige operando booleano (recebeu {t}).", p.lineno(1))
+        semantic_error(f"o operador 'not' exige operando booleano (recebeu {t}).", p.lineno(1), fatal=True)
         p[0] = None
     else:
         p[0] = "boolean"
@@ -338,7 +344,8 @@ def p_error(p):
     global syntax_errors
     syntax_errors += 1
     if p is None:
-        msg = f"Erro sintático [linha {lexer.lineno}]: fim inesperado do arquivo."
+        col = find_column(lexer.lexdata, len(lexer.lexdata))
+        msg = f"Erro sintático [linha {lexer.lineno}, coluna {col}]: fim inesperado do arquivo."
         errors.append(msg)
         print(msg)
         return
@@ -373,7 +380,10 @@ def run_file(path):
     lexer = build_lexer(symtab)
     stream = TokenStream(lexer)
     PARSER = yacc.yacc(start=start, debug=True, write_tables=False, errorlog=yacc.NullLogger())
-    PARSER.parse(source, lexer=lexer, tokenfunc=stream.getNextToken)
+    try:
+        PARSER.parse(source, lexer=lexer, tokenfunc=stream.getNextToken)
+    except CompilationAbort:
+        print("Compilação abortada no primeiro erro de tipo.")
     print(symtab.dump())
    
     print(f"\nErros léxicos: {len(lexer.errors)}")

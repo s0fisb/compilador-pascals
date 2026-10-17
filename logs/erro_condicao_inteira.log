@@ -1,7 +1,7 @@
 Código de saída: 1
 
 Erro semântico (linha 5): a condição do 'while' deve ser booleana (recebeu integer).
-Erro semântico (linha 6): a condição do 'if' deve ser booleana (recebeu integer).
+Compilação abortada no primeiro erro de tipo.
 
 TABELA DE SIMBOLOS
 [escopo 'global' nivel 0]
@@ -10,6 +10,6 @@ TABELA DE SIMBOLOS
 
 Erros léxicos: 0
 Erros sintáticos: 0
-Erros semânticos: 2
+Erros semânticos: 1
 
 Resultado: FALHA

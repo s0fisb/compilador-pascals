@@ -1,6 +1,6 @@
 Código de saída: 1
 
-Erro sintático [linha 6]: fim inesperado do arquivo.
+Erro sintático [linha 6, coluna 1]: fim inesperado do arquivo.
 
 TABELA DE SIMBOLOS
 [escopo 'global' nivel 0]

@@ -1,6 +1,7 @@
 Código de saída: 1
 
 Erro semântico (linha 8): atribuição incompatível: 'cont' é integer, mas a expressão é real.
+Compilação abortada no primeiro erro de tipo.
 
 TABELA DE SIMBOLOS
 [escopo 'global' nivel 0]

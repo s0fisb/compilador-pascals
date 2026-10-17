@@ -6,7 +6,7 @@ Erro sintático [linha 7, coluna 12]: token inesperado TIMES ('*').
     [modo pânico] 1 token(s) descartado(s).
 Recuperação sintática: análise retomada no sincronizador.
 Erro semântico (linha 8): atribuição incompatível: 'x' é real, mas a expressão é integer.
-Erro semântico (linha 9): operandos incompatíveis para '<' (integer e real); não há conversão implícita entre integer e real.
+Compilação abortada no primeiro erro de tipo.
 
 TABELA DE SIMBOLOS
 [escopo 'global' nivel 0]
@@ -17,6 +17,6 @@ TABELA DE SIMBOLOS
 
 Erros léxicos: 0
 Erros sintáticos: 2
-Erros semânticos: 2
+Erros semânticos: 1
 
 Resultado: FALHA
