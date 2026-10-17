@@ -1,4 +1,4 @@
-# Compilador Pascal-S (front-end)- TP1 de Compiladores
+# Compilador Pascal-S (front-end)
 
 Front-end completo para **Pascal-S** (subconjunto de Pascal) em Python com **PLY**:
 análise léxica sob demanda, tabela de símbolos com ponteiros, parser LALR(1),
