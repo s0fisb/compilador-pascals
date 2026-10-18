@@ -1,4 +1,4 @@
-"""Parser LALR(1) e verificador semântico Pascal-S usando PLY.
+"""Parser LALR(1) e verificador semântico Pascal-S usando PLY
 Uso: python yacc.py testes/sucesso_semantico.pas
 """
 import sys
@@ -11,9 +11,7 @@ precedence = (
     ("nonassoc", "IFX"),
     ("nonassoc", "ELSE"),
 )
-# A gramática já é estratificada (expr > simple_expr > term > factor), então a
-# precedência/associatividade dos operadores é imposta pela própria estrutura.
-# Só o dangling else precisa de precedência explícita (IFX < ELSE => shift).
+# A precedência dos operadores aritméticos e lógicos é imposta pela própria estrutura da gramática
 
 symtab = None
 lexer = None
@@ -22,18 +20,17 @@ PARSER = None
 errors = []
 syntax_errors = 0
 semantic_errors = 0
+last_error_pos = None
 
-# Sincronizadores do modo pânico: ';' (definido no enunciado) e 'end' (para o
-# último comando do bloco, que não termina com ';').
+# Sincronizadores do modo pânico: ';' e 'end' (para o último comando do bloco, que não termina com ';')
 SYNC_TOKENS = {"SEMICOLON", "END"}
 
 NUMERIC = ("integer", "real")
 RELOPS = {"=", "<>", "<", "<=", ">", ">="}
 
-
 class TokenStream:
-    """Fonte de tokens do parser (getNextToken sob demanda) com 'pushback'
-    para devolver ao parser o token de sincronização."""
+    #fonte de tokens do parser (getNextToken sob demanda) com 'pushback'
+    #para devolver ao parser o token de sincronização
 
     def __init__(self, lx):
         self.lexer = lx
@@ -45,13 +42,19 @@ class TokenStream:
         return self.lexer.getNextToken()
 
 
-def semantic_error(message, lineno=None):
+class CompilationAbort(Exception):
+    pass
+
+
+def semantic_error(message, lineno=None, fatal=False):
     global semantic_errors
     semantic_errors += 1
     where = f"linha {lineno}" if lineno is not None else "local desconhecido"
     msg = f"Erro semântico ({where}): {message}"
     errors.append(msg)
     print(msg)
+    if fatal:
+        raise CompilationAbort(msg)
 
 
 # Tipos: 'integer', 'real', 'boolean'. None = subexpressão que já gerou erro
@@ -62,24 +65,23 @@ def check_operands(op, t1, t2, lineno):
     if op in ("and", "or"):
         if t1 == "boolean" and t2 == "boolean":
             return "boolean"
-        semantic_error(f"o operador '{op}' exige operandos booleanos (recebeu {t1} e {t2}).", lineno)
+        semantic_error(f"o operador '{op}' exige operandos booleanos (recebeu {t1} e {t2}).", lineno, fatal=True)
         return None
     if t1 not in NUMERIC or t2 not in NUMERIC:
-        semantic_error(f"o operador '{op}' exige operandos numéricos (recebeu {t1} e {t2}).", lineno)
+        semantic_error(f"o operador '{op}' exige operandos numéricos (recebeu {t1} e {t2}).", lineno, fatal=True)
         return None
     if t1 != t2:
         semantic_error(f"operandos incompatíveis para '{op}' ({t1} e {t2}); "
-                       f"não há conversão implícita entre integer e real.", lineno)
+                       f"não há conversão implícita entre integer e real.", lineno, fatal=True)
         return None
     return "boolean" if op in RELOPS else t1       # '/' mantém o tipo dos operandos
 
 
 def check_condition(kw, t, lineno):
     if t is not None and t != "boolean":
-        semantic_error(f"a condição do '{kw}' deve ser booleana (recebeu {t}).", lineno)
+        semantic_error(f"a condição do '{kw}' deve ser booleana (recebeu {t}).", lineno, fatal=True)
 
 
- 
 # Programa e declarações
  
 def p_program(p):
@@ -149,8 +151,17 @@ def p_type_real(p):
  
 # Comandos
  
+def p_block_enter(p):
+    "block_enter :"
+    # Redução vazia logo após BEGIN: cria um ambiente para cada bloco.
+    # O lexer continua sob demanda e os identificadores declarados no escopo
+    # externo continuam acessíveis pela cadeia parent.
+    symtab.enter_scope(name=f"bloco_linha_{p.lineno(0) or lexer.lineno}")
+
+
 def p_block(p):
-    "block : BEGIN stmt_list END"
+    "block : BEGIN block_enter stmt_list END"
+    symtab.exit_scope()
     p[0] = None
 
 
@@ -210,7 +221,7 @@ def p_assign_stmt(p):
         semantic_error(f"variável '{symbol.name}' usada em atribuição sem declaração.", p.lineno(1))
     elif rhs is not None and symbol.type != rhs:
         semantic_error(f"atribuição incompatível: '{symbol.name}' é {symbol.type}, "
-                       f"mas a expressão é {rhs}.", p.lineno(2))
+                       f"mas a expressão é {rhs}.", p.lineno(2), fatal=True)
     p[0] = None
 
 
@@ -325,7 +336,7 @@ def p_factor_not(p):
     if t is None:
         p[0] = None
     elif t != "boolean":
-        semantic_error(f"o operador 'not' exige operando booleano (recebeu {t}).", p.lineno(1))
+        semantic_error(f"o operador 'not' exige operando booleano (recebeu {t}).", p.lineno(1), fatal=True)
         p[0] = None
     else:
         p[0] = "boolean"
@@ -335,10 +346,16 @@ def p_factor_not(p):
 # Erros sintáticos: modo pânico
  
 def p_error(p):
-    global syntax_errors
+    global syntax_errors, last_error_pos
+    if p is not None and p.lexpos == last_error_pos:
+        # sem progresso: o parser voltou ao mesmo token ofensor (else solto,
+        # que não é sincronizador), descarta-o em silêncio para não entrar em loop
+        PARSER.errok()
+        return None
     syntax_errors += 1
     if p is None:
-        msg = f"Erro sintático [linha {lexer.lineno}]: fim inesperado do arquivo."
+        col = find_column(lexer.lexdata, len(lexer.lexdata))
+        msg = f"Erro sintático [linha {lexer.lineno}, coluna {col}]: fim inesperado do arquivo."
         errors.append(msg)
         print(msg)
         return
@@ -347,8 +364,9 @@ def p_error(p):
     msg = f"Erro sintático [linha {p.lineno}, coluna {col}]: token inesperado {p.type} ({value!r})."
     errors.append(msg)
     print(msg)
+    last_error_pos = p.lexpos
     if p.type in SYNC_TOKENS:
-        return                          # já estamos no sincronizador
+        return                     # já estamos no sincronizador
     # Modo pânico: descarta tokens até o próximo sincronizador e o devolve ao
     # parser; as produções `... : error` desempilham até um estado que aceite
     # 'error' e retomam a análise a partir dele.
@@ -365,15 +383,24 @@ def p_error(p):
 
 
 def run_file(path):
-    global symtab, lexer, stream, PARSER, errors, syntax_errors, semantic_errors
+    global symtab, lexer, stream, PARSER, errors, syntax_errors, semantic_errors, last_error_pos
     symtab = ScopeManager()
     errors, syntax_errors, semantic_errors = [], 0, 0
+    last_error_pos = None
     with open(path, encoding="utf-8") as source_file:
         source = source_file.read()
     lexer = build_lexer(symtab)
     stream = TokenStream(lexer)
     PARSER = yacc.yacc(start=start, debug=True, write_tables=False, errorlog=yacc.NullLogger())
-    PARSER.parse(source, lexer=lexer, tokenfunc=stream.getNextToken)
+    try:
+        PARSER.parse(source, lexer=lexer, tokenfunc=stream.getNextToken)
+    except CompilationAbort:
+        print("Compilação abortada no primeiro erro de tipo.")
+    finally:
+        # Se um erro fatal impedir a redução de block, não deixe o gerenciador
+        # apontando para um escopo interno ao imprimir o estado final.
+        while symtab.top.parent is not None:
+            symtab.exit_scope()
     print(symtab.dump())
    
     print(f"\nErros léxicos: {len(lexer.errors)}")

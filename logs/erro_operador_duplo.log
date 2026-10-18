@@ -1,17 +1,18 @@
 Código de saída: 1
 
-Erro sintático [linha 5, coluna 16]: token inesperado TIMES ('*').
+Erro sintático [linha 6, coluna 16]: token inesperado TIMES ('*').
     [modo pânico] 1 token(s) descartado(s).
 Recuperação sintática: análise retomada no sincronizador.
-Erro sintático [linha 6, coluna 16]: token inesperado DIVIDE ('/').
+Erro sintático [linha 7, coluna 16]: token inesperado DIVIDE ('/').
     [modo pânico] 1 token(s) descartado(s).
 Recuperação sintática: análise retomada no sincronizador.
-Erro semântico (linha 7): atribuição incompatível: 'valor' é integer, mas a expressão é real.
+Erro semântico (linha 8): atribuição incompatível: 'valor' é integer, mas a expressão é real.
+Compilação abortada no primeiro erro de tipo.
 
 TABELA DE SIMBOLOS
 [escopo 'global' nivel 0]
   nome              tipo     offset  linha 
-  valor             integer  0       3     
+  valor             integer  0       4     
 
 Erros léxicos: 0
 Erros sintáticos: 2

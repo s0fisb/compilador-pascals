@@ -1,3 +1,4 @@
+// erro_operador_duplo: operador binário seguido de operador (recuperação em ;)
 program Mais;
 var
   valor : integer;

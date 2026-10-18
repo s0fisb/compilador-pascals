@@ -1,0 +1,16 @@
+Código de saída: 1
+
+Erro sintático [linha 6, coluna 5]: token inesperado ELSE ('else').
+    [modo pânico] 3 token(s) descartado(s).
+Recuperação sintática: análise retomada no sincronizador.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo     offset  linha 
+  a                 integer  0       3     
+
+Erros léxicos: 0
+Erros sintáticos: 1
+Erros semânticos: 0
+
+Resultado: FALHA

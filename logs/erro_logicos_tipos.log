@@ -1,0 +1,16 @@
+Código de saída: 1
+
+Erro semântico (linha 5): o operador 'and' exige operandos booleanos (recebeu integer e integer).
+Compilação abortada no primeiro erro de tipo.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo     offset  linha 
+  a                 integer  0       2     
+  b                 integer  4       2     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

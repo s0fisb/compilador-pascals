@@ -4,6 +4,7 @@ Erro sintático [linha 5, coluna 16]: token inesperado TIMES ('*').
     [modo pânico] 1 token(s) descartado(s).
 Recuperação sintática: análise retomada no sincronizador.
 Erro semântico (linha 6): atribuição incompatível: 'valor' é integer, mas a expressão é real.
+Compilação abortada no primeiro erro de tipo.
 
 TABELA DE SIMBOLOS
 [escopo 'global' nivel 0]

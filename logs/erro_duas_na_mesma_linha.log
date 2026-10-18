@@ -1,0 +1,20 @@
+Código de saída: 1
+
+Erro sintático [linha 4, coluna 12]: token inesperado TIMES ('*').
+    [modo pânico] 1 token(s) descartado(s).
+Recuperação sintática: análise retomada no sincronizador.
+Erro sintático [linha 4, coluna 26]: token inesperado DIVIDE ('/').
+    [modo pânico] 1 token(s) descartado(s).
+Recuperação sintática: análise retomada no sincronizador.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo     offset  linha 
+  a                 integer  0       2     
+  b                 integer  4       2     
+
+Erros léxicos: 0
+Erros sintáticos: 2
+Erros semânticos: 0
+
+Resultado: FALHA
