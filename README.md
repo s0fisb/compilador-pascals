@@ -30,7 +30,6 @@ Código de saída: `0` = sucesso; `1` = houve erro léxico, sintático ou semân
 | `testes/` | Programas de entrada (sucesso, erro léxico, sintático e semântico) |
 | `logs/` | Saída do compilador para cada teste |
 | `parser.out` | Tabelas LALR geradas pelo PLY (usado na análise de conflitos) |
-| `relatorio_tecnico.pdf` | Relatório técnico |
 
 ## Decisões principais
 
