@@ -1,15 +1,15 @@
 """
-symtab.py - Tabela de Símbolos do compilador Pascal-S (TP1).
+symtab.py - Tabela de Símbolos do compilador Pascal-S.
 
-Repositório central de atributos (Aulas 3 e 8):
+Repositório central de atributos:
   * cada identificador vira UM objeto Symbol; o token ID carrega uma
     REFERÊNCIA a esse objeto (ponteiro), não a string;
-  * ambientes encadeados via `parent` (equivalente ao `prev` da Aula 8):
+  * ambientes encadeados via `parent:
     entrar em bloco -> nova tabela filha; sair -> volta ao pai;
   * lookup procura do escopo atual em direção ao global.
 """
 
-# Largura em bytes de cada tipo (Aula 8: B.width) e usada para calcular offset.
+# Largura em bytes de cada tipo e usada para calcular offset
 WIDTH = {"integer": 4, "real": 8}
 
 
@@ -19,7 +19,7 @@ class Symbol:
     def __init__(self, name, var_type=None, lineno=0, scope=None):
         self.name = name            # lexema
         self.type = var_type        # 'integer' | 'real' | None (ainda sem declaração)
-        self.lineno = lineno        # linha da declaração (ou do 1º uso, se não declarado)
+        self.lineno = lineno        # linha da declaração (ou do 1° uso, se não declarado)
         self.scope = scope          # SymbolTable onde a entrada vive
         self.offset = None          # deslocamento relativo no escopo
         self.declared = False       # True após aparecer em um `var`
@@ -31,7 +31,7 @@ class Symbol:
 
 
 class SymbolTable:
-    """Um ambiente (tabela hash) ligado ao ambiente pai."""
+    #Um ambiente (tabela hash) ligado ao ambiente pai
 
     def __init__(self, parent=None, name="global"):
         self.symbols = {}
@@ -42,7 +42,7 @@ class SymbolTable:
 
     @staticmethod
     def key(name):
-        # Pascal-S: identificadores não diferenciam maiúsculas/minúsculas.
+        # Pascal-S: identificadores não diferenciam maiúsculas/minúsculas
         return name.casefold()
 
     def insert(self, name, symbol):
@@ -56,7 +56,7 @@ class SymbolTable:
         return self.symbols.get(self.key(name))
 
     def lookup(self, name):
-        """Busca incremental: escopo atual -> pai -> ... -> global."""
+        #Busca incremental: escopo atual -> pai -> ... -> global
         table = self
         while table is not None:
             found = table.lookup_local(name)
@@ -72,7 +72,7 @@ class SymbolTable:
 
 
 class ScopeManager:
-    """Pilha de ambientes usada pelo lexer e pelo parser."""
+    #Pilha de ambientes usada pelo lexer e pelo parser
 
     def __init__(self):
         self.top = SymbolTable(None, "global")
@@ -87,11 +87,16 @@ class ScopeManager:
         if self.top.parent is not None:
             self.top = self.top.parent
 
+    def reset_to_global(self):
+        #Volta ao ambiente global sem apagar os ambientes já registrados
+        while self.top.parent is not None:
+            self.exit_scope()
+
     # usado pelo LEXER (token ID -> ponteiro)
     def lookup_or_install(self, name, lineno):
-        """Devolve a entrada de `name`; se não existir, cria uma entrada
-        ainda NÃO declarada no escopo atual (a Aula 3 chama isso de
-        'instalar' o lexema). O parser decide depois se é erro."""
+        #Devolve a entrada de `name`; se não existir, cria uma entrada
+        #ainda NÃO declarada no escopo atual (a Aula 3 chama isso de
+        #'instalar' o lexema). O parser decide depois se é erro.
         sym = self.top.lookup(name)
         if sym is None:
             sym = Symbol(name, None, lineno, self.top)
@@ -100,8 +105,8 @@ class ScopeManager:
 
     # usado pelo PARSER (declarações)
     def declare(self, sym, var_type, lineno):
-        """Registra a declaração de `sym`.
-        Retorna o Symbol declarado, ou None se for REDECLARAÇÃO no mesmo escopo."""
+        #Registra a declaração de `sym`.
+        #Retorna o Symbol declarado, ou None se for REDECLARAÇÃO no mesmo escopo
         existing = self.top.lookup_local(sym.name)
         if existing is not None and existing.declared:
             return None
@@ -121,9 +126,11 @@ class ScopeManager:
     def dump(self):
         lines = ["", "TABELA DE SIMBOLOS"]
         for t in self.tables:
+            declared = [s for s in t.symbols.values() if s.declared]
+            if not declared and t.parent is not None:
+                continue            # blocos sem declarações não entram no log
             lines.append(f"[escopo '{t.name}' nivel {t.level}]")
             lines.append(f"  {'nome':<18}{'tipo':<9}{'offset':<8}{'linha':<6}")
-            for s in t.symbols.values():
-                if s.declared:
-                    lines.append(f"  {s.name:<18}{s.type:<9}{s.offset:<8}{s.lineno:<6}")
+            for s in declared:
+                lines.append(f"  {s.name:<18}{s.type:<9}{s.offset:<8}{s.lineno:<6}")
         return "\n".join(lines)

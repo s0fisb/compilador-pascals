@@ -1,16 +1,15 @@
 """
-lex.py - Analisador léxico do Pascal-S (TP1) com PLY.
+lex.py- Analisador léxico do Pascal-S
 
 Sob demanda: nada é pré-tokenizado. O parser (yacc.py) chama getNextToken() uma vez por lookahead.
 
 Uso isolado (para testar só o léxico):
-    python lex.py testes/sucesso_semantico.pas
+    python3 lex.py testes/sucesso_semantico.pas
 """
 import sys
 import ply.lex as lex
 
-# 1. Tokens
- 
+# Tokens
 reserved = {
     "program": "PROGRAM", "var": "VAR", "integer": "INTEGER", "real": "REAL",
     "begin": "BEGIN", "end": "END", "if": "IF", "then": "THEN", "else": "ELSE",
@@ -25,7 +24,7 @@ tokens = [
 ] + list(reserved.values())
 
 # Símbolos simples (strings: o PLY ordena pelo tamanho da regex, então
-# ':=' vence ':' , '<=' e '<>' vencem '<' -> longest match, Aula 2).
+# ':=' vence ':' , '<=' e '<>' vencem '<' -> longest match.
 t_ASSIGN = r":="
 t_COLON = r":"
 t_SEMICOLON = r";"
@@ -44,17 +43,15 @@ t_LT = r"<"
 t_GE = r">="
 t_GT = r">"
 
-t_ignore = " \t\r"          # \r para arquivos com final de linha do Windows
-
 
 def find_column(data, lexpos):
-    """Coluna (base 1) de lexpos dentro de sua linha."""
+    #coluna (base 1) de lexpos dentro de sua linha
     last_nl = data.rfind("\n", 0, lexpos)
     return lexpos - last_nl
 
  
-# 2. Comentários (descartados: não retornam token)
-#    As funções são testadas na ORDEM em que aparecem neste arquivo.
+# Comentários (descartados: não retornam token)
+# as funções são testadas na ORDEM em que aparecem neste arquivo
  
 def t_COMMENT_LINE(t):
     r"//[^\n]*"
@@ -63,7 +60,7 @@ def t_COMMENT_LINE(t):
 
 def t_COMMENT_BLOCK(t):
     r"\{[^}]*\}"
-    t.lexer.lineno += t.value.count("\n")     # comentário pode ocupar várias linhas
+    t.lexer.lineno += t.value.count("\n") # comentário pode ocupar várias linhas
 
 
 def t_COMMENT_UNCLOSED(t):
@@ -76,7 +73,7 @@ def t_COMMENT_UNCLOSED(t):
     t.lexer.lineno += t.value.count("\n")
 
 
-# 3. Números, identificadores, quebra de linha
+# Números, identificadores, quebra de linha
  
 def t_NUM_REAL(t):
     r"\d+\.\d+"
@@ -92,7 +89,7 @@ def t_NUM_INT(t):
 
 def t_ID(t):
     r"[a-zA-Z_][a-zA-Z0-9_]*"
-    t.type = reserved.get(t.value.lower(), "ID")     # palavras reservadas case-insensitive
+    t.type = reserved.get(t.value.lower(), "ID") # palavras reservadas case-insensitive
     if t.type == "ID" and t.lexer.symtab is not None:
         # atributo do token ID = PONTEIRO para a entrada da tabela de símbolos
         t.value = t.lexer.symtab.lookup_or_install(t.value, t.lexer.lineno)
@@ -110,10 +107,10 @@ def t_error(t):
            f"caractere ilegal '{t.value[0]}'.")
     print(msg)
     t.lexer.errors.append(msg)
-    t.lexer.skip(1)          # modo pânico léxico: descarta 1 caractere e continua
+    t.lexer.skip(1)    # modo pânico léxico: descarta 1 caractere e continua
 
 
-# 4. Construção do lexer
+# Construção do lexer
  
 lexer = lex.lex()
 lexer.errors = []
@@ -121,7 +118,7 @@ lexer.symtab = None
 
 
 def build_lexer(symtab=None):
-    """Devolve um lexer novo (linha 1, sem erros) ligado à tabela de símbolos."""
+    #devolve um lexer novo (linha 1, sem erros) ligado a tabela de símbolos
     lx = lexer.clone()
     lx.lineno = 1
     lx.errors = []
@@ -130,7 +127,7 @@ def build_lexer(symtab=None):
     return lx
 
  
-# 5. Execução isolada: lista os tokens, pedindo um por vez
+# Execução isolada: lista os tokens, pedindo um por vez
  
 if __name__ == "__main__":
     if len(sys.argv) != 2:
