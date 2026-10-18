@@ -12,9 +12,9 @@ verificação semântica de tipagem forte e recuperação de erros em modo pâni
 ## Como executar
 
 ```bash
-python yacc.py testes/sucesso_semantico.pas              # compila um arquivo
-python lex.py testes/sucesso_semantico.pas               # só o analisador léxico
-python run_tests.py                                      # roda todos os testes e regrava logs/
+python3 yacc.py testes/sucesso_semantico.pas              # compila um arquivo
+python3 lex.py testes/sucesso_semantico.pas               # só o analisador léxico
+python3 run_tests.py                                      # roda todos os testes e regrava logs/
 ```
 
 Código de saída: `0` = sucesso; `1` = houve erro léxico, sintático ou semântico.
