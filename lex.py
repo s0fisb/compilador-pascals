@@ -43,6 +43,7 @@ t_LT = r"<"
 t_GE = r">="
 t_GT = r">"
 
+t_ignore = " \t\r"
 
 def find_column(data, lexpos):
     #coluna (base 1) de lexpos dentro de sua linha
