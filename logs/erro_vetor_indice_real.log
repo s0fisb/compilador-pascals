@@ -1,0 +1,16 @@
+Código de saída: 1
+
+Erro semântico (linha 7): o índice de 'v' deve ser integer (recebeu real).
+Compilação abortada no primeiro erro de tipo.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo                    offset  linha 
+  v                 array[1..5] of integer  0       3     
+  x                 real                    20      4     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

@@ -1,0 +1,17 @@
+Código de saída: 0
+
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo                                offset  linha 
+  v                 array[1..10] of integer             0       3     
+  m                 array[1..3] of array[1..3] of real  40      4     
+  f                 array[0..4] of boolean              112     5     
+  i                 integer                             117     6     
+  j                 integer                             121     6     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 0
+
+Resultado: SUCESSO

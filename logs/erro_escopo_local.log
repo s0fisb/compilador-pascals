@@ -1,0 +1,19 @@
+Código de saída: 1
+
+Erro semântico (linha 12): variável 'local' usada em atribuição sem declaração.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo                        offset  linha 
+  g                 integer                     0       2     
+  f                 function(integer): integer  -       3     
+[escopo 'func f' nivel 1]
+  nome              tipo     offset  linha 
+  x                 integer  0       3     
+  local             integer  4       4     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

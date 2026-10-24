@@ -3,127 +3,213 @@ Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 Grammar
 
 Rule 0     S' -> program
-Rule 1     program -> PROGRAM ID SEMICOLON decl_list block DOT
-Rule 2     program -> PROGRAM error SEMICOLON decl_list block DOT
-Rule 3     decl_list -> <empty>
-Rule 4     decl_list -> VAR decl_group_list
-Rule 5     decl_group_list -> decl_group
-Rule 6     decl_group_list -> decl_group_list decl_group
-Rule 7     decl_group -> id_list COLON type SEMICOLON
-Rule 8     decl_group -> error SEMICOLON
-Rule 9     id_list -> ID
-Rule 10    id_list -> id_list COMMA ID
-Rule 11    type -> INTEGER
-Rule 12    type -> REAL
-Rule 13    block_enter -> <empty>
-Rule 14    block -> BEGIN block_enter stmt_list END
-Rule 15    stmt_list -> stmt
-Rule 16    stmt_list -> stmt_list SEMICOLON stmt
-Rule 17    stmt -> assign_stmt
-Rule 18    stmt -> if_stmt
-Rule 19    stmt -> while_stmt
-Rule 20    stmt -> write_stmt
-Rule 21    stmt -> block
-Rule 22    stmt -> <empty>
-Rule 23    stmt -> error
-Rule 24    assign_stmt -> ID ASSIGN expr
-Rule 25    if_stmt -> IF expr THEN stmt
-Rule 26    if_stmt -> IF expr THEN stmt ELSE stmt
-Rule 27    while_stmt -> WHILE expr DO stmt
-Rule 28    write_stmt -> WRITELN LPAREN expr_list RPAREN
-Rule 29    expr_list -> expr
-Rule 30    expr_list -> expr_list COMMA expr
-Rule 31    expr -> simple_expr
-Rule 32    expr -> simple_expr relop simple_expr
-Rule 33    relop -> EQ
-Rule 34    relop -> NE
-Rule 35    relop -> LT
-Rule 36    relop -> LE
-Rule 37    relop -> GT
-Rule 38    relop -> GE
-Rule 39    simple_expr -> term
-Rule 40    simple_expr -> simple_expr PLUS term
-Rule 41    simple_expr -> simple_expr MINUS term
-Rule 42    simple_expr -> simple_expr OR term
-Rule 43    term -> factor
-Rule 44    term -> term TIMES factor
-Rule 45    term -> term DIVIDE factor
-Rule 46    term -> term AND factor
-Rule 47    factor -> ID
-Rule 48    factor -> NUM_INT
-Rule 49    factor -> NUM_REAL
-Rule 50    factor -> LPAREN expr RPAREN
-Rule 51    factor -> NOT factor
+Rule 1     program -> PROGRAM ID SEMICOLON uses_opt type_opt decl_list subprogram_list block DOT
+Rule 2     program -> PROGRAM error SEMICOLON uses_opt type_opt decl_list subprogram_list block DOT
+Rule 3     uses_opt -> <empty>
+Rule 4     uses_opt -> USES unit_list SEMICOLON
+Rule 5     unit_list -> ID
+Rule 6     unit_list -> unit_list COMMA ID
+Rule 7     type_opt -> <empty>
+Rule 8     type_opt -> TYPE type_decl_list
+Rule 9     type_decl_list -> type_decl
+Rule 10    type_decl_list -> type_decl_list type_decl
+Rule 11    type_decl -> ID EQ type SEMICOLON
+Rule 12    type -> ID
+Rule 13    ptr_start -> CARET
+Rule 14    type -> ptr_start type
+Rule 15    type -> STRINGTYPE
+Rule 16    type -> RECORD field_decl_list END
+Rule 17    type -> RECORD field_decl_list SEMICOLON END
+Rule 18    field_decl_list -> field_decl
+Rule 19    field_decl_list -> field_decl_list SEMICOLON field_decl
+Rule 20    field_decl -> id_list COLON type
+Rule 21    subprogram_list -> <empty>
+Rule 22    subprogram_list -> subprogram_list subprogram
+Rule 23    subprogram -> sub_header decl_list block SEMICOLON
+Rule 24    sub_header -> FUNCTION ID LPAREN params RPAREN COLON type SEMICOLON
+Rule 25    sub_header -> FUNCTION ID COLON type SEMICOLON
+Rule 26    sub_header -> PROCEDURE ID LPAREN params RPAREN SEMICOLON
+Rule 27    sub_header -> PROCEDURE ID SEMICOLON
+Rule 28    params -> param_group
+Rule 29    params -> params SEMICOLON param_group
+Rule 30    param_group -> id_list COLON type
+Rule 31    decl_list -> <empty>
+Rule 32    decl_list -> VAR decl_group_list
+Rule 33    decl_group_list -> decl_group
+Rule 34    decl_group_list -> decl_group_list decl_group
+Rule 35    decl_group -> id_list COLON type SEMICOLON
+Rule 36    decl_group -> error SEMICOLON
+Rule 37    id_list -> ID
+Rule 38    id_list -> id_list COMMA ID
+Rule 39    type -> INTEGER
+Rule 40    type -> BOOLEAN
+Rule 41    type -> ARRAY LBRACKET range_list RBRACKET OF type
+Rule 42    range_list -> range
+Rule 43    range_list -> range_list COMMA range
+Rule 44    range -> bound DOTDOT bound
+Rule 45    bound -> NUM_INT
+Rule 46    bound -> MINUS NUM_INT
+Rule 47    type -> REAL
+Rule 48    block_enter -> <empty>
+Rule 49    block -> BEGIN block_enter stmt_list END
+Rule 50    stmt_list -> stmt
+Rule 51    stmt_list -> stmt_list SEMICOLON stmt
+Rule 52    stmt -> NEW LPAREN variable RPAREN
+Rule 53    stmt -> DISPOSE LPAREN variable RPAREN
+Rule 54    stmt -> ID LPAREN expr_list RPAREN
+Rule 55    stmt -> ID LPAREN RPAREN
+Rule 56    stmt -> variable
+Rule 57    stmt -> assign_stmt
+Rule 58    stmt -> if_stmt
+Rule 59    stmt -> while_stmt
+Rule 60    stmt -> write_stmt
+Rule 61    stmt -> block
+Rule 62    stmt -> <empty>
+Rule 63    stmt -> error
+Rule 64    assign_stmt -> variable ASSIGN expr
+Rule 65    variable -> ID
+Rule 66    variable -> variable DOT ID
+Rule 67    variable -> variable CARET
+Rule 68    variable -> variable LBRACKET expr_list RBRACKET
+Rule 69    if_stmt -> IF expr THEN stmt
+Rule 70    if_stmt -> IF expr THEN stmt ELSE stmt
+Rule 71    while_stmt -> WHILE expr DO stmt
+Rule 72    write_stmt -> WRITELN LPAREN expr_list RPAREN
+Rule 73    expr_list -> expr
+Rule 74    expr_list -> expr_list COMMA expr
+Rule 75    expr -> simple_expr
+Rule 76    expr -> simple_expr relop simple_expr
+Rule 77    relop -> EQ
+Rule 78    relop -> NE
+Rule 79    relop -> LT
+Rule 80    relop -> LE
+Rule 81    relop -> GT
+Rule 82    relop -> GE
+Rule 83    simple_expr -> term
+Rule 84    simple_expr -> simple_expr PLUS term
+Rule 85    simple_expr -> simple_expr MINUS term
+Rule 86    simple_expr -> simple_expr OR term
+Rule 87    term -> factor
+Rule 88    term -> term TIMES factor
+Rule 89    term -> term DIVIDE factor
+Rule 90    term -> term AND factor
+Rule 91    factor -> variable
+Rule 92    factor -> ID LPAREN expr_list RPAREN
+Rule 93    factor -> ID LPAREN RPAREN
+Rule 94    factor -> NIL
+Rule 95    factor -> STRING
+Rule 96    factor -> NUM_INT
+Rule 97    factor -> NUM_REAL
+Rule 98    factor -> TRUE
+Rule 99    factor -> FALSE
+Rule 100   factor -> LPAREN expr RPAREN
+Rule 101   factor -> NOT factor
 
 Terminals, with rules where they appear
 
-AND                  : 46
-ASSIGN               : 24
-BEGIN                : 14
-COLON                : 7
-COMMA                : 10 30
-DIVIDE               : 45
-DO                   : 27
-DOT                  : 1 2
-ELSE                 : 26
-END                  : 14
-EQ                   : 33
-GE                   : 38
-GT                   : 37
-ID                   : 1 9 10 24 47
-IF                   : 25 26
-INTEGER              : 11
-LE                   : 36
-LPAREN               : 28 50
-LT                   : 35
-MINUS                : 41
-NE                   : 34
-NOT                  : 51
-NUM_INT              : 48
-NUM_REAL             : 49
-OR                   : 42
-PLUS                 : 40
+AND                  : 90
+ARRAY                : 41
+ASSIGN               : 64
+BEGIN                : 49
+BOOLEAN              : 40
+CARET                : 13 67
+COLON                : 20 24 25 30 35
+COMMA                : 6 38 43 74
+DISPOSE              : 53
+DIVIDE               : 89
+DO                   : 71
+DOT                  : 1 2 66
+DOTDOT               : 44
+ELSE                 : 70
+END                  : 16 17 49
+EQ                   : 11 77
+FALSE                : 99
+FUNCTION             : 24 25
+GE                   : 82
+GT                   : 81
+ID                   : 1 5 6 11 12 24 25 26 27 37 38 54 55 65 66 92 93
+IF                   : 69 70
+INTEGER              : 39
+LBRACKET             : 41 68
+LE                   : 80
+LPAREN               : 24 26 52 53 54 55 72 92 93 100
+LT                   : 79
+MINUS                : 46 85
+NE                   : 78
+NEW                  : 52
+NIL                  : 94
+NOT                  : 101
+NUM_INT              : 45 46 96
+NUM_REAL             : 97
+OF                   : 41
+OR                   : 86
+PLUS                 : 84
+PROCEDURE            : 26 27
 PROGRAM              : 1 2
-REAL                 : 12
-RPAREN               : 28 50
-SEMICOLON            : 1 2 7 8 16
-THEN                 : 25 26
-TIMES                : 44
-VAR                  : 4
-WHILE                : 27
-WRITELN              : 28
-error                : 2 8 23
+RBRACKET             : 41 68
+REAL                 : 47
+RECORD               : 16 17
+RPAREN               : 24 26 52 53 54 55 72 92 93 100
+SEMICOLON            : 1 2 4 11 17 19 23 24 25 26 27 29 35 36 51
+STRING               : 95
+STRINGTYPE           : 15
+THEN                 : 69 70
+TIMES                : 88
+TRUE                 : 98
+TYPE                 : 8
+USES                 : 4
+VAR                  : 32
+WHILE                : 71
+WRITELN              : 72
+error                : 2 36 63
 
 Nonterminals, with rules where they appear
 
-assign_stmt          : 17
-block                : 1 2 21
-block_enter          : 14
-decl_group           : 5 6
-decl_group_list      : 4 6
-decl_list            : 1 2
-expr                 : 24 25 26 27 29 30 50
-expr_list            : 28 30
-factor               : 43 44 45 46 51
-id_list              : 7 10
-if_stmt              : 18
+assign_stmt          : 57
+block                : 1 2 23 61
+block_enter          : 49
+bound                : 44 44
+decl_group           : 33 34
+decl_group_list      : 32 34
+decl_list            : 1 2 23
+expr                 : 64 69 70 71 73 74 100
+expr_list            : 54 68 72 74 92
+factor               : 87 88 89 90 101
+field_decl           : 18 19
+field_decl_list      : 16 17 19
+id_list              : 20 30 35 38
+if_stmt              : 58
+param_group          : 28 29
+params               : 24 26 29
 program              : 0
-relop                : 32
-simple_expr          : 31 32 32 40 41 42
-stmt                 : 15 16 25 26 26 27
-stmt_list            : 14 16
-term                 : 39 40 41 42 44 45 46
-type                 : 7
-while_stmt           : 19
-write_stmt           : 20
+ptr_start            : 14
+range                : 42 43
+range_list           : 41 43
+relop                : 76
+simple_expr          : 75 76 76 84 85 86
+stmt                 : 50 51 69 70 70 71
+stmt_list            : 49 51
+sub_header           : 23
+subprogram           : 22
+subprogram_list      : 1 2 22
+term                 : 83 84 85 86 88 89 90
+type                 : 11 14 20 24 25 30 35 41
+type_decl            : 9 10
+type_decl_list       : 8 10
+type_opt             : 1 2
+unit_list            : 4 6
+uses_opt             : 1 2
+variable             : 52 53 56 64 66 67 68 91
+while_stmt           : 59
+write_stmt           : 60
 
 Parsing method: LALR
 
 state 0
 
     (0) S' -> . program
-    (1) program -> . PROGRAM ID SEMICOLON decl_list block DOT
-    (2) program -> . PROGRAM error SEMICOLON decl_list block DOT
+    (1) program -> . PROGRAM ID SEMICOLON uses_opt type_opt decl_list subprogram_list block DOT
+    (2) program -> . PROGRAM error SEMICOLON uses_opt type_opt decl_list subprogram_list block DOT
 
     PROGRAM         shift and go to state 2
 
@@ -137,8 +223,8 @@ state 1
 
 state 2
 
-    (1) program -> PROGRAM . ID SEMICOLON decl_list block DOT
-    (2) program -> PROGRAM . error SEMICOLON decl_list block DOT
+    (1) program -> PROGRAM . ID SEMICOLON uses_opt type_opt decl_list subprogram_list block DOT
+    (2) program -> PROGRAM . error SEMICOLON uses_opt type_opt decl_list subprogram_list block DOT
 
     ID              shift and go to state 3
     error           shift and go to state 4
@@ -146,1408 +232,3267 @@ state 2
 
 state 3
 
-    (1) program -> PROGRAM ID . SEMICOLON decl_list block DOT
+    (1) program -> PROGRAM ID . SEMICOLON uses_opt type_opt decl_list subprogram_list block DOT
 
     SEMICOLON       shift and go to state 5
 
 
 state 4
 
-    (2) program -> PROGRAM error . SEMICOLON decl_list block DOT
+    (2) program -> PROGRAM error . SEMICOLON uses_opt type_opt decl_list subprogram_list block DOT
 
     SEMICOLON       shift and go to state 6
 
 
 state 5
 
-    (1) program -> PROGRAM ID SEMICOLON . decl_list block DOT
-    (3) decl_list -> .
-    (4) decl_list -> . VAR decl_group_list
+    (1) program -> PROGRAM ID SEMICOLON . uses_opt type_opt decl_list subprogram_list block DOT
+    (3) uses_opt -> .
+    (4) uses_opt -> . USES unit_list SEMICOLON
 
-    BEGIN           reduce using rule 3 (decl_list -> .)
-    VAR             shift and go to state 8
+    TYPE            reduce using rule 3 (uses_opt -> .)
+    VAR             reduce using rule 3 (uses_opt -> .)
+    BEGIN           reduce using rule 3 (uses_opt -> .)
+    FUNCTION        reduce using rule 3 (uses_opt -> .)
+    PROCEDURE       reduce using rule 3 (uses_opt -> .)
+    USES            shift and go to state 8
 
-    decl_list                      shift and go to state 7
+    uses_opt                       shift and go to state 7
 
 state 6
 
-    (2) program -> PROGRAM error SEMICOLON . decl_list block DOT
-    (3) decl_list -> .
-    (4) decl_list -> . VAR decl_group_list
+    (2) program -> PROGRAM error SEMICOLON . uses_opt type_opt decl_list subprogram_list block DOT
+    (3) uses_opt -> .
+    (4) uses_opt -> . USES unit_list SEMICOLON
 
-    BEGIN           reduce using rule 3 (decl_list -> .)
-    VAR             shift and go to state 8
+    TYPE            reduce using rule 3 (uses_opt -> .)
+    VAR             reduce using rule 3 (uses_opt -> .)
+    BEGIN           reduce using rule 3 (uses_opt -> .)
+    FUNCTION        reduce using rule 3 (uses_opt -> .)
+    PROCEDURE       reduce using rule 3 (uses_opt -> .)
+    USES            shift and go to state 8
 
-    decl_list                      shift and go to state 9
+    uses_opt                       shift and go to state 9
 
 state 7
 
-    (1) program -> PROGRAM ID SEMICOLON decl_list . block DOT
-    (14) block -> . BEGIN block_enter stmt_list END
+    (1) program -> PROGRAM ID SEMICOLON uses_opt . type_opt decl_list subprogram_list block DOT
+    (7) type_opt -> .
+    (8) type_opt -> . TYPE type_decl_list
 
-    BEGIN           shift and go to state 11
+    VAR             reduce using rule 7 (type_opt -> .)
+    BEGIN           reduce using rule 7 (type_opt -> .)
+    FUNCTION        reduce using rule 7 (type_opt -> .)
+    PROCEDURE       reduce using rule 7 (type_opt -> .)
+    TYPE            shift and go to state 11
 
-    block                          shift and go to state 10
+    type_opt                       shift and go to state 10
 
 state 8
 
-    (4) decl_list -> VAR . decl_group_list
-    (5) decl_group_list -> . decl_group
-    (6) decl_group_list -> . decl_group_list decl_group
-    (7) decl_group -> . id_list COLON type SEMICOLON
-    (8) decl_group -> . error SEMICOLON
-    (9) id_list -> . ID
-    (10) id_list -> . id_list COMMA ID
+    (4) uses_opt -> USES . unit_list SEMICOLON
+    (5) unit_list -> . ID
+    (6) unit_list -> . unit_list COMMA ID
 
-    error           shift and go to state 15
-    ID              shift and go to state 16
+    ID              shift and go to state 13
 
-    decl_group_list                shift and go to state 12
-    decl_group                     shift and go to state 13
-    id_list                        shift and go to state 14
+    unit_list                      shift and go to state 12
 
 state 9
 
-    (2) program -> PROGRAM error SEMICOLON decl_list . block DOT
-    (14) block -> . BEGIN block_enter stmt_list END
+    (2) program -> PROGRAM error SEMICOLON uses_opt . type_opt decl_list subprogram_list block DOT
+    (7) type_opt -> .
+    (8) type_opt -> . TYPE type_decl_list
 
-    BEGIN           shift and go to state 11
+    VAR             reduce using rule 7 (type_opt -> .)
+    BEGIN           reduce using rule 7 (type_opt -> .)
+    FUNCTION        reduce using rule 7 (type_opt -> .)
+    PROCEDURE       reduce using rule 7 (type_opt -> .)
+    TYPE            shift and go to state 11
 
-    block                          shift and go to state 17
+    type_opt                       shift and go to state 14
 
 state 10
 
-    (1) program -> PROGRAM ID SEMICOLON decl_list block . DOT
+    (1) program -> PROGRAM ID SEMICOLON uses_opt type_opt . decl_list subprogram_list block DOT
+    (31) decl_list -> .
+    (32) decl_list -> . VAR decl_group_list
 
-    DOT             shift and go to state 18
+    BEGIN           reduce using rule 31 (decl_list -> .)
+    FUNCTION        reduce using rule 31 (decl_list -> .)
+    PROCEDURE       reduce using rule 31 (decl_list -> .)
+    VAR             shift and go to state 16
 
+    decl_list                      shift and go to state 15
 
 state 11
 
-    (14) block -> BEGIN . block_enter stmt_list END
-    (13) block_enter -> .
+    (8) type_opt -> TYPE . type_decl_list
+    (9) type_decl_list -> . type_decl
+    (10) type_decl_list -> . type_decl_list type_decl
+    (11) type_decl -> . ID EQ type SEMICOLON
 
-    error           reduce using rule 13 (block_enter -> .)
-    ID              reduce using rule 13 (block_enter -> .)
-    IF              reduce using rule 13 (block_enter -> .)
-    WHILE           reduce using rule 13 (block_enter -> .)
-    WRITELN         reduce using rule 13 (block_enter -> .)
-    BEGIN           reduce using rule 13 (block_enter -> .)
-    END             reduce using rule 13 (block_enter -> .)
-    SEMICOLON       reduce using rule 13 (block_enter -> .)
+    ID              shift and go to state 19
 
-    block_enter                    shift and go to state 19
+    type_decl_list                 shift and go to state 17
+    type_decl                      shift and go to state 18
 
 state 12
 
-    (4) decl_list -> VAR decl_group_list .
-    (6) decl_group_list -> decl_group_list . decl_group
-    (7) decl_group -> . id_list COLON type SEMICOLON
-    (8) decl_group -> . error SEMICOLON
-    (9) id_list -> . ID
-    (10) id_list -> . id_list COMMA ID
+    (4) uses_opt -> USES unit_list . SEMICOLON
+    (6) unit_list -> unit_list . COMMA ID
 
-    BEGIN           reduce using rule 4 (decl_list -> VAR decl_group_list .)
-    error           shift and go to state 15
-    ID              shift and go to state 16
+    SEMICOLON       shift and go to state 20
+    COMMA           shift and go to state 21
 
-    decl_group                     shift and go to state 20
-    id_list                        shift and go to state 14
 
 state 13
 
-    (5) decl_group_list -> decl_group .
+    (5) unit_list -> ID .
 
-    error           reduce using rule 5 (decl_group_list -> decl_group .)
-    ID              reduce using rule 5 (decl_group_list -> decl_group .)
-    BEGIN           reduce using rule 5 (decl_group_list -> decl_group .)
+    SEMICOLON       reduce using rule 5 (unit_list -> ID .)
+    COMMA           reduce using rule 5 (unit_list -> ID .)
 
 
 state 14
 
-    (7) decl_group -> id_list . COLON type SEMICOLON
-    (10) id_list -> id_list . COMMA ID
+    (2) program -> PROGRAM error SEMICOLON uses_opt type_opt . decl_list subprogram_list block DOT
+    (31) decl_list -> .
+    (32) decl_list -> . VAR decl_group_list
 
-    COLON           shift and go to state 21
-    COMMA           shift and go to state 22
+    BEGIN           reduce using rule 31 (decl_list -> .)
+    FUNCTION        reduce using rule 31 (decl_list -> .)
+    PROCEDURE       reduce using rule 31 (decl_list -> .)
+    VAR             shift and go to state 16
 
+    decl_list                      shift and go to state 22
 
 state 15
 
-    (8) decl_group -> error . SEMICOLON
+    (1) program -> PROGRAM ID SEMICOLON uses_opt type_opt decl_list . subprogram_list block DOT
+    (21) subprogram_list -> .
+    (22) subprogram_list -> . subprogram_list subprogram
 
-    SEMICOLON       shift and go to state 23
+    BEGIN           reduce using rule 21 (subprogram_list -> .)
+    FUNCTION        reduce using rule 21 (subprogram_list -> .)
+    PROCEDURE       reduce using rule 21 (subprogram_list -> .)
 
+    subprogram_list                shift and go to state 23
 
 state 16
 
-    (9) id_list -> ID .
+    (32) decl_list -> VAR . decl_group_list
+    (33) decl_group_list -> . decl_group
+    (34) decl_group_list -> . decl_group_list decl_group
+    (35) decl_group -> . id_list COLON type SEMICOLON
+    (36) decl_group -> . error SEMICOLON
+    (37) id_list -> . ID
+    (38) id_list -> . id_list COMMA ID
 
-    COLON           reduce using rule 9 (id_list -> ID .)
-    COMMA           reduce using rule 9 (id_list -> ID .)
+    error           shift and go to state 27
+    ID              shift and go to state 28
 
+    decl_group_list                shift and go to state 24
+    decl_group                     shift and go to state 25
+    id_list                        shift and go to state 26
 
 state 17
 
-    (2) program -> PROGRAM error SEMICOLON decl_list block . DOT
+    (8) type_opt -> TYPE type_decl_list .
+    (10) type_decl_list -> type_decl_list . type_decl
+    (11) type_decl -> . ID EQ type SEMICOLON
 
-    DOT             shift and go to state 24
+    VAR             reduce using rule 8 (type_opt -> TYPE type_decl_list .)
+    BEGIN           reduce using rule 8 (type_opt -> TYPE type_decl_list .)
+    FUNCTION        reduce using rule 8 (type_opt -> TYPE type_decl_list .)
+    PROCEDURE       reduce using rule 8 (type_opt -> TYPE type_decl_list .)
+    ID              shift and go to state 19
 
+    type_decl                      shift and go to state 29
 
 state 18
 
-    (1) program -> PROGRAM ID SEMICOLON decl_list block DOT .
+    (9) type_decl_list -> type_decl .
 
-    $end            reduce using rule 1 (program -> PROGRAM ID SEMICOLON decl_list block DOT .)
+    ID              reduce using rule 9 (type_decl_list -> type_decl .)
+    VAR             reduce using rule 9 (type_decl_list -> type_decl .)
+    BEGIN           reduce using rule 9 (type_decl_list -> type_decl .)
+    FUNCTION        reduce using rule 9 (type_decl_list -> type_decl .)
+    PROCEDURE       reduce using rule 9 (type_decl_list -> type_decl .)
 
 
 state 19
 
-    (14) block -> BEGIN block_enter . stmt_list END
-    (15) stmt_list -> . stmt
-    (16) stmt_list -> . stmt_list SEMICOLON stmt
-    (17) stmt -> . assign_stmt
-    (18) stmt -> . if_stmt
-    (19) stmt -> . while_stmt
-    (20) stmt -> . write_stmt
-    (21) stmt -> . block
-    (22) stmt -> .
-    (23) stmt -> . error
-    (24) assign_stmt -> . ID ASSIGN expr
-    (25) if_stmt -> . IF expr THEN stmt
-    (26) if_stmt -> . IF expr THEN stmt ELSE stmt
-    (27) while_stmt -> . WHILE expr DO stmt
-    (28) write_stmt -> . WRITELN LPAREN expr_list RPAREN
-    (14) block -> . BEGIN block_enter stmt_list END
+    (11) type_decl -> ID . EQ type SEMICOLON
 
-    END             reduce using rule 22 (stmt -> .)
-    SEMICOLON       reduce using rule 22 (stmt -> .)
-    error           shift and go to state 32
-    ID              shift and go to state 33
-    IF              shift and go to state 34
-    WHILE           shift and go to state 35
-    WRITELN         shift and go to state 36
-    BEGIN           shift and go to state 11
+    EQ              shift and go to state 30
 
-    stmt_list                      shift and go to state 25
-    stmt                           shift and go to state 26
-    assign_stmt                    shift and go to state 27
-    if_stmt                        shift and go to state 28
-    while_stmt                     shift and go to state 29
-    write_stmt                     shift and go to state 30
-    block                          shift and go to state 31
 
 state 20
 
-    (6) decl_group_list -> decl_group_list decl_group .
+    (4) uses_opt -> USES unit_list SEMICOLON .
 
-    error           reduce using rule 6 (decl_group_list -> decl_group_list decl_group .)
-    ID              reduce using rule 6 (decl_group_list -> decl_group_list decl_group .)
-    BEGIN           reduce using rule 6 (decl_group_list -> decl_group_list decl_group .)
+    TYPE            reduce using rule 4 (uses_opt -> USES unit_list SEMICOLON .)
+    VAR             reduce using rule 4 (uses_opt -> USES unit_list SEMICOLON .)
+    BEGIN           reduce using rule 4 (uses_opt -> USES unit_list SEMICOLON .)
+    FUNCTION        reduce using rule 4 (uses_opt -> USES unit_list SEMICOLON .)
+    PROCEDURE       reduce using rule 4 (uses_opt -> USES unit_list SEMICOLON .)
 
 
 state 21
 
-    (7) decl_group -> id_list COLON . type SEMICOLON
-    (11) type -> . INTEGER
-    (12) type -> . REAL
+    (6) unit_list -> unit_list COMMA . ID
 
-    INTEGER         shift and go to state 38
-    REAL            shift and go to state 39
+    ID              shift and go to state 31
 
-    type                           shift and go to state 37
 
 state 22
 
-    (10) id_list -> id_list COMMA . ID
+    (2) program -> PROGRAM error SEMICOLON uses_opt type_opt decl_list . subprogram_list block DOT
+    (21) subprogram_list -> .
+    (22) subprogram_list -> . subprogram_list subprogram
 
-    ID              shift and go to state 40
+    BEGIN           reduce using rule 21 (subprogram_list -> .)
+    FUNCTION        reduce using rule 21 (subprogram_list -> .)
+    PROCEDURE       reduce using rule 21 (subprogram_list -> .)
 
+    subprogram_list                shift and go to state 32
 
 state 23
 
-    (8) decl_group -> error SEMICOLON .
+    (1) program -> PROGRAM ID SEMICOLON uses_opt type_opt decl_list subprogram_list . block DOT
+    (22) subprogram_list -> subprogram_list . subprogram
+    (49) block -> . BEGIN block_enter stmt_list END
+    (23) subprogram -> . sub_header decl_list block SEMICOLON
+    (24) sub_header -> . FUNCTION ID LPAREN params RPAREN COLON type SEMICOLON
+    (25) sub_header -> . FUNCTION ID COLON type SEMICOLON
+    (26) sub_header -> . PROCEDURE ID LPAREN params RPAREN SEMICOLON
+    (27) sub_header -> . PROCEDURE ID SEMICOLON
 
-    error           reduce using rule 8 (decl_group -> error SEMICOLON .)
-    ID              reduce using rule 8 (decl_group -> error SEMICOLON .)
-    BEGIN           reduce using rule 8 (decl_group -> error SEMICOLON .)
+    BEGIN           shift and go to state 35
+    FUNCTION        shift and go to state 37
+    PROCEDURE       shift and go to state 38
 
+    block                          shift and go to state 33
+    subprogram                     shift and go to state 34
+    sub_header                     shift and go to state 36
 
 state 24
 
-    (2) program -> PROGRAM error SEMICOLON decl_list block DOT .
+    (32) decl_list -> VAR decl_group_list .
+    (34) decl_group_list -> decl_group_list . decl_group
+    (35) decl_group -> . id_list COLON type SEMICOLON
+    (36) decl_group -> . error SEMICOLON
+    (37) id_list -> . ID
+    (38) id_list -> . id_list COMMA ID
 
-    $end            reduce using rule 2 (program -> PROGRAM error SEMICOLON decl_list block DOT .)
+    BEGIN           reduce using rule 32 (decl_list -> VAR decl_group_list .)
+    FUNCTION        reduce using rule 32 (decl_list -> VAR decl_group_list .)
+    PROCEDURE       reduce using rule 32 (decl_list -> VAR decl_group_list .)
+    error           shift and go to state 27
+    ID              shift and go to state 28
 
+    decl_group                     shift and go to state 39
+    id_list                        shift and go to state 26
 
 state 25
 
-    (14) block -> BEGIN block_enter stmt_list . END
-    (16) stmt_list -> stmt_list . SEMICOLON stmt
+    (33) decl_group_list -> decl_group .
 
-    END             shift and go to state 41
-    SEMICOLON       shift and go to state 42
+    error           reduce using rule 33 (decl_group_list -> decl_group .)
+    ID              reduce using rule 33 (decl_group_list -> decl_group .)
+    BEGIN           reduce using rule 33 (decl_group_list -> decl_group .)
+    FUNCTION        reduce using rule 33 (decl_group_list -> decl_group .)
+    PROCEDURE       reduce using rule 33 (decl_group_list -> decl_group .)
 
 
 state 26
 
-    (15) stmt_list -> stmt .
+    (35) decl_group -> id_list . COLON type SEMICOLON
+    (38) id_list -> id_list . COMMA ID
 
-    END             reduce using rule 15 (stmt_list -> stmt .)
-    SEMICOLON       reduce using rule 15 (stmt_list -> stmt .)
+    COLON           shift and go to state 40
+    COMMA           shift and go to state 41
 
 
 state 27
 
-    (17) stmt -> assign_stmt .
+    (36) decl_group -> error . SEMICOLON
 
-    END             reduce using rule 17 (stmt -> assign_stmt .)
-    SEMICOLON       reduce using rule 17 (stmt -> assign_stmt .)
-    ELSE            reduce using rule 17 (stmt -> assign_stmt .)
+    SEMICOLON       shift and go to state 42
 
 
 state 28
 
-    (18) stmt -> if_stmt .
+    (37) id_list -> ID .
 
-    END             reduce using rule 18 (stmt -> if_stmt .)
-    SEMICOLON       reduce using rule 18 (stmt -> if_stmt .)
-    ELSE            reduce using rule 18 (stmt -> if_stmt .)
+    COLON           reduce using rule 37 (id_list -> ID .)
+    COMMA           reduce using rule 37 (id_list -> ID .)
 
 
 state 29
 
-    (19) stmt -> while_stmt .
+    (10) type_decl_list -> type_decl_list type_decl .
 
-    END             reduce using rule 19 (stmt -> while_stmt .)
-    SEMICOLON       reduce using rule 19 (stmt -> while_stmt .)
-    ELSE            reduce using rule 19 (stmt -> while_stmt .)
+    ID              reduce using rule 10 (type_decl_list -> type_decl_list type_decl .)
+    VAR             reduce using rule 10 (type_decl_list -> type_decl_list type_decl .)
+    BEGIN           reduce using rule 10 (type_decl_list -> type_decl_list type_decl .)
+    FUNCTION        reduce using rule 10 (type_decl_list -> type_decl_list type_decl .)
+    PROCEDURE       reduce using rule 10 (type_decl_list -> type_decl_list type_decl .)
 
 
 state 30
 
-    (20) stmt -> write_stmt .
+    (11) type_decl -> ID EQ . type SEMICOLON
+    (12) type -> . ID
+    (14) type -> . ptr_start type
+    (15) type -> . STRINGTYPE
+    (16) type -> . RECORD field_decl_list END
+    (17) type -> . RECORD field_decl_list SEMICOLON END
+    (39) type -> . INTEGER
+    (40) type -> . BOOLEAN
+    (41) type -> . ARRAY LBRACKET range_list RBRACKET OF type
+    (47) type -> . REAL
+    (13) ptr_start -> . CARET
 
-    END             reduce using rule 20 (stmt -> write_stmt .)
-    SEMICOLON       reduce using rule 20 (stmt -> write_stmt .)
-    ELSE            reduce using rule 20 (stmt -> write_stmt .)
+    ID              shift and go to state 43
+    STRINGTYPE      shift and go to state 46
+    RECORD          shift and go to state 47
+    INTEGER         shift and go to state 48
+    BOOLEAN         shift and go to state 49
+    ARRAY           shift and go to state 50
+    REAL            shift and go to state 51
+    CARET           shift and go to state 52
 
+    type                           shift and go to state 44
+    ptr_start                      shift and go to state 45
 
 state 31
 
-    (21) stmt -> block .
+    (6) unit_list -> unit_list COMMA ID .
 
-    END             reduce using rule 21 (stmt -> block .)
-    SEMICOLON       reduce using rule 21 (stmt -> block .)
-    ELSE            reduce using rule 21 (stmt -> block .)
+    SEMICOLON       reduce using rule 6 (unit_list -> unit_list COMMA ID .)
+    COMMA           reduce using rule 6 (unit_list -> unit_list COMMA ID .)
 
 
 state 32
 
-    (23) stmt -> error .
+    (2) program -> PROGRAM error SEMICOLON uses_opt type_opt decl_list subprogram_list . block DOT
+    (22) subprogram_list -> subprogram_list . subprogram
+    (49) block -> . BEGIN block_enter stmt_list END
+    (23) subprogram -> . sub_header decl_list block SEMICOLON
+    (24) sub_header -> . FUNCTION ID LPAREN params RPAREN COLON type SEMICOLON
+    (25) sub_header -> . FUNCTION ID COLON type SEMICOLON
+    (26) sub_header -> . PROCEDURE ID LPAREN params RPAREN SEMICOLON
+    (27) sub_header -> . PROCEDURE ID SEMICOLON
 
-    END             reduce using rule 23 (stmt -> error .)
-    SEMICOLON       reduce using rule 23 (stmt -> error .)
-    ELSE            reduce using rule 23 (stmt -> error .)
+    BEGIN           shift and go to state 35
+    FUNCTION        shift and go to state 37
+    PROCEDURE       shift and go to state 38
 
+    block                          shift and go to state 53
+    subprogram                     shift and go to state 34
+    sub_header                     shift and go to state 36
 
 state 33
 
-    (24) assign_stmt -> ID . ASSIGN expr
+    (1) program -> PROGRAM ID SEMICOLON uses_opt type_opt decl_list subprogram_list block . DOT
 
-    ASSIGN          shift and go to state 43
+    DOT             shift and go to state 54
 
 
 state 34
 
-    (25) if_stmt -> IF . expr THEN stmt
-    (26) if_stmt -> IF . expr THEN stmt ELSE stmt
-    (31) expr -> . simple_expr
-    (32) expr -> . simple_expr relop simple_expr
-    (39) simple_expr -> . term
-    (40) simple_expr -> . simple_expr PLUS term
-    (41) simple_expr -> . simple_expr MINUS term
-    (42) simple_expr -> . simple_expr OR term
-    (43) term -> . factor
-    (44) term -> . term TIMES factor
-    (45) term -> . term DIVIDE factor
-    (46) term -> . term AND factor
-    (47) factor -> . ID
-    (48) factor -> . NUM_INT
-    (49) factor -> . NUM_REAL
-    (50) factor -> . LPAREN expr RPAREN
-    (51) factor -> . NOT factor
+    (22) subprogram_list -> subprogram_list subprogram .
 
-    ID              shift and go to state 48
-    NUM_INT         shift and go to state 49
-    NUM_REAL        shift and go to state 50
-    LPAREN          shift and go to state 51
-    NOT             shift and go to state 52
+    BEGIN           reduce using rule 22 (subprogram_list -> subprogram_list subprogram .)
+    FUNCTION        reduce using rule 22 (subprogram_list -> subprogram_list subprogram .)
+    PROCEDURE       reduce using rule 22 (subprogram_list -> subprogram_list subprogram .)
 
-    expr                           shift and go to state 44
-    simple_expr                    shift and go to state 45
-    term                           shift and go to state 46
-    factor                         shift and go to state 47
 
 state 35
 
-    (27) while_stmt -> WHILE . expr DO stmt
-    (31) expr -> . simple_expr
-    (32) expr -> . simple_expr relop simple_expr
-    (39) simple_expr -> . term
-    (40) simple_expr -> . simple_expr PLUS term
-    (41) simple_expr -> . simple_expr MINUS term
-    (42) simple_expr -> . simple_expr OR term
-    (43) term -> . factor
-    (44) term -> . term TIMES factor
-    (45) term -> . term DIVIDE factor
-    (46) term -> . term AND factor
-    (47) factor -> . ID
-    (48) factor -> . NUM_INT
-    (49) factor -> . NUM_REAL
-    (50) factor -> . LPAREN expr RPAREN
-    (51) factor -> . NOT factor
+    (49) block -> BEGIN . block_enter stmt_list END
+    (48) block_enter -> .
 
-    ID              shift and go to state 48
-    NUM_INT         shift and go to state 49
-    NUM_REAL        shift and go to state 50
-    LPAREN          shift and go to state 51
-    NOT             shift and go to state 52
+    NEW             reduce using rule 48 (block_enter -> .)
+    DISPOSE         reduce using rule 48 (block_enter -> .)
+    ID              reduce using rule 48 (block_enter -> .)
+    error           reduce using rule 48 (block_enter -> .)
+    IF              reduce using rule 48 (block_enter -> .)
+    WHILE           reduce using rule 48 (block_enter -> .)
+    WRITELN         reduce using rule 48 (block_enter -> .)
+    BEGIN           reduce using rule 48 (block_enter -> .)
+    END             reduce using rule 48 (block_enter -> .)
+    SEMICOLON       reduce using rule 48 (block_enter -> .)
 
-    expr                           shift and go to state 53
-    simple_expr                    shift and go to state 45
-    term                           shift and go to state 46
-    factor                         shift and go to state 47
+    block_enter                    shift and go to state 55
 
 state 36
 
-    (28) write_stmt -> WRITELN . LPAREN expr_list RPAREN
+    (23) subprogram -> sub_header . decl_list block SEMICOLON
+    (31) decl_list -> .
+    (32) decl_list -> . VAR decl_group_list
 
-    LPAREN          shift and go to state 54
+    BEGIN           reduce using rule 31 (decl_list -> .)
+    VAR             shift and go to state 16
 
+    decl_list                      shift and go to state 56
 
 state 37
 
-    (7) decl_group -> id_list COLON type . SEMICOLON
+    (24) sub_header -> FUNCTION . ID LPAREN params RPAREN COLON type SEMICOLON
+    (25) sub_header -> FUNCTION . ID COLON type SEMICOLON
 
-    SEMICOLON       shift and go to state 55
+    ID              shift and go to state 57
 
 
 state 38
 
-    (11) type -> INTEGER .
+    (26) sub_header -> PROCEDURE . ID LPAREN params RPAREN SEMICOLON
+    (27) sub_header -> PROCEDURE . ID SEMICOLON
 
-    SEMICOLON       reduce using rule 11 (type -> INTEGER .)
+    ID              shift and go to state 58
 
 
 state 39
 
-    (12) type -> REAL .
+    (34) decl_group_list -> decl_group_list decl_group .
 
-    SEMICOLON       reduce using rule 12 (type -> REAL .)
+    error           reduce using rule 34 (decl_group_list -> decl_group_list decl_group .)
+    ID              reduce using rule 34 (decl_group_list -> decl_group_list decl_group .)
+    BEGIN           reduce using rule 34 (decl_group_list -> decl_group_list decl_group .)
+    FUNCTION        reduce using rule 34 (decl_group_list -> decl_group_list decl_group .)
+    PROCEDURE       reduce using rule 34 (decl_group_list -> decl_group_list decl_group .)
 
 
 state 40
 
-    (10) id_list -> id_list COMMA ID .
+    (35) decl_group -> id_list COLON . type SEMICOLON
+    (12) type -> . ID
+    (14) type -> . ptr_start type
+    (15) type -> . STRINGTYPE
+    (16) type -> . RECORD field_decl_list END
+    (17) type -> . RECORD field_decl_list SEMICOLON END
+    (39) type -> . INTEGER
+    (40) type -> . BOOLEAN
+    (41) type -> . ARRAY LBRACKET range_list RBRACKET OF type
+    (47) type -> . REAL
+    (13) ptr_start -> . CARET
 
-    COLON           reduce using rule 10 (id_list -> id_list COMMA ID .)
-    COMMA           reduce using rule 10 (id_list -> id_list COMMA ID .)
+    ID              shift and go to state 43
+    STRINGTYPE      shift and go to state 46
+    RECORD          shift and go to state 47
+    INTEGER         shift and go to state 48
+    BOOLEAN         shift and go to state 49
+    ARRAY           shift and go to state 50
+    REAL            shift and go to state 51
+    CARET           shift and go to state 52
 
+    type                           shift and go to state 59
+    ptr_start                      shift and go to state 45
 
 state 41
 
-    (14) block -> BEGIN block_enter stmt_list END .
+    (38) id_list -> id_list COMMA . ID
 
-    DOT             reduce using rule 14 (block -> BEGIN block_enter stmt_list END .)
-    END             reduce using rule 14 (block -> BEGIN block_enter stmt_list END .)
-    SEMICOLON       reduce using rule 14 (block -> BEGIN block_enter stmt_list END .)
-    ELSE            reduce using rule 14 (block -> BEGIN block_enter stmt_list END .)
+    ID              shift and go to state 60
 
 
 state 42
 
-    (16) stmt_list -> stmt_list SEMICOLON . stmt
-    (17) stmt -> . assign_stmt
-    (18) stmt -> . if_stmt
-    (19) stmt -> . while_stmt
-    (20) stmt -> . write_stmt
-    (21) stmt -> . block
-    (22) stmt -> .
-    (23) stmt -> . error
-    (24) assign_stmt -> . ID ASSIGN expr
-    (25) if_stmt -> . IF expr THEN stmt
-    (26) if_stmt -> . IF expr THEN stmt ELSE stmt
-    (27) while_stmt -> . WHILE expr DO stmt
-    (28) write_stmt -> . WRITELN LPAREN expr_list RPAREN
-    (14) block -> . BEGIN block_enter stmt_list END
+    (36) decl_group -> error SEMICOLON .
 
-    END             reduce using rule 22 (stmt -> .)
-    SEMICOLON       reduce using rule 22 (stmt -> .)
-    error           shift and go to state 32
-    ID              shift and go to state 33
-    IF              shift and go to state 34
-    WHILE           shift and go to state 35
-    WRITELN         shift and go to state 36
-    BEGIN           shift and go to state 11
+    error           reduce using rule 36 (decl_group -> error SEMICOLON .)
+    ID              reduce using rule 36 (decl_group -> error SEMICOLON .)
+    BEGIN           reduce using rule 36 (decl_group -> error SEMICOLON .)
+    FUNCTION        reduce using rule 36 (decl_group -> error SEMICOLON .)
+    PROCEDURE       reduce using rule 36 (decl_group -> error SEMICOLON .)
 
-    stmt                           shift and go to state 56
-    assign_stmt                    shift and go to state 27
-    if_stmt                        shift and go to state 28
-    while_stmt                     shift and go to state 29
-    write_stmt                     shift and go to state 30
-    block                          shift and go to state 31
 
 state 43
 
-    (24) assign_stmt -> ID ASSIGN . expr
-    (31) expr -> . simple_expr
-    (32) expr -> . simple_expr relop simple_expr
-    (39) simple_expr -> . term
-    (40) simple_expr -> . simple_expr PLUS term
-    (41) simple_expr -> . simple_expr MINUS term
-    (42) simple_expr -> . simple_expr OR term
-    (43) term -> . factor
-    (44) term -> . term TIMES factor
-    (45) term -> . term DIVIDE factor
-    (46) term -> . term AND factor
-    (47) factor -> . ID
-    (48) factor -> . NUM_INT
-    (49) factor -> . NUM_REAL
-    (50) factor -> . LPAREN expr RPAREN
-    (51) factor -> . NOT factor
+    (12) type -> ID .
 
-    ID              shift and go to state 48
-    NUM_INT         shift and go to state 49
-    NUM_REAL        shift and go to state 50
-    LPAREN          shift and go to state 51
-    NOT             shift and go to state 52
+    SEMICOLON       reduce using rule 12 (type -> ID .)
+    END             reduce using rule 12 (type -> ID .)
+    RPAREN          reduce using rule 12 (type -> ID .)
 
-    expr                           shift and go to state 57
-    simple_expr                    shift and go to state 45
-    term                           shift and go to state 46
-    factor                         shift and go to state 47
 
 state 44
 
-    (25) if_stmt -> IF expr . THEN stmt
-    (26) if_stmt -> IF expr . THEN stmt ELSE stmt
+    (11) type_decl -> ID EQ type . SEMICOLON
 
-    THEN            shift and go to state 58
+    SEMICOLON       shift and go to state 61
 
 
 state 45
 
-    (31) expr -> simple_expr .
-    (32) expr -> simple_expr . relop simple_expr
-    (40) simple_expr -> simple_expr . PLUS term
-    (41) simple_expr -> simple_expr . MINUS term
-    (42) simple_expr -> simple_expr . OR term
-    (33) relop -> . EQ
-    (34) relop -> . NE
-    (35) relop -> . LT
-    (36) relop -> . LE
-    (37) relop -> . GT
-    (38) relop -> . GE
+    (14) type -> ptr_start . type
+    (12) type -> . ID
+    (14) type -> . ptr_start type
+    (15) type -> . STRINGTYPE
+    (16) type -> . RECORD field_decl_list END
+    (17) type -> . RECORD field_decl_list SEMICOLON END
+    (39) type -> . INTEGER
+    (40) type -> . BOOLEAN
+    (41) type -> . ARRAY LBRACKET range_list RBRACKET OF type
+    (47) type -> . REAL
+    (13) ptr_start -> . CARET
 
-    THEN            reduce using rule 31 (expr -> simple_expr .)
-    DO              reduce using rule 31 (expr -> simple_expr .)
-    END             reduce using rule 31 (expr -> simple_expr .)
-    SEMICOLON       reduce using rule 31 (expr -> simple_expr .)
-    ELSE            reduce using rule 31 (expr -> simple_expr .)
-    RPAREN          reduce using rule 31 (expr -> simple_expr .)
-    COMMA           reduce using rule 31 (expr -> simple_expr .)
-    PLUS            shift and go to state 60
-    MINUS           shift and go to state 61
-    OR              shift and go to state 62
-    EQ              shift and go to state 63
-    NE              shift and go to state 64
-    LT              shift and go to state 65
-    LE              shift and go to state 66
-    GT              shift and go to state 67
-    GE              shift and go to state 68
+    ID              shift and go to state 43
+    STRINGTYPE      shift and go to state 46
+    RECORD          shift and go to state 47
+    INTEGER         shift and go to state 48
+    BOOLEAN         shift and go to state 49
+    ARRAY           shift and go to state 50
+    REAL            shift and go to state 51
+    CARET           shift and go to state 52
 
-    relop                          shift and go to state 59
+    ptr_start                      shift and go to state 45
+    type                           shift and go to state 62
 
 state 46
 
-    (39) simple_expr -> term .
-    (44) term -> term . TIMES factor
-    (45) term -> term . DIVIDE factor
-    (46) term -> term . AND factor
+    (15) type -> STRINGTYPE .
 
-    PLUS            reduce using rule 39 (simple_expr -> term .)
-    MINUS           reduce using rule 39 (simple_expr -> term .)
-    OR              reduce using rule 39 (simple_expr -> term .)
-    EQ              reduce using rule 39 (simple_expr -> term .)
-    NE              reduce using rule 39 (simple_expr -> term .)
-    LT              reduce using rule 39 (simple_expr -> term .)
-    LE              reduce using rule 39 (simple_expr -> term .)
-    GT              reduce using rule 39 (simple_expr -> term .)
-    GE              reduce using rule 39 (simple_expr -> term .)
-    THEN            reduce using rule 39 (simple_expr -> term .)
-    DO              reduce using rule 39 (simple_expr -> term .)
-    END             reduce using rule 39 (simple_expr -> term .)
-    SEMICOLON       reduce using rule 39 (simple_expr -> term .)
-    ELSE            reduce using rule 39 (simple_expr -> term .)
-    RPAREN          reduce using rule 39 (simple_expr -> term .)
-    COMMA           reduce using rule 39 (simple_expr -> term .)
-    TIMES           shift and go to state 69
-    DIVIDE          shift and go to state 70
-    AND             shift and go to state 71
+    SEMICOLON       reduce using rule 15 (type -> STRINGTYPE .)
+    END             reduce using rule 15 (type -> STRINGTYPE .)
+    RPAREN          reduce using rule 15 (type -> STRINGTYPE .)
 
 
 state 47
 
-    (43) term -> factor .
+    (16) type -> RECORD . field_decl_list END
+    (17) type -> RECORD . field_decl_list SEMICOLON END
+    (18) field_decl_list -> . field_decl
+    (19) field_decl_list -> . field_decl_list SEMICOLON field_decl
+    (20) field_decl -> . id_list COLON type
+    (37) id_list -> . ID
+    (38) id_list -> . id_list COMMA ID
 
-    TIMES           reduce using rule 43 (term -> factor .)
-    DIVIDE          reduce using rule 43 (term -> factor .)
-    AND             reduce using rule 43 (term -> factor .)
-    PLUS            reduce using rule 43 (term -> factor .)
-    MINUS           reduce using rule 43 (term -> factor .)
-    OR              reduce using rule 43 (term -> factor .)
-    EQ              reduce using rule 43 (term -> factor .)
-    NE              reduce using rule 43 (term -> factor .)
-    LT              reduce using rule 43 (term -> factor .)
-    LE              reduce using rule 43 (term -> factor .)
-    GT              reduce using rule 43 (term -> factor .)
-    GE              reduce using rule 43 (term -> factor .)
-    THEN            reduce using rule 43 (term -> factor .)
-    DO              reduce using rule 43 (term -> factor .)
-    END             reduce using rule 43 (term -> factor .)
-    SEMICOLON       reduce using rule 43 (term -> factor .)
-    ELSE            reduce using rule 43 (term -> factor .)
-    RPAREN          reduce using rule 43 (term -> factor .)
-    COMMA           reduce using rule 43 (term -> factor .)
+    ID              shift and go to state 28
 
+    field_decl_list                shift and go to state 63
+    field_decl                     shift and go to state 64
+    id_list                        shift and go to state 65
 
 state 48
 
-    (47) factor -> ID .
+    (39) type -> INTEGER .
 
-    TIMES           reduce using rule 47 (factor -> ID .)
-    DIVIDE          reduce using rule 47 (factor -> ID .)
-    AND             reduce using rule 47 (factor -> ID .)
-    PLUS            reduce using rule 47 (factor -> ID .)
-    MINUS           reduce using rule 47 (factor -> ID .)
-    OR              reduce using rule 47 (factor -> ID .)
-    EQ              reduce using rule 47 (factor -> ID .)
-    NE              reduce using rule 47 (factor -> ID .)
-    LT              reduce using rule 47 (factor -> ID .)
-    LE              reduce using rule 47 (factor -> ID .)
-    GT              reduce using rule 47 (factor -> ID .)
-    GE              reduce using rule 47 (factor -> ID .)
-    THEN            reduce using rule 47 (factor -> ID .)
-    DO              reduce using rule 47 (factor -> ID .)
-    END             reduce using rule 47 (factor -> ID .)
-    SEMICOLON       reduce using rule 47 (factor -> ID .)
-    ELSE            reduce using rule 47 (factor -> ID .)
-    RPAREN          reduce using rule 47 (factor -> ID .)
-    COMMA           reduce using rule 47 (factor -> ID .)
+    SEMICOLON       reduce using rule 39 (type -> INTEGER .)
+    END             reduce using rule 39 (type -> INTEGER .)
+    RPAREN          reduce using rule 39 (type -> INTEGER .)
 
 
 state 49
 
-    (48) factor -> NUM_INT .
+    (40) type -> BOOLEAN .
 
-    TIMES           reduce using rule 48 (factor -> NUM_INT .)
-    DIVIDE          reduce using rule 48 (factor -> NUM_INT .)
-    AND             reduce using rule 48 (factor -> NUM_INT .)
-    PLUS            reduce using rule 48 (factor -> NUM_INT .)
-    MINUS           reduce using rule 48 (factor -> NUM_INT .)
-    OR              reduce using rule 48 (factor -> NUM_INT .)
-    EQ              reduce using rule 48 (factor -> NUM_INT .)
-    NE              reduce using rule 48 (factor -> NUM_INT .)
-    LT              reduce using rule 48 (factor -> NUM_INT .)
-    LE              reduce using rule 48 (factor -> NUM_INT .)
-    GT              reduce using rule 48 (factor -> NUM_INT .)
-    GE              reduce using rule 48 (factor -> NUM_INT .)
-    THEN            reduce using rule 48 (factor -> NUM_INT .)
-    DO              reduce using rule 48 (factor -> NUM_INT .)
-    END             reduce using rule 48 (factor -> NUM_INT .)
-    SEMICOLON       reduce using rule 48 (factor -> NUM_INT .)
-    ELSE            reduce using rule 48 (factor -> NUM_INT .)
-    RPAREN          reduce using rule 48 (factor -> NUM_INT .)
-    COMMA           reduce using rule 48 (factor -> NUM_INT .)
+    SEMICOLON       reduce using rule 40 (type -> BOOLEAN .)
+    END             reduce using rule 40 (type -> BOOLEAN .)
+    RPAREN          reduce using rule 40 (type -> BOOLEAN .)
 
 
 state 50
 
-    (49) factor -> NUM_REAL .
+    (41) type -> ARRAY . LBRACKET range_list RBRACKET OF type
 
-    TIMES           reduce using rule 49 (factor -> NUM_REAL .)
-    DIVIDE          reduce using rule 49 (factor -> NUM_REAL .)
-    AND             reduce using rule 49 (factor -> NUM_REAL .)
-    PLUS            reduce using rule 49 (factor -> NUM_REAL .)
-    MINUS           reduce using rule 49 (factor -> NUM_REAL .)
-    OR              reduce using rule 49 (factor -> NUM_REAL .)
-    EQ              reduce using rule 49 (factor -> NUM_REAL .)
-    NE              reduce using rule 49 (factor -> NUM_REAL .)
-    LT              reduce using rule 49 (factor -> NUM_REAL .)
-    LE              reduce using rule 49 (factor -> NUM_REAL .)
-    GT              reduce using rule 49 (factor -> NUM_REAL .)
-    GE              reduce using rule 49 (factor -> NUM_REAL .)
-    THEN            reduce using rule 49 (factor -> NUM_REAL .)
-    DO              reduce using rule 49 (factor -> NUM_REAL .)
-    END             reduce using rule 49 (factor -> NUM_REAL .)
-    SEMICOLON       reduce using rule 49 (factor -> NUM_REAL .)
-    ELSE            reduce using rule 49 (factor -> NUM_REAL .)
-    RPAREN          reduce using rule 49 (factor -> NUM_REAL .)
-    COMMA           reduce using rule 49 (factor -> NUM_REAL .)
+    LBRACKET        shift and go to state 66
 
 
 state 51
 
-    (50) factor -> LPAREN . expr RPAREN
-    (31) expr -> . simple_expr
-    (32) expr -> . simple_expr relop simple_expr
-    (39) simple_expr -> . term
-    (40) simple_expr -> . simple_expr PLUS term
-    (41) simple_expr -> . simple_expr MINUS term
-    (42) simple_expr -> . simple_expr OR term
-    (43) term -> . factor
-    (44) term -> . term TIMES factor
-    (45) term -> . term DIVIDE factor
-    (46) term -> . term AND factor
-    (47) factor -> . ID
-    (48) factor -> . NUM_INT
-    (49) factor -> . NUM_REAL
-    (50) factor -> . LPAREN expr RPAREN
-    (51) factor -> . NOT factor
+    (47) type -> REAL .
 
-    ID              shift and go to state 48
-    NUM_INT         shift and go to state 49
-    NUM_REAL        shift and go to state 50
-    LPAREN          shift and go to state 51
-    NOT             shift and go to state 52
+    SEMICOLON       reduce using rule 47 (type -> REAL .)
+    END             reduce using rule 47 (type -> REAL .)
+    RPAREN          reduce using rule 47 (type -> REAL .)
 
-    expr                           shift and go to state 72
-    simple_expr                    shift and go to state 45
-    term                           shift and go to state 46
-    factor                         shift and go to state 47
 
 state 52
 
-    (51) factor -> NOT . factor
-    (47) factor -> . ID
-    (48) factor -> . NUM_INT
-    (49) factor -> . NUM_REAL
-    (50) factor -> . LPAREN expr RPAREN
-    (51) factor -> . NOT factor
+    (13) ptr_start -> CARET .
 
-    ID              shift and go to state 48
-    NUM_INT         shift and go to state 49
-    NUM_REAL        shift and go to state 50
-    LPAREN          shift and go to state 51
-    NOT             shift and go to state 52
+    ID              reduce using rule 13 (ptr_start -> CARET .)
+    STRINGTYPE      reduce using rule 13 (ptr_start -> CARET .)
+    RECORD          reduce using rule 13 (ptr_start -> CARET .)
+    INTEGER         reduce using rule 13 (ptr_start -> CARET .)
+    BOOLEAN         reduce using rule 13 (ptr_start -> CARET .)
+    ARRAY           reduce using rule 13 (ptr_start -> CARET .)
+    REAL            reduce using rule 13 (ptr_start -> CARET .)
+    CARET           reduce using rule 13 (ptr_start -> CARET .)
 
-    factor                         shift and go to state 73
 
 state 53
 
-    (27) while_stmt -> WHILE expr . DO stmt
+    (2) program -> PROGRAM error SEMICOLON uses_opt type_opt decl_list subprogram_list block . DOT
 
-    DO              shift and go to state 74
+    DOT             shift and go to state 67
 
 
 state 54
 
-    (28) write_stmt -> WRITELN LPAREN . expr_list RPAREN
-    (29) expr_list -> . expr
-    (30) expr_list -> . expr_list COMMA expr
-    (31) expr -> . simple_expr
-    (32) expr -> . simple_expr relop simple_expr
-    (39) simple_expr -> . term
-    (40) simple_expr -> . simple_expr PLUS term
-    (41) simple_expr -> . simple_expr MINUS term
-    (42) simple_expr -> . simple_expr OR term
-    (43) term -> . factor
-    (44) term -> . term TIMES factor
-    (45) term -> . term DIVIDE factor
-    (46) term -> . term AND factor
-    (47) factor -> . ID
-    (48) factor -> . NUM_INT
-    (49) factor -> . NUM_REAL
-    (50) factor -> . LPAREN expr RPAREN
-    (51) factor -> . NOT factor
+    (1) program -> PROGRAM ID SEMICOLON uses_opt type_opt decl_list subprogram_list block DOT .
 
-    ID              shift and go to state 48
-    NUM_INT         shift and go to state 49
-    NUM_REAL        shift and go to state 50
-    LPAREN          shift and go to state 51
-    NOT             shift and go to state 52
+    $end            reduce using rule 1 (program -> PROGRAM ID SEMICOLON uses_opt type_opt decl_list subprogram_list block DOT .)
 
-    expr_list                      shift and go to state 75
-    expr                           shift and go to state 76
-    simple_expr                    shift and go to state 45
-    term                           shift and go to state 46
-    factor                         shift and go to state 47
 
 state 55
 
-    (7) decl_group -> id_list COLON type SEMICOLON .
+    (49) block -> BEGIN block_enter . stmt_list END
+    (50) stmt_list -> . stmt
+    (51) stmt_list -> . stmt_list SEMICOLON stmt
+    (52) stmt -> . NEW LPAREN variable RPAREN
+    (53) stmt -> . DISPOSE LPAREN variable RPAREN
+    (54) stmt -> . ID LPAREN expr_list RPAREN
+    (55) stmt -> . ID LPAREN RPAREN
+    (56) stmt -> . variable
+    (57) stmt -> . assign_stmt
+    (58) stmt -> . if_stmt
+    (59) stmt -> . while_stmt
+    (60) stmt -> . write_stmt
+    (61) stmt -> . block
+    (62) stmt -> .
+    (63) stmt -> . error
+    (65) variable -> . ID
+    (66) variable -> . variable DOT ID
+    (67) variable -> . variable CARET
+    (68) variable -> . variable LBRACKET expr_list RBRACKET
+    (64) assign_stmt -> . variable ASSIGN expr
+    (69) if_stmt -> . IF expr THEN stmt
+    (70) if_stmt -> . IF expr THEN stmt ELSE stmt
+    (71) while_stmt -> . WHILE expr DO stmt
+    (72) write_stmt -> . WRITELN LPAREN expr_list RPAREN
+    (49) block -> . BEGIN block_enter stmt_list END
 
-    error           reduce using rule 7 (decl_group -> id_list COLON type SEMICOLON .)
-    ID              reduce using rule 7 (decl_group -> id_list COLON type SEMICOLON .)
-    BEGIN           reduce using rule 7 (decl_group -> id_list COLON type SEMICOLON .)
+    NEW             shift and go to state 70
+    DISPOSE         shift and go to state 72
+    ID              shift and go to state 73
+    END             reduce using rule 62 (stmt -> .)
+    SEMICOLON       reduce using rule 62 (stmt -> .)
+    error           shift and go to state 79
+    IF              shift and go to state 80
+    WHILE           shift and go to state 81
+    WRITELN         shift and go to state 82
+    BEGIN           shift and go to state 35
 
+    stmt_list                      shift and go to state 68
+    stmt                           shift and go to state 69
+    variable                       shift and go to state 71
+    assign_stmt                    shift and go to state 74
+    if_stmt                        shift and go to state 75
+    while_stmt                     shift and go to state 76
+    write_stmt                     shift and go to state 77
+    block                          shift and go to state 78
 
 state 56
 
-    (16) stmt_list -> stmt_list SEMICOLON stmt .
+    (23) subprogram -> sub_header decl_list . block SEMICOLON
+    (49) block -> . BEGIN block_enter stmt_list END
 
-    END             reduce using rule 16 (stmt_list -> stmt_list SEMICOLON stmt .)
-    SEMICOLON       reduce using rule 16 (stmt_list -> stmt_list SEMICOLON stmt .)
+    BEGIN           shift and go to state 35
 
+    block                          shift and go to state 83
 
 state 57
 
-    (24) assign_stmt -> ID ASSIGN expr .
+    (24) sub_header -> FUNCTION ID . LPAREN params RPAREN COLON type SEMICOLON
+    (25) sub_header -> FUNCTION ID . COLON type SEMICOLON
 
-    END             reduce using rule 24 (assign_stmt -> ID ASSIGN expr .)
-    SEMICOLON       reduce using rule 24 (assign_stmt -> ID ASSIGN expr .)
-    ELSE            reduce using rule 24 (assign_stmt -> ID ASSIGN expr .)
+    LPAREN          shift and go to state 84
+    COLON           shift and go to state 85
 
 
 state 58
 
-    (25) if_stmt -> IF expr THEN . stmt
-    (26) if_stmt -> IF expr THEN . stmt ELSE stmt
-    (17) stmt -> . assign_stmt
-    (18) stmt -> . if_stmt
-    (19) stmt -> . while_stmt
-    (20) stmt -> . write_stmt
-    (21) stmt -> . block
-    (22) stmt -> .
-    (23) stmt -> . error
-    (24) assign_stmt -> . ID ASSIGN expr
-    (25) if_stmt -> . IF expr THEN stmt
-    (26) if_stmt -> . IF expr THEN stmt ELSE stmt
-    (27) while_stmt -> . WHILE expr DO stmt
-    (28) write_stmt -> . WRITELN LPAREN expr_list RPAREN
-    (14) block -> . BEGIN block_enter stmt_list END
+    (26) sub_header -> PROCEDURE ID . LPAREN params RPAREN SEMICOLON
+    (27) sub_header -> PROCEDURE ID . SEMICOLON
 
-    ELSE            reduce using rule 22 (stmt -> .)
-    END             reduce using rule 22 (stmt -> .)
-    SEMICOLON       reduce using rule 22 (stmt -> .)
-    error           shift and go to state 32
-    ID              shift and go to state 33
-    IF              shift and go to state 34
-    WHILE           shift and go to state 35
-    WRITELN         shift and go to state 36
-    BEGIN           shift and go to state 11
+    LPAREN          shift and go to state 86
+    SEMICOLON       shift and go to state 87
 
-    stmt                           shift and go to state 77
-    assign_stmt                    shift and go to state 27
-    if_stmt                        shift and go to state 28
-    while_stmt                     shift and go to state 29
-    write_stmt                     shift and go to state 30
-    block                          shift and go to state 31
 
 state 59
 
-    (32) expr -> simple_expr relop . simple_expr
-    (39) simple_expr -> . term
-    (40) simple_expr -> . simple_expr PLUS term
-    (41) simple_expr -> . simple_expr MINUS term
-    (42) simple_expr -> . simple_expr OR term
-    (43) term -> . factor
-    (44) term -> . term TIMES factor
-    (45) term -> . term DIVIDE factor
-    (46) term -> . term AND factor
-    (47) factor -> . ID
-    (48) factor -> . NUM_INT
-    (49) factor -> . NUM_REAL
-    (50) factor -> . LPAREN expr RPAREN
-    (51) factor -> . NOT factor
+    (35) decl_group -> id_list COLON type . SEMICOLON
 
-    ID              shift and go to state 48
-    NUM_INT         shift and go to state 49
-    NUM_REAL        shift and go to state 50
-    LPAREN          shift and go to state 51
-    NOT             shift and go to state 52
+    SEMICOLON       shift and go to state 88
 
-    simple_expr                    shift and go to state 78
-    term                           shift and go to state 46
-    factor                         shift and go to state 47
 
 state 60
 
-    (40) simple_expr -> simple_expr PLUS . term
-    (43) term -> . factor
-    (44) term -> . term TIMES factor
-    (45) term -> . term DIVIDE factor
-    (46) term -> . term AND factor
-    (47) factor -> . ID
-    (48) factor -> . NUM_INT
-    (49) factor -> . NUM_REAL
-    (50) factor -> . LPAREN expr RPAREN
-    (51) factor -> . NOT factor
+    (38) id_list -> id_list COMMA ID .
 
-    ID              shift and go to state 48
-    NUM_INT         shift and go to state 49
-    NUM_REAL        shift and go to state 50
-    LPAREN          shift and go to state 51
-    NOT             shift and go to state 52
+    COLON           reduce using rule 38 (id_list -> id_list COMMA ID .)
+    COMMA           reduce using rule 38 (id_list -> id_list COMMA ID .)
 
-    term                           shift and go to state 79
-    factor                         shift and go to state 47
 
 state 61
 
-    (41) simple_expr -> simple_expr MINUS . term
-    (43) term -> . factor
-    (44) term -> . term TIMES factor
-    (45) term -> . term DIVIDE factor
-    (46) term -> . term AND factor
-    (47) factor -> . ID
-    (48) factor -> . NUM_INT
-    (49) factor -> . NUM_REAL
-    (50) factor -> . LPAREN expr RPAREN
-    (51) factor -> . NOT factor
+    (11) type_decl -> ID EQ type SEMICOLON .
 
-    ID              shift and go to state 48
-    NUM_INT         shift and go to state 49
-    NUM_REAL        shift and go to state 50
-    LPAREN          shift and go to state 51
-    NOT             shift and go to state 52
+    ID              reduce using rule 11 (type_decl -> ID EQ type SEMICOLON .)
+    VAR             reduce using rule 11 (type_decl -> ID EQ type SEMICOLON .)
+    BEGIN           reduce using rule 11 (type_decl -> ID EQ type SEMICOLON .)
+    FUNCTION        reduce using rule 11 (type_decl -> ID EQ type SEMICOLON .)
+    PROCEDURE       reduce using rule 11 (type_decl -> ID EQ type SEMICOLON .)
 
-    term                           shift and go to state 80
-    factor                         shift and go to state 47
 
 state 62
 
-    (42) simple_expr -> simple_expr OR . term
-    (43) term -> . factor
-    (44) term -> . term TIMES factor
-    (45) term -> . term DIVIDE factor
-    (46) term -> . term AND factor
-    (47) factor -> . ID
-    (48) factor -> . NUM_INT
-    (49) factor -> . NUM_REAL
-    (50) factor -> . LPAREN expr RPAREN
-    (51) factor -> . NOT factor
+    (14) type -> ptr_start type .
 
-    ID              shift and go to state 48
-    NUM_INT         shift and go to state 49
-    NUM_REAL        shift and go to state 50
-    LPAREN          shift and go to state 51
-    NOT             shift and go to state 52
+    SEMICOLON       reduce using rule 14 (type -> ptr_start type .)
+    END             reduce using rule 14 (type -> ptr_start type .)
+    RPAREN          reduce using rule 14 (type -> ptr_start type .)
 
-    term                           shift and go to state 81
-    factor                         shift and go to state 47
 
 state 63
 
-    (33) relop -> EQ .
+    (16) type -> RECORD field_decl_list . END
+    (17) type -> RECORD field_decl_list . SEMICOLON END
+    (19) field_decl_list -> field_decl_list . SEMICOLON field_decl
 
-    ID              reduce using rule 33 (relop -> EQ .)
-    NUM_INT         reduce using rule 33 (relop -> EQ .)
-    NUM_REAL        reduce using rule 33 (relop -> EQ .)
-    LPAREN          reduce using rule 33 (relop -> EQ .)
-    NOT             reduce using rule 33 (relop -> EQ .)
+    END             shift and go to state 89
+    SEMICOLON       shift and go to state 90
 
 
 state 64
 
-    (34) relop -> NE .
+    (18) field_decl_list -> field_decl .
 
-    ID              reduce using rule 34 (relop -> NE .)
-    NUM_INT         reduce using rule 34 (relop -> NE .)
-    NUM_REAL        reduce using rule 34 (relop -> NE .)
-    LPAREN          reduce using rule 34 (relop -> NE .)
-    NOT             reduce using rule 34 (relop -> NE .)
+    END             reduce using rule 18 (field_decl_list -> field_decl .)
+    SEMICOLON       reduce using rule 18 (field_decl_list -> field_decl .)
 
 
 state 65
 
-    (35) relop -> LT .
+    (20) field_decl -> id_list . COLON type
+    (38) id_list -> id_list . COMMA ID
 
-    ID              reduce using rule 35 (relop -> LT .)
-    NUM_INT         reduce using rule 35 (relop -> LT .)
-    NUM_REAL        reduce using rule 35 (relop -> LT .)
-    LPAREN          reduce using rule 35 (relop -> LT .)
-    NOT             reduce using rule 35 (relop -> LT .)
+    COLON           shift and go to state 91
+    COMMA           shift and go to state 41
 
 
 state 66
 
-    (36) relop -> LE .
+    (41) type -> ARRAY LBRACKET . range_list RBRACKET OF type
+    (42) range_list -> . range
+    (43) range_list -> . range_list COMMA range
+    (44) range -> . bound DOTDOT bound
+    (45) bound -> . NUM_INT
+    (46) bound -> . MINUS NUM_INT
 
-    ID              reduce using rule 36 (relop -> LE .)
-    NUM_INT         reduce using rule 36 (relop -> LE .)
-    NUM_REAL        reduce using rule 36 (relop -> LE .)
-    LPAREN          reduce using rule 36 (relop -> LE .)
-    NOT             reduce using rule 36 (relop -> LE .)
+    NUM_INT         shift and go to state 95
+    MINUS           shift and go to state 96
 
+    range_list                     shift and go to state 92
+    range                          shift and go to state 93
+    bound                          shift and go to state 94
 
 state 67
 
-    (37) relop -> GT .
+    (2) program -> PROGRAM error SEMICOLON uses_opt type_opt decl_list subprogram_list block DOT .
 
-    ID              reduce using rule 37 (relop -> GT .)
-    NUM_INT         reduce using rule 37 (relop -> GT .)
-    NUM_REAL        reduce using rule 37 (relop -> GT .)
-    LPAREN          reduce using rule 37 (relop -> GT .)
-    NOT             reduce using rule 37 (relop -> GT .)
+    $end            reduce using rule 2 (program -> PROGRAM error SEMICOLON uses_opt type_opt decl_list subprogram_list block DOT .)
 
 
 state 68
 
-    (38) relop -> GE .
+    (49) block -> BEGIN block_enter stmt_list . END
+    (51) stmt_list -> stmt_list . SEMICOLON stmt
 
-    ID              reduce using rule 38 (relop -> GE .)
-    NUM_INT         reduce using rule 38 (relop -> GE .)
-    NUM_REAL        reduce using rule 38 (relop -> GE .)
-    LPAREN          reduce using rule 38 (relop -> GE .)
-    NOT             reduce using rule 38 (relop -> GE .)
+    END             shift and go to state 97
+    SEMICOLON       shift and go to state 98
 
 
 state 69
 
-    (44) term -> term TIMES . factor
-    (47) factor -> . ID
-    (48) factor -> . NUM_INT
-    (49) factor -> . NUM_REAL
-    (50) factor -> . LPAREN expr RPAREN
-    (51) factor -> . NOT factor
+    (50) stmt_list -> stmt .
 
-    ID              shift and go to state 48
-    NUM_INT         shift and go to state 49
-    NUM_REAL        shift and go to state 50
-    LPAREN          shift and go to state 51
-    NOT             shift and go to state 52
+    END             reduce using rule 50 (stmt_list -> stmt .)
+    SEMICOLON       reduce using rule 50 (stmt_list -> stmt .)
 
-    factor                         shift and go to state 82
 
 state 70
 
-    (45) term -> term DIVIDE . factor
-    (47) factor -> . ID
-    (48) factor -> . NUM_INT
-    (49) factor -> . NUM_REAL
-    (50) factor -> . LPAREN expr RPAREN
-    (51) factor -> . NOT factor
+    (52) stmt -> NEW . LPAREN variable RPAREN
 
-    ID              shift and go to state 48
-    NUM_INT         shift and go to state 49
-    NUM_REAL        shift and go to state 50
-    LPAREN          shift and go to state 51
-    NOT             shift and go to state 52
+    LPAREN          shift and go to state 99
 
-    factor                         shift and go to state 83
 
 state 71
 
-    (46) term -> term AND . factor
-    (47) factor -> . ID
-    (48) factor -> . NUM_INT
-    (49) factor -> . NUM_REAL
-    (50) factor -> . LPAREN expr RPAREN
-    (51) factor -> . NOT factor
+    (56) stmt -> variable .
+    (66) variable -> variable . DOT ID
+    (67) variable -> variable . CARET
+    (68) variable -> variable . LBRACKET expr_list RBRACKET
+    (64) assign_stmt -> variable . ASSIGN expr
 
-    ID              shift and go to state 48
-    NUM_INT         shift and go to state 49
-    NUM_REAL        shift and go to state 50
-    LPAREN          shift and go to state 51
-    NOT             shift and go to state 52
+    END             reduce using rule 56 (stmt -> variable .)
+    SEMICOLON       reduce using rule 56 (stmt -> variable .)
+    ELSE            reduce using rule 56 (stmt -> variable .)
+    DOT             shift and go to state 100
+    CARET           shift and go to state 101
+    LBRACKET        shift and go to state 102
+    ASSIGN          shift and go to state 103
 
-    factor                         shift and go to state 84
 
 state 72
 
-    (50) factor -> LPAREN expr . RPAREN
+    (53) stmt -> DISPOSE . LPAREN variable RPAREN
 
-    RPAREN          shift and go to state 85
+    LPAREN          shift and go to state 104
 
 
 state 73
 
-    (51) factor -> NOT factor .
+    (54) stmt -> ID . LPAREN expr_list RPAREN
+    (55) stmt -> ID . LPAREN RPAREN
+    (65) variable -> ID .
 
-    TIMES           reduce using rule 51 (factor -> NOT factor .)
-    DIVIDE          reduce using rule 51 (factor -> NOT factor .)
-    AND             reduce using rule 51 (factor -> NOT factor .)
-    PLUS            reduce using rule 51 (factor -> NOT factor .)
-    MINUS           reduce using rule 51 (factor -> NOT factor .)
-    OR              reduce using rule 51 (factor -> NOT factor .)
-    EQ              reduce using rule 51 (factor -> NOT factor .)
-    NE              reduce using rule 51 (factor -> NOT factor .)
-    LT              reduce using rule 51 (factor -> NOT factor .)
-    LE              reduce using rule 51 (factor -> NOT factor .)
-    GT              reduce using rule 51 (factor -> NOT factor .)
-    GE              reduce using rule 51 (factor -> NOT factor .)
-    THEN            reduce using rule 51 (factor -> NOT factor .)
-    DO              reduce using rule 51 (factor -> NOT factor .)
-    END             reduce using rule 51 (factor -> NOT factor .)
-    SEMICOLON       reduce using rule 51 (factor -> NOT factor .)
-    ELSE            reduce using rule 51 (factor -> NOT factor .)
-    RPAREN          reduce using rule 51 (factor -> NOT factor .)
-    COMMA           reduce using rule 51 (factor -> NOT factor .)
+    LPAREN          shift and go to state 105
+    DOT             reduce using rule 65 (variable -> ID .)
+    CARET           reduce using rule 65 (variable -> ID .)
+    LBRACKET        reduce using rule 65 (variable -> ID .)
+    ASSIGN          reduce using rule 65 (variable -> ID .)
+    END             reduce using rule 65 (variable -> ID .)
+    SEMICOLON       reduce using rule 65 (variable -> ID .)
+    ELSE            reduce using rule 65 (variable -> ID .)
 
 
 state 74
 
-    (27) while_stmt -> WHILE expr DO . stmt
-    (17) stmt -> . assign_stmt
-    (18) stmt -> . if_stmt
-    (19) stmt -> . while_stmt
-    (20) stmt -> . write_stmt
-    (21) stmt -> . block
-    (22) stmt -> .
-    (23) stmt -> . error
-    (24) assign_stmt -> . ID ASSIGN expr
-    (25) if_stmt -> . IF expr THEN stmt
-    (26) if_stmt -> . IF expr THEN stmt ELSE stmt
-    (27) while_stmt -> . WHILE expr DO stmt
-    (28) write_stmt -> . WRITELN LPAREN expr_list RPAREN
-    (14) block -> . BEGIN block_enter stmt_list END
+    (57) stmt -> assign_stmt .
 
-    ELSE            reduce using rule 22 (stmt -> .)
-    END             reduce using rule 22 (stmt -> .)
-    SEMICOLON       reduce using rule 22 (stmt -> .)
-    error           shift and go to state 32
-    ID              shift and go to state 33
-    IF              shift and go to state 34
-    WHILE           shift and go to state 35
-    WRITELN         shift and go to state 36
-    BEGIN           shift and go to state 11
+    END             reduce using rule 57 (stmt -> assign_stmt .)
+    SEMICOLON       reduce using rule 57 (stmt -> assign_stmt .)
+    ELSE            reduce using rule 57 (stmt -> assign_stmt .)
 
-    stmt                           shift and go to state 86
-    assign_stmt                    shift and go to state 27
-    if_stmt                        shift and go to state 28
-    while_stmt                     shift and go to state 29
-    write_stmt                     shift and go to state 30
-    block                          shift and go to state 31
 
 state 75
 
-    (28) write_stmt -> WRITELN LPAREN expr_list . RPAREN
-    (30) expr_list -> expr_list . COMMA expr
+    (58) stmt -> if_stmt .
 
-    RPAREN          shift and go to state 87
-    COMMA           shift and go to state 88
+    END             reduce using rule 58 (stmt -> if_stmt .)
+    SEMICOLON       reduce using rule 58 (stmt -> if_stmt .)
+    ELSE            reduce using rule 58 (stmt -> if_stmt .)
 
 
 state 76
 
-    (29) expr_list -> expr .
+    (59) stmt -> while_stmt .
 
-    RPAREN          reduce using rule 29 (expr_list -> expr .)
-    COMMA           reduce using rule 29 (expr_list -> expr .)
+    END             reduce using rule 59 (stmt -> while_stmt .)
+    SEMICOLON       reduce using rule 59 (stmt -> while_stmt .)
+    ELSE            reduce using rule 59 (stmt -> while_stmt .)
 
 
 state 77
 
-    (25) if_stmt -> IF expr THEN stmt .
-    (26) if_stmt -> IF expr THEN stmt . ELSE stmt
+    (60) stmt -> write_stmt .
 
-    END             reduce using rule 25 (if_stmt -> IF expr THEN stmt .)
-    SEMICOLON       reduce using rule 25 (if_stmt -> IF expr THEN stmt .)
-    ELSE            shift and go to state 89
-
-  ! ELSE            [ reduce using rule 25 (if_stmt -> IF expr THEN stmt .) ]
+    END             reduce using rule 60 (stmt -> write_stmt .)
+    SEMICOLON       reduce using rule 60 (stmt -> write_stmt .)
+    ELSE            reduce using rule 60 (stmt -> write_stmt .)
 
 
 state 78
 
-    (32) expr -> simple_expr relop simple_expr .
-    (40) simple_expr -> simple_expr . PLUS term
-    (41) simple_expr -> simple_expr . MINUS term
-    (42) simple_expr -> simple_expr . OR term
+    (61) stmt -> block .
 
-    THEN            reduce using rule 32 (expr -> simple_expr relop simple_expr .)
-    DO              reduce using rule 32 (expr -> simple_expr relop simple_expr .)
-    END             reduce using rule 32 (expr -> simple_expr relop simple_expr .)
-    SEMICOLON       reduce using rule 32 (expr -> simple_expr relop simple_expr .)
-    ELSE            reduce using rule 32 (expr -> simple_expr relop simple_expr .)
-    RPAREN          reduce using rule 32 (expr -> simple_expr relop simple_expr .)
-    COMMA           reduce using rule 32 (expr -> simple_expr relop simple_expr .)
-    PLUS            shift and go to state 60
-    MINUS           shift and go to state 61
-    OR              shift and go to state 62
+    END             reduce using rule 61 (stmt -> block .)
+    SEMICOLON       reduce using rule 61 (stmt -> block .)
+    ELSE            reduce using rule 61 (stmt -> block .)
 
 
 state 79
 
-    (40) simple_expr -> simple_expr PLUS term .
-    (44) term -> term . TIMES factor
-    (45) term -> term . DIVIDE factor
-    (46) term -> term . AND factor
+    (63) stmt -> error .
 
-    PLUS            reduce using rule 40 (simple_expr -> simple_expr PLUS term .)
-    MINUS           reduce using rule 40 (simple_expr -> simple_expr PLUS term .)
-    OR              reduce using rule 40 (simple_expr -> simple_expr PLUS term .)
-    EQ              reduce using rule 40 (simple_expr -> simple_expr PLUS term .)
-    NE              reduce using rule 40 (simple_expr -> simple_expr PLUS term .)
-    LT              reduce using rule 40 (simple_expr -> simple_expr PLUS term .)
-    LE              reduce using rule 40 (simple_expr -> simple_expr PLUS term .)
-    GT              reduce using rule 40 (simple_expr -> simple_expr PLUS term .)
-    GE              reduce using rule 40 (simple_expr -> simple_expr PLUS term .)
-    THEN            reduce using rule 40 (simple_expr -> simple_expr PLUS term .)
-    DO              reduce using rule 40 (simple_expr -> simple_expr PLUS term .)
-    END             reduce using rule 40 (simple_expr -> simple_expr PLUS term .)
-    SEMICOLON       reduce using rule 40 (simple_expr -> simple_expr PLUS term .)
-    ELSE            reduce using rule 40 (simple_expr -> simple_expr PLUS term .)
-    RPAREN          reduce using rule 40 (simple_expr -> simple_expr PLUS term .)
-    COMMA           reduce using rule 40 (simple_expr -> simple_expr PLUS term .)
-    TIMES           shift and go to state 69
-    DIVIDE          shift and go to state 70
-    AND             shift and go to state 71
+    END             reduce using rule 63 (stmt -> error .)
+    SEMICOLON       reduce using rule 63 (stmt -> error .)
+    ELSE            reduce using rule 63 (stmt -> error .)
 
 
 state 80
 
-    (41) simple_expr -> simple_expr MINUS term .
-    (44) term -> term . TIMES factor
-    (45) term -> term . DIVIDE factor
-    (46) term -> term . AND factor
+    (69) if_stmt -> IF . expr THEN stmt
+    (70) if_stmt -> IF . expr THEN stmt ELSE stmt
+    (75) expr -> . simple_expr
+    (76) expr -> . simple_expr relop simple_expr
+    (83) simple_expr -> . term
+    (84) simple_expr -> . simple_expr PLUS term
+    (85) simple_expr -> . simple_expr MINUS term
+    (86) simple_expr -> . simple_expr OR term
+    (87) term -> . factor
+    (88) term -> . term TIMES factor
+    (89) term -> . term DIVIDE factor
+    (90) term -> . term AND factor
+    (91) factor -> . variable
+    (92) factor -> . ID LPAREN expr_list RPAREN
+    (93) factor -> . ID LPAREN RPAREN
+    (94) factor -> . NIL
+    (95) factor -> . STRING
+    (96) factor -> . NUM_INT
+    (97) factor -> . NUM_REAL
+    (98) factor -> . TRUE
+    (99) factor -> . FALSE
+    (100) factor -> . LPAREN expr RPAREN
+    (101) factor -> . NOT factor
+    (65) variable -> . ID
+    (66) variable -> . variable DOT ID
+    (67) variable -> . variable CARET
+    (68) variable -> . variable LBRACKET expr_list RBRACKET
 
-    PLUS            reduce using rule 41 (simple_expr -> simple_expr MINUS term .)
-    MINUS           reduce using rule 41 (simple_expr -> simple_expr MINUS term .)
-    OR              reduce using rule 41 (simple_expr -> simple_expr MINUS term .)
-    EQ              reduce using rule 41 (simple_expr -> simple_expr MINUS term .)
-    NE              reduce using rule 41 (simple_expr -> simple_expr MINUS term .)
-    LT              reduce using rule 41 (simple_expr -> simple_expr MINUS term .)
-    LE              reduce using rule 41 (simple_expr -> simple_expr MINUS term .)
-    GT              reduce using rule 41 (simple_expr -> simple_expr MINUS term .)
-    GE              reduce using rule 41 (simple_expr -> simple_expr MINUS term .)
-    THEN            reduce using rule 41 (simple_expr -> simple_expr MINUS term .)
-    DO              reduce using rule 41 (simple_expr -> simple_expr MINUS term .)
-    END             reduce using rule 41 (simple_expr -> simple_expr MINUS term .)
-    SEMICOLON       reduce using rule 41 (simple_expr -> simple_expr MINUS term .)
-    ELSE            reduce using rule 41 (simple_expr -> simple_expr MINUS term .)
-    RPAREN          reduce using rule 41 (simple_expr -> simple_expr MINUS term .)
-    COMMA           reduce using rule 41 (simple_expr -> simple_expr MINUS term .)
-    TIMES           shift and go to state 69
-    DIVIDE          shift and go to state 70
-    AND             shift and go to state 71
+    ID              shift and go to state 111
+    NIL             shift and go to state 113
+    STRING          shift and go to state 114
+    NUM_INT         shift and go to state 115
+    NUM_REAL        shift and go to state 116
+    TRUE            shift and go to state 117
+    FALSE           shift and go to state 118
+    LPAREN          shift and go to state 112
+    NOT             shift and go to state 119
 
+    expr                           shift and go to state 106
+    simple_expr                    shift and go to state 107
+    term                           shift and go to state 108
+    factor                         shift and go to state 109
+    variable                       shift and go to state 110
 
 state 81
 
-    (42) simple_expr -> simple_expr OR term .
-    (44) term -> term . TIMES factor
-    (45) term -> term . DIVIDE factor
-    (46) term -> term . AND factor
+    (71) while_stmt -> WHILE . expr DO stmt
+    (75) expr -> . simple_expr
+    (76) expr -> . simple_expr relop simple_expr
+    (83) simple_expr -> . term
+    (84) simple_expr -> . simple_expr PLUS term
+    (85) simple_expr -> . simple_expr MINUS term
+    (86) simple_expr -> . simple_expr OR term
+    (87) term -> . factor
+    (88) term -> . term TIMES factor
+    (89) term -> . term DIVIDE factor
+    (90) term -> . term AND factor
+    (91) factor -> . variable
+    (92) factor -> . ID LPAREN expr_list RPAREN
+    (93) factor -> . ID LPAREN RPAREN
+    (94) factor -> . NIL
+    (95) factor -> . STRING
+    (96) factor -> . NUM_INT
+    (97) factor -> . NUM_REAL
+    (98) factor -> . TRUE
+    (99) factor -> . FALSE
+    (100) factor -> . LPAREN expr RPAREN
+    (101) factor -> . NOT factor
+    (65) variable -> . ID
+    (66) variable -> . variable DOT ID
+    (67) variable -> . variable CARET
+    (68) variable -> . variable LBRACKET expr_list RBRACKET
 
-    PLUS            reduce using rule 42 (simple_expr -> simple_expr OR term .)
-    MINUS           reduce using rule 42 (simple_expr -> simple_expr OR term .)
-    OR              reduce using rule 42 (simple_expr -> simple_expr OR term .)
-    EQ              reduce using rule 42 (simple_expr -> simple_expr OR term .)
-    NE              reduce using rule 42 (simple_expr -> simple_expr OR term .)
-    LT              reduce using rule 42 (simple_expr -> simple_expr OR term .)
-    LE              reduce using rule 42 (simple_expr -> simple_expr OR term .)
-    GT              reduce using rule 42 (simple_expr -> simple_expr OR term .)
-    GE              reduce using rule 42 (simple_expr -> simple_expr OR term .)
-    THEN            reduce using rule 42 (simple_expr -> simple_expr OR term .)
-    DO              reduce using rule 42 (simple_expr -> simple_expr OR term .)
-    END             reduce using rule 42 (simple_expr -> simple_expr OR term .)
-    SEMICOLON       reduce using rule 42 (simple_expr -> simple_expr OR term .)
-    ELSE            reduce using rule 42 (simple_expr -> simple_expr OR term .)
-    RPAREN          reduce using rule 42 (simple_expr -> simple_expr OR term .)
-    COMMA           reduce using rule 42 (simple_expr -> simple_expr OR term .)
-    TIMES           shift and go to state 69
-    DIVIDE          shift and go to state 70
-    AND             shift and go to state 71
+    ID              shift and go to state 111
+    NIL             shift and go to state 113
+    STRING          shift and go to state 114
+    NUM_INT         shift and go to state 115
+    NUM_REAL        shift and go to state 116
+    TRUE            shift and go to state 117
+    FALSE           shift and go to state 118
+    LPAREN          shift and go to state 112
+    NOT             shift and go to state 119
 
+    expr                           shift and go to state 120
+    simple_expr                    shift and go to state 107
+    term                           shift and go to state 108
+    factor                         shift and go to state 109
+    variable                       shift and go to state 110
 
 state 82
 
-    (44) term -> term TIMES factor .
+    (72) write_stmt -> WRITELN . LPAREN expr_list RPAREN
 
-    TIMES           reduce using rule 44 (term -> term TIMES factor .)
-    DIVIDE          reduce using rule 44 (term -> term TIMES factor .)
-    AND             reduce using rule 44 (term -> term TIMES factor .)
-    PLUS            reduce using rule 44 (term -> term TIMES factor .)
-    MINUS           reduce using rule 44 (term -> term TIMES factor .)
-    OR              reduce using rule 44 (term -> term TIMES factor .)
-    EQ              reduce using rule 44 (term -> term TIMES factor .)
-    NE              reduce using rule 44 (term -> term TIMES factor .)
-    LT              reduce using rule 44 (term -> term TIMES factor .)
-    LE              reduce using rule 44 (term -> term TIMES factor .)
-    GT              reduce using rule 44 (term -> term TIMES factor .)
-    GE              reduce using rule 44 (term -> term TIMES factor .)
-    THEN            reduce using rule 44 (term -> term TIMES factor .)
-    DO              reduce using rule 44 (term -> term TIMES factor .)
-    END             reduce using rule 44 (term -> term TIMES factor .)
-    SEMICOLON       reduce using rule 44 (term -> term TIMES factor .)
-    ELSE            reduce using rule 44 (term -> term TIMES factor .)
-    RPAREN          reduce using rule 44 (term -> term TIMES factor .)
-    COMMA           reduce using rule 44 (term -> term TIMES factor .)
+    LPAREN          shift and go to state 121
 
 
 state 83
 
-    (45) term -> term DIVIDE factor .
+    (23) subprogram -> sub_header decl_list block . SEMICOLON
 
-    TIMES           reduce using rule 45 (term -> term DIVIDE factor .)
-    DIVIDE          reduce using rule 45 (term -> term DIVIDE factor .)
-    AND             reduce using rule 45 (term -> term DIVIDE factor .)
-    PLUS            reduce using rule 45 (term -> term DIVIDE factor .)
-    MINUS           reduce using rule 45 (term -> term DIVIDE factor .)
-    OR              reduce using rule 45 (term -> term DIVIDE factor .)
-    EQ              reduce using rule 45 (term -> term DIVIDE factor .)
-    NE              reduce using rule 45 (term -> term DIVIDE factor .)
-    LT              reduce using rule 45 (term -> term DIVIDE factor .)
-    LE              reduce using rule 45 (term -> term DIVIDE factor .)
-    GT              reduce using rule 45 (term -> term DIVIDE factor .)
-    GE              reduce using rule 45 (term -> term DIVIDE factor .)
-    THEN            reduce using rule 45 (term -> term DIVIDE factor .)
-    DO              reduce using rule 45 (term -> term DIVIDE factor .)
-    END             reduce using rule 45 (term -> term DIVIDE factor .)
-    SEMICOLON       reduce using rule 45 (term -> term DIVIDE factor .)
-    ELSE            reduce using rule 45 (term -> term DIVIDE factor .)
-    RPAREN          reduce using rule 45 (term -> term DIVIDE factor .)
-    COMMA           reduce using rule 45 (term -> term DIVIDE factor .)
+    SEMICOLON       shift and go to state 122
 
 
 state 84
 
-    (46) term -> term AND factor .
+    (24) sub_header -> FUNCTION ID LPAREN . params RPAREN COLON type SEMICOLON
+    (28) params -> . param_group
+    (29) params -> . params SEMICOLON param_group
+    (30) param_group -> . id_list COLON type
+    (37) id_list -> . ID
+    (38) id_list -> . id_list COMMA ID
 
-    TIMES           reduce using rule 46 (term -> term AND factor .)
-    DIVIDE          reduce using rule 46 (term -> term AND factor .)
-    AND             reduce using rule 46 (term -> term AND factor .)
-    PLUS            reduce using rule 46 (term -> term AND factor .)
-    MINUS           reduce using rule 46 (term -> term AND factor .)
-    OR              reduce using rule 46 (term -> term AND factor .)
-    EQ              reduce using rule 46 (term -> term AND factor .)
-    NE              reduce using rule 46 (term -> term AND factor .)
-    LT              reduce using rule 46 (term -> term AND factor .)
-    LE              reduce using rule 46 (term -> term AND factor .)
-    GT              reduce using rule 46 (term -> term AND factor .)
-    GE              reduce using rule 46 (term -> term AND factor .)
-    THEN            reduce using rule 46 (term -> term AND factor .)
-    DO              reduce using rule 46 (term -> term AND factor .)
-    END             reduce using rule 46 (term -> term AND factor .)
-    SEMICOLON       reduce using rule 46 (term -> term AND factor .)
-    ELSE            reduce using rule 46 (term -> term AND factor .)
-    RPAREN          reduce using rule 46 (term -> term AND factor .)
-    COMMA           reduce using rule 46 (term -> term AND factor .)
+    ID              shift and go to state 28
 
+    params                         shift and go to state 123
+    param_group                    shift and go to state 124
+    id_list                        shift and go to state 125
 
 state 85
 
-    (50) factor -> LPAREN expr RPAREN .
+    (25) sub_header -> FUNCTION ID COLON . type SEMICOLON
+    (12) type -> . ID
+    (14) type -> . ptr_start type
+    (15) type -> . STRINGTYPE
+    (16) type -> . RECORD field_decl_list END
+    (17) type -> . RECORD field_decl_list SEMICOLON END
+    (39) type -> . INTEGER
+    (40) type -> . BOOLEAN
+    (41) type -> . ARRAY LBRACKET range_list RBRACKET OF type
+    (47) type -> . REAL
+    (13) ptr_start -> . CARET
 
-    TIMES           reduce using rule 50 (factor -> LPAREN expr RPAREN .)
-    DIVIDE          reduce using rule 50 (factor -> LPAREN expr RPAREN .)
-    AND             reduce using rule 50 (factor -> LPAREN expr RPAREN .)
-    PLUS            reduce using rule 50 (factor -> LPAREN expr RPAREN .)
-    MINUS           reduce using rule 50 (factor -> LPAREN expr RPAREN .)
-    OR              reduce using rule 50 (factor -> LPAREN expr RPAREN .)
-    EQ              reduce using rule 50 (factor -> LPAREN expr RPAREN .)
-    NE              reduce using rule 50 (factor -> LPAREN expr RPAREN .)
-    LT              reduce using rule 50 (factor -> LPAREN expr RPAREN .)
-    LE              reduce using rule 50 (factor -> LPAREN expr RPAREN .)
-    GT              reduce using rule 50 (factor -> LPAREN expr RPAREN .)
-    GE              reduce using rule 50 (factor -> LPAREN expr RPAREN .)
-    THEN            reduce using rule 50 (factor -> LPAREN expr RPAREN .)
-    DO              reduce using rule 50 (factor -> LPAREN expr RPAREN .)
-    END             reduce using rule 50 (factor -> LPAREN expr RPAREN .)
-    SEMICOLON       reduce using rule 50 (factor -> LPAREN expr RPAREN .)
-    ELSE            reduce using rule 50 (factor -> LPAREN expr RPAREN .)
-    RPAREN          reduce using rule 50 (factor -> LPAREN expr RPAREN .)
-    COMMA           reduce using rule 50 (factor -> LPAREN expr RPAREN .)
+    ID              shift and go to state 43
+    STRINGTYPE      shift and go to state 46
+    RECORD          shift and go to state 47
+    INTEGER         shift and go to state 48
+    BOOLEAN         shift and go to state 49
+    ARRAY           shift and go to state 50
+    REAL            shift and go to state 51
+    CARET           shift and go to state 52
 
+    type                           shift and go to state 126
+    ptr_start                      shift and go to state 45
 
 state 86
 
-    (27) while_stmt -> WHILE expr DO stmt .
+    (26) sub_header -> PROCEDURE ID LPAREN . params RPAREN SEMICOLON
+    (28) params -> . param_group
+    (29) params -> . params SEMICOLON param_group
+    (30) param_group -> . id_list COLON type
+    (37) id_list -> . ID
+    (38) id_list -> . id_list COMMA ID
 
-    END             reduce using rule 27 (while_stmt -> WHILE expr DO stmt .)
-    SEMICOLON       reduce using rule 27 (while_stmt -> WHILE expr DO stmt .)
-    ELSE            reduce using rule 27 (while_stmt -> WHILE expr DO stmt .)
+    ID              shift and go to state 28
 
+    params                         shift and go to state 127
+    param_group                    shift and go to state 124
+    id_list                        shift and go to state 125
 
 state 87
 
-    (28) write_stmt -> WRITELN LPAREN expr_list RPAREN .
+    (27) sub_header -> PROCEDURE ID SEMICOLON .
 
-    END             reduce using rule 28 (write_stmt -> WRITELN LPAREN expr_list RPAREN .)
-    SEMICOLON       reduce using rule 28 (write_stmt -> WRITELN LPAREN expr_list RPAREN .)
-    ELSE            reduce using rule 28 (write_stmt -> WRITELN LPAREN expr_list RPAREN .)
+    VAR             reduce using rule 27 (sub_header -> PROCEDURE ID SEMICOLON .)
+    BEGIN           reduce using rule 27 (sub_header -> PROCEDURE ID SEMICOLON .)
 
 
 state 88
 
-    (30) expr_list -> expr_list COMMA . expr
-    (31) expr -> . simple_expr
-    (32) expr -> . simple_expr relop simple_expr
-    (39) simple_expr -> . term
-    (40) simple_expr -> . simple_expr PLUS term
-    (41) simple_expr -> . simple_expr MINUS term
-    (42) simple_expr -> . simple_expr OR term
-    (43) term -> . factor
-    (44) term -> . term TIMES factor
-    (45) term -> . term DIVIDE factor
-    (46) term -> . term AND factor
-    (47) factor -> . ID
-    (48) factor -> . NUM_INT
-    (49) factor -> . NUM_REAL
-    (50) factor -> . LPAREN expr RPAREN
-    (51) factor -> . NOT factor
+    (35) decl_group -> id_list COLON type SEMICOLON .
 
-    ID              shift and go to state 48
-    NUM_INT         shift and go to state 49
-    NUM_REAL        shift and go to state 50
-    LPAREN          shift and go to state 51
-    NOT             shift and go to state 52
+    error           reduce using rule 35 (decl_group -> id_list COLON type SEMICOLON .)
+    ID              reduce using rule 35 (decl_group -> id_list COLON type SEMICOLON .)
+    BEGIN           reduce using rule 35 (decl_group -> id_list COLON type SEMICOLON .)
+    FUNCTION        reduce using rule 35 (decl_group -> id_list COLON type SEMICOLON .)
+    PROCEDURE       reduce using rule 35 (decl_group -> id_list COLON type SEMICOLON .)
 
-    expr                           shift and go to state 90
-    simple_expr                    shift and go to state 45
-    term                           shift and go to state 46
-    factor                         shift and go to state 47
 
 state 89
 
-    (26) if_stmt -> IF expr THEN stmt ELSE . stmt
-    (17) stmt -> . assign_stmt
-    (18) stmt -> . if_stmt
-    (19) stmt -> . while_stmt
-    (20) stmt -> . write_stmt
-    (21) stmt -> . block
-    (22) stmt -> .
-    (23) stmt -> . error
-    (24) assign_stmt -> . ID ASSIGN expr
-    (25) if_stmt -> . IF expr THEN stmt
-    (26) if_stmt -> . IF expr THEN stmt ELSE stmt
-    (27) while_stmt -> . WHILE expr DO stmt
-    (28) write_stmt -> . WRITELN LPAREN expr_list RPAREN
-    (14) block -> . BEGIN block_enter stmt_list END
+    (16) type -> RECORD field_decl_list END .
 
-    ELSE            reduce using rule 22 (stmt -> .)
-    END             reduce using rule 22 (stmt -> .)
-    SEMICOLON       reduce using rule 22 (stmt -> .)
-    error           shift and go to state 32
-    ID              shift and go to state 33
-    IF              shift and go to state 34
-    WHILE           shift and go to state 35
-    WRITELN         shift and go to state 36
-    BEGIN           shift and go to state 11
+    SEMICOLON       reduce using rule 16 (type -> RECORD field_decl_list END .)
+    END             reduce using rule 16 (type -> RECORD field_decl_list END .)
+    RPAREN          reduce using rule 16 (type -> RECORD field_decl_list END .)
 
-    stmt                           shift and go to state 91
-    assign_stmt                    shift and go to state 27
-    if_stmt                        shift and go to state 28
-    while_stmt                     shift and go to state 29
-    write_stmt                     shift and go to state 30
-    block                          shift and go to state 31
 
 state 90
 
-    (30) expr_list -> expr_list COMMA expr .
+    (17) type -> RECORD field_decl_list SEMICOLON . END
+    (19) field_decl_list -> field_decl_list SEMICOLON . field_decl
+    (20) field_decl -> . id_list COLON type
+    (37) id_list -> . ID
+    (38) id_list -> . id_list COMMA ID
 
-    RPAREN          reduce using rule 30 (expr_list -> expr_list COMMA expr .)
-    COMMA           reduce using rule 30 (expr_list -> expr_list COMMA expr .)
+    END             shift and go to state 128
+    ID              shift and go to state 28
 
+    field_decl                     shift and go to state 129
+    id_list                        shift and go to state 65
 
 state 91
 
-    (26) if_stmt -> IF expr THEN stmt ELSE stmt .
+    (20) field_decl -> id_list COLON . type
+    (12) type -> . ID
+    (14) type -> . ptr_start type
+    (15) type -> . STRINGTYPE
+    (16) type -> . RECORD field_decl_list END
+    (17) type -> . RECORD field_decl_list SEMICOLON END
+    (39) type -> . INTEGER
+    (40) type -> . BOOLEAN
+    (41) type -> . ARRAY LBRACKET range_list RBRACKET OF type
+    (47) type -> . REAL
+    (13) ptr_start -> . CARET
 
-    END             reduce using rule 26 (if_stmt -> IF expr THEN stmt ELSE stmt .)
-    SEMICOLON       reduce using rule 26 (if_stmt -> IF expr THEN stmt ELSE stmt .)
-    ELSE            reduce using rule 26 (if_stmt -> IF expr THEN stmt ELSE stmt .)
+    ID              shift and go to state 43
+    STRINGTYPE      shift and go to state 46
+    RECORD          shift and go to state 47
+    INTEGER         shift and go to state 48
+    BOOLEAN         shift and go to state 49
+    ARRAY           shift and go to state 50
+    REAL            shift and go to state 51
+    CARET           shift and go to state 52
+
+    type                           shift and go to state 130
+    ptr_start                      shift and go to state 45
+
+state 92
+
+    (41) type -> ARRAY LBRACKET range_list . RBRACKET OF type
+    (43) range_list -> range_list . COMMA range
+
+    RBRACKET        shift and go to state 131
+    COMMA           shift and go to state 132
+
+
+state 93
+
+    (42) range_list -> range .
+
+    RBRACKET        reduce using rule 42 (range_list -> range .)
+    COMMA           reduce using rule 42 (range_list -> range .)
+
+
+state 94
+
+    (44) range -> bound . DOTDOT bound
+
+    DOTDOT          shift and go to state 133
+
+
+state 95
+
+    (45) bound -> NUM_INT .
+
+    DOTDOT          reduce using rule 45 (bound -> NUM_INT .)
+    RBRACKET        reduce using rule 45 (bound -> NUM_INT .)
+    COMMA           reduce using rule 45 (bound -> NUM_INT .)
+
+
+state 96
+
+    (46) bound -> MINUS . NUM_INT
+
+    NUM_INT         shift and go to state 134
+
+
+state 97
+
+    (49) block -> BEGIN block_enter stmt_list END .
+
+    DOT             reduce using rule 49 (block -> BEGIN block_enter stmt_list END .)
+    END             reduce using rule 49 (block -> BEGIN block_enter stmt_list END .)
+    SEMICOLON       reduce using rule 49 (block -> BEGIN block_enter stmt_list END .)
+    ELSE            reduce using rule 49 (block -> BEGIN block_enter stmt_list END .)
+
+
+state 98
+
+    (51) stmt_list -> stmt_list SEMICOLON . stmt
+    (52) stmt -> . NEW LPAREN variable RPAREN
+    (53) stmt -> . DISPOSE LPAREN variable RPAREN
+    (54) stmt -> . ID LPAREN expr_list RPAREN
+    (55) stmt -> . ID LPAREN RPAREN
+    (56) stmt -> . variable
+    (57) stmt -> . assign_stmt
+    (58) stmt -> . if_stmt
+    (59) stmt -> . while_stmt
+    (60) stmt -> . write_stmt
+    (61) stmt -> . block
+    (62) stmt -> .
+    (63) stmt -> . error
+    (65) variable -> . ID
+    (66) variable -> . variable DOT ID
+    (67) variable -> . variable CARET
+    (68) variable -> . variable LBRACKET expr_list RBRACKET
+    (64) assign_stmt -> . variable ASSIGN expr
+    (69) if_stmt -> . IF expr THEN stmt
+    (70) if_stmt -> . IF expr THEN stmt ELSE stmt
+    (71) while_stmt -> . WHILE expr DO stmt
+    (72) write_stmt -> . WRITELN LPAREN expr_list RPAREN
+    (49) block -> . BEGIN block_enter stmt_list END
+
+    NEW             shift and go to state 70
+    DISPOSE         shift and go to state 72
+    ID              shift and go to state 73
+    END             reduce using rule 62 (stmt -> .)
+    SEMICOLON       reduce using rule 62 (stmt -> .)
+    error           shift and go to state 79
+    IF              shift and go to state 80
+    WHILE           shift and go to state 81
+    WRITELN         shift and go to state 82
+    BEGIN           shift and go to state 35
+
+    stmt                           shift and go to state 135
+    variable                       shift and go to state 71
+    assign_stmt                    shift and go to state 74
+    if_stmt                        shift and go to state 75
+    while_stmt                     shift and go to state 76
+    write_stmt                     shift and go to state 77
+    block                          shift and go to state 78
+
+state 99
+
+    (52) stmt -> NEW LPAREN . variable RPAREN
+    (65) variable -> . ID
+    (66) variable -> . variable DOT ID
+    (67) variable -> . variable CARET
+    (68) variable -> . variable LBRACKET expr_list RBRACKET
+
+    ID              shift and go to state 137
+
+    variable                       shift and go to state 136
+
+state 100
+
+    (66) variable -> variable DOT . ID
+
+    ID              shift and go to state 138
+
+
+state 101
+
+    (67) variable -> variable CARET .
+
+    DOT             reduce using rule 67 (variable -> variable CARET .)
+    CARET           reduce using rule 67 (variable -> variable CARET .)
+    LBRACKET        reduce using rule 67 (variable -> variable CARET .)
+    ASSIGN          reduce using rule 67 (variable -> variable CARET .)
+    END             reduce using rule 67 (variable -> variable CARET .)
+    SEMICOLON       reduce using rule 67 (variable -> variable CARET .)
+    TIMES           reduce using rule 67 (variable -> variable CARET .)
+    DIVIDE          reduce using rule 67 (variable -> variable CARET .)
+    AND             reduce using rule 67 (variable -> variable CARET .)
+    PLUS            reduce using rule 67 (variable -> variable CARET .)
+    MINUS           reduce using rule 67 (variable -> variable CARET .)
+    OR              reduce using rule 67 (variable -> variable CARET .)
+    EQ              reduce using rule 67 (variable -> variable CARET .)
+    NE              reduce using rule 67 (variable -> variable CARET .)
+    LT              reduce using rule 67 (variable -> variable CARET .)
+    LE              reduce using rule 67 (variable -> variable CARET .)
+    GT              reduce using rule 67 (variable -> variable CARET .)
+    GE              reduce using rule 67 (variable -> variable CARET .)
+    THEN            reduce using rule 67 (variable -> variable CARET .)
+    DO              reduce using rule 67 (variable -> variable CARET .)
+    RPAREN          reduce using rule 67 (variable -> variable CARET .)
+    RBRACKET        reduce using rule 67 (variable -> variable CARET .)
+    COMMA           reduce using rule 67 (variable -> variable CARET .)
+    ELSE            reduce using rule 67 (variable -> variable CARET .)
+
+
+state 102
+
+    (68) variable -> variable LBRACKET . expr_list RBRACKET
+    (73) expr_list -> . expr
+    (74) expr_list -> . expr_list COMMA expr
+    (75) expr -> . simple_expr
+    (76) expr -> . simple_expr relop simple_expr
+    (83) simple_expr -> . term
+    (84) simple_expr -> . simple_expr PLUS term
+    (85) simple_expr -> . simple_expr MINUS term
+    (86) simple_expr -> . simple_expr OR term
+    (87) term -> . factor
+    (88) term -> . term TIMES factor
+    (89) term -> . term DIVIDE factor
+    (90) term -> . term AND factor
+    (91) factor -> . variable
+    (92) factor -> . ID LPAREN expr_list RPAREN
+    (93) factor -> . ID LPAREN RPAREN
+    (94) factor -> . NIL
+    (95) factor -> . STRING
+    (96) factor -> . NUM_INT
+    (97) factor -> . NUM_REAL
+    (98) factor -> . TRUE
+    (99) factor -> . FALSE
+    (100) factor -> . LPAREN expr RPAREN
+    (101) factor -> . NOT factor
+    (65) variable -> . ID
+    (66) variable -> . variable DOT ID
+    (67) variable -> . variable CARET
+    (68) variable -> . variable LBRACKET expr_list RBRACKET
+
+    ID              shift and go to state 111
+    NIL             shift and go to state 113
+    STRING          shift and go to state 114
+    NUM_INT         shift and go to state 115
+    NUM_REAL        shift and go to state 116
+    TRUE            shift and go to state 117
+    FALSE           shift and go to state 118
+    LPAREN          shift and go to state 112
+    NOT             shift and go to state 119
+
+    variable                       shift and go to state 110
+    expr_list                      shift and go to state 139
+    expr                           shift and go to state 140
+    simple_expr                    shift and go to state 107
+    term                           shift and go to state 108
+    factor                         shift and go to state 109
+
+state 103
+
+    (64) assign_stmt -> variable ASSIGN . expr
+    (75) expr -> . simple_expr
+    (76) expr -> . simple_expr relop simple_expr
+    (83) simple_expr -> . term
+    (84) simple_expr -> . simple_expr PLUS term
+    (85) simple_expr -> . simple_expr MINUS term
+    (86) simple_expr -> . simple_expr OR term
+    (87) term -> . factor
+    (88) term -> . term TIMES factor
+    (89) term -> . term DIVIDE factor
+    (90) term -> . term AND factor
+    (91) factor -> . variable
+    (92) factor -> . ID LPAREN expr_list RPAREN
+    (93) factor -> . ID LPAREN RPAREN
+    (94) factor -> . NIL
+    (95) factor -> . STRING
+    (96) factor -> . NUM_INT
+    (97) factor -> . NUM_REAL
+    (98) factor -> . TRUE
+    (99) factor -> . FALSE
+    (100) factor -> . LPAREN expr RPAREN
+    (101) factor -> . NOT factor
+    (65) variable -> . ID
+    (66) variable -> . variable DOT ID
+    (67) variable -> . variable CARET
+    (68) variable -> . variable LBRACKET expr_list RBRACKET
+
+    ID              shift and go to state 111
+    NIL             shift and go to state 113
+    STRING          shift and go to state 114
+    NUM_INT         shift and go to state 115
+    NUM_REAL        shift and go to state 116
+    TRUE            shift and go to state 117
+    FALSE           shift and go to state 118
+    LPAREN          shift and go to state 112
+    NOT             shift and go to state 119
+
+    variable                       shift and go to state 110
+    expr                           shift and go to state 141
+    simple_expr                    shift and go to state 107
+    term                           shift and go to state 108
+    factor                         shift and go to state 109
+
+state 104
+
+    (53) stmt -> DISPOSE LPAREN . variable RPAREN
+    (65) variable -> . ID
+    (66) variable -> . variable DOT ID
+    (67) variable -> . variable CARET
+    (68) variable -> . variable LBRACKET expr_list RBRACKET
+
+    ID              shift and go to state 137
+
+    variable                       shift and go to state 142
+
+state 105
+
+    (54) stmt -> ID LPAREN . expr_list RPAREN
+    (55) stmt -> ID LPAREN . RPAREN
+    (73) expr_list -> . expr
+    (74) expr_list -> . expr_list COMMA expr
+    (75) expr -> . simple_expr
+    (76) expr -> . simple_expr relop simple_expr
+    (83) simple_expr -> . term
+    (84) simple_expr -> . simple_expr PLUS term
+    (85) simple_expr -> . simple_expr MINUS term
+    (86) simple_expr -> . simple_expr OR term
+    (87) term -> . factor
+    (88) term -> . term TIMES factor
+    (89) term -> . term DIVIDE factor
+    (90) term -> . term AND factor
+    (91) factor -> . variable
+    (92) factor -> . ID LPAREN expr_list RPAREN
+    (93) factor -> . ID LPAREN RPAREN
+    (94) factor -> . NIL
+    (95) factor -> . STRING
+    (96) factor -> . NUM_INT
+    (97) factor -> . NUM_REAL
+    (98) factor -> . TRUE
+    (99) factor -> . FALSE
+    (100) factor -> . LPAREN expr RPAREN
+    (101) factor -> . NOT factor
+    (65) variable -> . ID
+    (66) variable -> . variable DOT ID
+    (67) variable -> . variable CARET
+    (68) variable -> . variable LBRACKET expr_list RBRACKET
+
+    RPAREN          shift and go to state 144
+    ID              shift and go to state 111
+    NIL             shift and go to state 113
+    STRING          shift and go to state 114
+    NUM_INT         shift and go to state 115
+    NUM_REAL        shift and go to state 116
+    TRUE            shift and go to state 117
+    FALSE           shift and go to state 118
+    LPAREN          shift and go to state 112
+    NOT             shift and go to state 119
+
+    expr_list                      shift and go to state 143
+    expr                           shift and go to state 140
+    simple_expr                    shift and go to state 107
+    term                           shift and go to state 108
+    factor                         shift and go to state 109
+    variable                       shift and go to state 110
+
+state 106
+
+    (69) if_stmt -> IF expr . THEN stmt
+    (70) if_stmt -> IF expr . THEN stmt ELSE stmt
+
+    THEN            shift and go to state 145
+
+
+state 107
+
+    (75) expr -> simple_expr .
+    (76) expr -> simple_expr . relop simple_expr
+    (84) simple_expr -> simple_expr . PLUS term
+    (85) simple_expr -> simple_expr . MINUS term
+    (86) simple_expr -> simple_expr . OR term
+    (77) relop -> . EQ
+    (78) relop -> . NE
+    (79) relop -> . LT
+    (80) relop -> . LE
+    (81) relop -> . GT
+    (82) relop -> . GE
+
+    THEN            reduce using rule 75 (expr -> simple_expr .)
+    DO              reduce using rule 75 (expr -> simple_expr .)
+    RBRACKET        reduce using rule 75 (expr -> simple_expr .)
+    COMMA           reduce using rule 75 (expr -> simple_expr .)
+    END             reduce using rule 75 (expr -> simple_expr .)
+    SEMICOLON       reduce using rule 75 (expr -> simple_expr .)
+    ELSE            reduce using rule 75 (expr -> simple_expr .)
+    RPAREN          reduce using rule 75 (expr -> simple_expr .)
+    PLUS            shift and go to state 147
+    MINUS           shift and go to state 148
+    OR              shift and go to state 149
+    EQ              shift and go to state 150
+    NE              shift and go to state 151
+    LT              shift and go to state 152
+    LE              shift and go to state 153
+    GT              shift and go to state 154
+    GE              shift and go to state 155
+
+    relop                          shift and go to state 146
+
+state 108
+
+    (83) simple_expr -> term .
+    (88) term -> term . TIMES factor
+    (89) term -> term . DIVIDE factor
+    (90) term -> term . AND factor
+
+    PLUS            reduce using rule 83 (simple_expr -> term .)
+    MINUS           reduce using rule 83 (simple_expr -> term .)
+    OR              reduce using rule 83 (simple_expr -> term .)
+    EQ              reduce using rule 83 (simple_expr -> term .)
+    NE              reduce using rule 83 (simple_expr -> term .)
+    LT              reduce using rule 83 (simple_expr -> term .)
+    LE              reduce using rule 83 (simple_expr -> term .)
+    GT              reduce using rule 83 (simple_expr -> term .)
+    GE              reduce using rule 83 (simple_expr -> term .)
+    THEN            reduce using rule 83 (simple_expr -> term .)
+    DO              reduce using rule 83 (simple_expr -> term .)
+    RBRACKET        reduce using rule 83 (simple_expr -> term .)
+    COMMA           reduce using rule 83 (simple_expr -> term .)
+    END             reduce using rule 83 (simple_expr -> term .)
+    SEMICOLON       reduce using rule 83 (simple_expr -> term .)
+    ELSE            reduce using rule 83 (simple_expr -> term .)
+    RPAREN          reduce using rule 83 (simple_expr -> term .)
+    TIMES           shift and go to state 156
+    DIVIDE          shift and go to state 157
+    AND             shift and go to state 158
+
+
+state 109
+
+    (87) term -> factor .
+
+    TIMES           reduce using rule 87 (term -> factor .)
+    DIVIDE          reduce using rule 87 (term -> factor .)
+    AND             reduce using rule 87 (term -> factor .)
+    PLUS            reduce using rule 87 (term -> factor .)
+    MINUS           reduce using rule 87 (term -> factor .)
+    OR              reduce using rule 87 (term -> factor .)
+    EQ              reduce using rule 87 (term -> factor .)
+    NE              reduce using rule 87 (term -> factor .)
+    LT              reduce using rule 87 (term -> factor .)
+    LE              reduce using rule 87 (term -> factor .)
+    GT              reduce using rule 87 (term -> factor .)
+    GE              reduce using rule 87 (term -> factor .)
+    THEN            reduce using rule 87 (term -> factor .)
+    DO              reduce using rule 87 (term -> factor .)
+    RBRACKET        reduce using rule 87 (term -> factor .)
+    COMMA           reduce using rule 87 (term -> factor .)
+    END             reduce using rule 87 (term -> factor .)
+    SEMICOLON       reduce using rule 87 (term -> factor .)
+    ELSE            reduce using rule 87 (term -> factor .)
+    RPAREN          reduce using rule 87 (term -> factor .)
+
+
+state 110
+
+    (91) factor -> variable .
+    (66) variable -> variable . DOT ID
+    (67) variable -> variable . CARET
+    (68) variable -> variable . LBRACKET expr_list RBRACKET
+
+    TIMES           reduce using rule 91 (factor -> variable .)
+    DIVIDE          reduce using rule 91 (factor -> variable .)
+    AND             reduce using rule 91 (factor -> variable .)
+    PLUS            reduce using rule 91 (factor -> variable .)
+    MINUS           reduce using rule 91 (factor -> variable .)
+    OR              reduce using rule 91 (factor -> variable .)
+    EQ              reduce using rule 91 (factor -> variable .)
+    NE              reduce using rule 91 (factor -> variable .)
+    LT              reduce using rule 91 (factor -> variable .)
+    LE              reduce using rule 91 (factor -> variable .)
+    GT              reduce using rule 91 (factor -> variable .)
+    GE              reduce using rule 91 (factor -> variable .)
+    THEN            reduce using rule 91 (factor -> variable .)
+    DO              reduce using rule 91 (factor -> variable .)
+    RBRACKET        reduce using rule 91 (factor -> variable .)
+    COMMA           reduce using rule 91 (factor -> variable .)
+    END             reduce using rule 91 (factor -> variable .)
+    SEMICOLON       reduce using rule 91 (factor -> variable .)
+    ELSE            reduce using rule 91 (factor -> variable .)
+    RPAREN          reduce using rule 91 (factor -> variable .)
+    DOT             shift and go to state 100
+    CARET           shift and go to state 101
+    LBRACKET        shift and go to state 102
+
+
+state 111
+
+    (92) factor -> ID . LPAREN expr_list RPAREN
+    (93) factor -> ID . LPAREN RPAREN
+    (65) variable -> ID .
+
+    LPAREN          shift and go to state 159
+    DOT             reduce using rule 65 (variable -> ID .)
+    CARET           reduce using rule 65 (variable -> ID .)
+    LBRACKET        reduce using rule 65 (variable -> ID .)
+    TIMES           reduce using rule 65 (variable -> ID .)
+    DIVIDE          reduce using rule 65 (variable -> ID .)
+    AND             reduce using rule 65 (variable -> ID .)
+    PLUS            reduce using rule 65 (variable -> ID .)
+    MINUS           reduce using rule 65 (variable -> ID .)
+    OR              reduce using rule 65 (variable -> ID .)
+    EQ              reduce using rule 65 (variable -> ID .)
+    NE              reduce using rule 65 (variable -> ID .)
+    LT              reduce using rule 65 (variable -> ID .)
+    LE              reduce using rule 65 (variable -> ID .)
+    GT              reduce using rule 65 (variable -> ID .)
+    GE              reduce using rule 65 (variable -> ID .)
+    THEN            reduce using rule 65 (variable -> ID .)
+    DO              reduce using rule 65 (variable -> ID .)
+    RBRACKET        reduce using rule 65 (variable -> ID .)
+    COMMA           reduce using rule 65 (variable -> ID .)
+    END             reduce using rule 65 (variable -> ID .)
+    SEMICOLON       reduce using rule 65 (variable -> ID .)
+    ELSE            reduce using rule 65 (variable -> ID .)
+    RPAREN          reduce using rule 65 (variable -> ID .)
+
+
+state 112
+
+    (100) factor -> LPAREN . expr RPAREN
+    (75) expr -> . simple_expr
+    (76) expr -> . simple_expr relop simple_expr
+    (83) simple_expr -> . term
+    (84) simple_expr -> . simple_expr PLUS term
+    (85) simple_expr -> . simple_expr MINUS term
+    (86) simple_expr -> . simple_expr OR term
+    (87) term -> . factor
+    (88) term -> . term TIMES factor
+    (89) term -> . term DIVIDE factor
+    (90) term -> . term AND factor
+    (91) factor -> . variable
+    (92) factor -> . ID LPAREN expr_list RPAREN
+    (93) factor -> . ID LPAREN RPAREN
+    (94) factor -> . NIL
+    (95) factor -> . STRING
+    (96) factor -> . NUM_INT
+    (97) factor -> . NUM_REAL
+    (98) factor -> . TRUE
+    (99) factor -> . FALSE
+    (100) factor -> . LPAREN expr RPAREN
+    (101) factor -> . NOT factor
+    (65) variable -> . ID
+    (66) variable -> . variable DOT ID
+    (67) variable -> . variable CARET
+    (68) variable -> . variable LBRACKET expr_list RBRACKET
+
+    ID              shift and go to state 111
+    NIL             shift and go to state 113
+    STRING          shift and go to state 114
+    NUM_INT         shift and go to state 115
+    NUM_REAL        shift and go to state 116
+    TRUE            shift and go to state 117
+    FALSE           shift and go to state 118
+    LPAREN          shift and go to state 112
+    NOT             shift and go to state 119
+
+    expr                           shift and go to state 160
+    simple_expr                    shift and go to state 107
+    term                           shift and go to state 108
+    factor                         shift and go to state 109
+    variable                       shift and go to state 110
+
+state 113
+
+    (94) factor -> NIL .
+
+    TIMES           reduce using rule 94 (factor -> NIL .)
+    DIVIDE          reduce using rule 94 (factor -> NIL .)
+    AND             reduce using rule 94 (factor -> NIL .)
+    PLUS            reduce using rule 94 (factor -> NIL .)
+    MINUS           reduce using rule 94 (factor -> NIL .)
+    OR              reduce using rule 94 (factor -> NIL .)
+    EQ              reduce using rule 94 (factor -> NIL .)
+    NE              reduce using rule 94 (factor -> NIL .)
+    LT              reduce using rule 94 (factor -> NIL .)
+    LE              reduce using rule 94 (factor -> NIL .)
+    GT              reduce using rule 94 (factor -> NIL .)
+    GE              reduce using rule 94 (factor -> NIL .)
+    THEN            reduce using rule 94 (factor -> NIL .)
+    DO              reduce using rule 94 (factor -> NIL .)
+    RBRACKET        reduce using rule 94 (factor -> NIL .)
+    COMMA           reduce using rule 94 (factor -> NIL .)
+    END             reduce using rule 94 (factor -> NIL .)
+    SEMICOLON       reduce using rule 94 (factor -> NIL .)
+    ELSE            reduce using rule 94 (factor -> NIL .)
+    RPAREN          reduce using rule 94 (factor -> NIL .)
+
+
+state 114
+
+    (95) factor -> STRING .
+
+    TIMES           reduce using rule 95 (factor -> STRING .)
+    DIVIDE          reduce using rule 95 (factor -> STRING .)
+    AND             reduce using rule 95 (factor -> STRING .)
+    PLUS            reduce using rule 95 (factor -> STRING .)
+    MINUS           reduce using rule 95 (factor -> STRING .)
+    OR              reduce using rule 95 (factor -> STRING .)
+    EQ              reduce using rule 95 (factor -> STRING .)
+    NE              reduce using rule 95 (factor -> STRING .)
+    LT              reduce using rule 95 (factor -> STRING .)
+    LE              reduce using rule 95 (factor -> STRING .)
+    GT              reduce using rule 95 (factor -> STRING .)
+    GE              reduce using rule 95 (factor -> STRING .)
+    THEN            reduce using rule 95 (factor -> STRING .)
+    DO              reduce using rule 95 (factor -> STRING .)
+    RBRACKET        reduce using rule 95 (factor -> STRING .)
+    COMMA           reduce using rule 95 (factor -> STRING .)
+    END             reduce using rule 95 (factor -> STRING .)
+    SEMICOLON       reduce using rule 95 (factor -> STRING .)
+    ELSE            reduce using rule 95 (factor -> STRING .)
+    RPAREN          reduce using rule 95 (factor -> STRING .)
+
+
+state 115
+
+    (96) factor -> NUM_INT .
+
+    TIMES           reduce using rule 96 (factor -> NUM_INT .)
+    DIVIDE          reduce using rule 96 (factor -> NUM_INT .)
+    AND             reduce using rule 96 (factor -> NUM_INT .)
+    PLUS            reduce using rule 96 (factor -> NUM_INT .)
+    MINUS           reduce using rule 96 (factor -> NUM_INT .)
+    OR              reduce using rule 96 (factor -> NUM_INT .)
+    EQ              reduce using rule 96 (factor -> NUM_INT .)
+    NE              reduce using rule 96 (factor -> NUM_INT .)
+    LT              reduce using rule 96 (factor -> NUM_INT .)
+    LE              reduce using rule 96 (factor -> NUM_INT .)
+    GT              reduce using rule 96 (factor -> NUM_INT .)
+    GE              reduce using rule 96 (factor -> NUM_INT .)
+    THEN            reduce using rule 96 (factor -> NUM_INT .)
+    DO              reduce using rule 96 (factor -> NUM_INT .)
+    RBRACKET        reduce using rule 96 (factor -> NUM_INT .)
+    COMMA           reduce using rule 96 (factor -> NUM_INT .)
+    END             reduce using rule 96 (factor -> NUM_INT .)
+    SEMICOLON       reduce using rule 96 (factor -> NUM_INT .)
+    ELSE            reduce using rule 96 (factor -> NUM_INT .)
+    RPAREN          reduce using rule 96 (factor -> NUM_INT .)
+
+
+state 116
+
+    (97) factor -> NUM_REAL .
+
+    TIMES           reduce using rule 97 (factor -> NUM_REAL .)
+    DIVIDE          reduce using rule 97 (factor -> NUM_REAL .)
+    AND             reduce using rule 97 (factor -> NUM_REAL .)
+    PLUS            reduce using rule 97 (factor -> NUM_REAL .)
+    MINUS           reduce using rule 97 (factor -> NUM_REAL .)
+    OR              reduce using rule 97 (factor -> NUM_REAL .)
+    EQ              reduce using rule 97 (factor -> NUM_REAL .)
+    NE              reduce using rule 97 (factor -> NUM_REAL .)
+    LT              reduce using rule 97 (factor -> NUM_REAL .)
+    LE              reduce using rule 97 (factor -> NUM_REAL .)
+    GT              reduce using rule 97 (factor -> NUM_REAL .)
+    GE              reduce using rule 97 (factor -> NUM_REAL .)
+    THEN            reduce using rule 97 (factor -> NUM_REAL .)
+    DO              reduce using rule 97 (factor -> NUM_REAL .)
+    RBRACKET        reduce using rule 97 (factor -> NUM_REAL .)
+    COMMA           reduce using rule 97 (factor -> NUM_REAL .)
+    END             reduce using rule 97 (factor -> NUM_REAL .)
+    SEMICOLON       reduce using rule 97 (factor -> NUM_REAL .)
+    ELSE            reduce using rule 97 (factor -> NUM_REAL .)
+    RPAREN          reduce using rule 97 (factor -> NUM_REAL .)
+
+
+state 117
+
+    (98) factor -> TRUE .
+
+    TIMES           reduce using rule 98 (factor -> TRUE .)
+    DIVIDE          reduce using rule 98 (factor -> TRUE .)
+    AND             reduce using rule 98 (factor -> TRUE .)
+    PLUS            reduce using rule 98 (factor -> TRUE .)
+    MINUS           reduce using rule 98 (factor -> TRUE .)
+    OR              reduce using rule 98 (factor -> TRUE .)
+    EQ              reduce using rule 98 (factor -> TRUE .)
+    NE              reduce using rule 98 (factor -> TRUE .)
+    LT              reduce using rule 98 (factor -> TRUE .)
+    LE              reduce using rule 98 (factor -> TRUE .)
+    GT              reduce using rule 98 (factor -> TRUE .)
+    GE              reduce using rule 98 (factor -> TRUE .)
+    THEN            reduce using rule 98 (factor -> TRUE .)
+    DO              reduce using rule 98 (factor -> TRUE .)
+    RBRACKET        reduce using rule 98 (factor -> TRUE .)
+    COMMA           reduce using rule 98 (factor -> TRUE .)
+    END             reduce using rule 98 (factor -> TRUE .)
+    SEMICOLON       reduce using rule 98 (factor -> TRUE .)
+    ELSE            reduce using rule 98 (factor -> TRUE .)
+    RPAREN          reduce using rule 98 (factor -> TRUE .)
+
+
+state 118
+
+    (99) factor -> FALSE .
+
+    TIMES           reduce using rule 99 (factor -> FALSE .)
+    DIVIDE          reduce using rule 99 (factor -> FALSE .)
+    AND             reduce using rule 99 (factor -> FALSE .)
+    PLUS            reduce using rule 99 (factor -> FALSE .)
+    MINUS           reduce using rule 99 (factor -> FALSE .)
+    OR              reduce using rule 99 (factor -> FALSE .)
+    EQ              reduce using rule 99 (factor -> FALSE .)
+    NE              reduce using rule 99 (factor -> FALSE .)
+    LT              reduce using rule 99 (factor -> FALSE .)
+    LE              reduce using rule 99 (factor -> FALSE .)
+    GT              reduce using rule 99 (factor -> FALSE .)
+    GE              reduce using rule 99 (factor -> FALSE .)
+    THEN            reduce using rule 99 (factor -> FALSE .)
+    DO              reduce using rule 99 (factor -> FALSE .)
+    RBRACKET        reduce using rule 99 (factor -> FALSE .)
+    COMMA           reduce using rule 99 (factor -> FALSE .)
+    END             reduce using rule 99 (factor -> FALSE .)
+    SEMICOLON       reduce using rule 99 (factor -> FALSE .)
+    ELSE            reduce using rule 99 (factor -> FALSE .)
+    RPAREN          reduce using rule 99 (factor -> FALSE .)
+
+
+state 119
+
+    (101) factor -> NOT . factor
+    (91) factor -> . variable
+    (92) factor -> . ID LPAREN expr_list RPAREN
+    (93) factor -> . ID LPAREN RPAREN
+    (94) factor -> . NIL
+    (95) factor -> . STRING
+    (96) factor -> . NUM_INT
+    (97) factor -> . NUM_REAL
+    (98) factor -> . TRUE
+    (99) factor -> . FALSE
+    (100) factor -> . LPAREN expr RPAREN
+    (101) factor -> . NOT factor
+    (65) variable -> . ID
+    (66) variable -> . variable DOT ID
+    (67) variable -> . variable CARET
+    (68) variable -> . variable LBRACKET expr_list RBRACKET
+
+    ID              shift and go to state 111
+    NIL             shift and go to state 113
+    STRING          shift and go to state 114
+    NUM_INT         shift and go to state 115
+    NUM_REAL        shift and go to state 116
+    TRUE            shift and go to state 117
+    FALSE           shift and go to state 118
+    LPAREN          shift and go to state 112
+    NOT             shift and go to state 119
+
+    factor                         shift and go to state 161
+    variable                       shift and go to state 110
+
+state 120
+
+    (71) while_stmt -> WHILE expr . DO stmt
+
+    DO              shift and go to state 162
+
+
+state 121
+
+    (72) write_stmt -> WRITELN LPAREN . expr_list RPAREN
+    (73) expr_list -> . expr
+    (74) expr_list -> . expr_list COMMA expr
+    (75) expr -> . simple_expr
+    (76) expr -> . simple_expr relop simple_expr
+    (83) simple_expr -> . term
+    (84) simple_expr -> . simple_expr PLUS term
+    (85) simple_expr -> . simple_expr MINUS term
+    (86) simple_expr -> . simple_expr OR term
+    (87) term -> . factor
+    (88) term -> . term TIMES factor
+    (89) term -> . term DIVIDE factor
+    (90) term -> . term AND factor
+    (91) factor -> . variable
+    (92) factor -> . ID LPAREN expr_list RPAREN
+    (93) factor -> . ID LPAREN RPAREN
+    (94) factor -> . NIL
+    (95) factor -> . STRING
+    (96) factor -> . NUM_INT
+    (97) factor -> . NUM_REAL
+    (98) factor -> . TRUE
+    (99) factor -> . FALSE
+    (100) factor -> . LPAREN expr RPAREN
+    (101) factor -> . NOT factor
+    (65) variable -> . ID
+    (66) variable -> . variable DOT ID
+    (67) variable -> . variable CARET
+    (68) variable -> . variable LBRACKET expr_list RBRACKET
+
+    ID              shift and go to state 111
+    NIL             shift and go to state 113
+    STRING          shift and go to state 114
+    NUM_INT         shift and go to state 115
+    NUM_REAL        shift and go to state 116
+    TRUE            shift and go to state 117
+    FALSE           shift and go to state 118
+    LPAREN          shift and go to state 112
+    NOT             shift and go to state 119
+
+    expr_list                      shift and go to state 163
+    expr                           shift and go to state 140
+    simple_expr                    shift and go to state 107
+    term                           shift and go to state 108
+    factor                         shift and go to state 109
+    variable                       shift and go to state 110
+
+state 122
+
+    (23) subprogram -> sub_header decl_list block SEMICOLON .
+
+    BEGIN           reduce using rule 23 (subprogram -> sub_header decl_list block SEMICOLON .)
+    FUNCTION        reduce using rule 23 (subprogram -> sub_header decl_list block SEMICOLON .)
+    PROCEDURE       reduce using rule 23 (subprogram -> sub_header decl_list block SEMICOLON .)
+
+
+state 123
+
+    (24) sub_header -> FUNCTION ID LPAREN params . RPAREN COLON type SEMICOLON
+    (29) params -> params . SEMICOLON param_group
+
+    RPAREN          shift and go to state 164
+    SEMICOLON       shift and go to state 165
+
+
+state 124
+
+    (28) params -> param_group .
+
+    RPAREN          reduce using rule 28 (params -> param_group .)
+    SEMICOLON       reduce using rule 28 (params -> param_group .)
+
+
+state 125
+
+    (30) param_group -> id_list . COLON type
+    (38) id_list -> id_list . COMMA ID
+
+    COLON           shift and go to state 166
+    COMMA           shift and go to state 41
+
+
+state 126
+
+    (25) sub_header -> FUNCTION ID COLON type . SEMICOLON
+
+    SEMICOLON       shift and go to state 167
+
+
+state 127
+
+    (26) sub_header -> PROCEDURE ID LPAREN params . RPAREN SEMICOLON
+    (29) params -> params . SEMICOLON param_group
+
+    RPAREN          shift and go to state 168
+    SEMICOLON       shift and go to state 165
+
+
+state 128
+
+    (17) type -> RECORD field_decl_list SEMICOLON END .
+
+    SEMICOLON       reduce using rule 17 (type -> RECORD field_decl_list SEMICOLON END .)
+    END             reduce using rule 17 (type -> RECORD field_decl_list SEMICOLON END .)
+    RPAREN          reduce using rule 17 (type -> RECORD field_decl_list SEMICOLON END .)
+
+
+state 129
+
+    (19) field_decl_list -> field_decl_list SEMICOLON field_decl .
+
+    END             reduce using rule 19 (field_decl_list -> field_decl_list SEMICOLON field_decl .)
+    SEMICOLON       reduce using rule 19 (field_decl_list -> field_decl_list SEMICOLON field_decl .)
+
+
+state 130
+
+    (20) field_decl -> id_list COLON type .
+
+    END             reduce using rule 20 (field_decl -> id_list COLON type .)
+    SEMICOLON       reduce using rule 20 (field_decl -> id_list COLON type .)
+
+
+state 131
+
+    (41) type -> ARRAY LBRACKET range_list RBRACKET . OF type
+
+    OF              shift and go to state 169
+
+
+state 132
+
+    (43) range_list -> range_list COMMA . range
+    (44) range -> . bound DOTDOT bound
+    (45) bound -> . NUM_INT
+    (46) bound -> . MINUS NUM_INT
+
+    NUM_INT         shift and go to state 95
+    MINUS           shift and go to state 96
+
+    range                          shift and go to state 170
+    bound                          shift and go to state 94
+
+state 133
+
+    (44) range -> bound DOTDOT . bound
+    (45) bound -> . NUM_INT
+    (46) bound -> . MINUS NUM_INT
+
+    NUM_INT         shift and go to state 95
+    MINUS           shift and go to state 96
+
+    bound                          shift and go to state 171
+
+state 134
+
+    (46) bound -> MINUS NUM_INT .
+
+    DOTDOT          reduce using rule 46 (bound -> MINUS NUM_INT .)
+    RBRACKET        reduce using rule 46 (bound -> MINUS NUM_INT .)
+    COMMA           reduce using rule 46 (bound -> MINUS NUM_INT .)
+
+
+state 135
+
+    (51) stmt_list -> stmt_list SEMICOLON stmt .
+
+    END             reduce using rule 51 (stmt_list -> stmt_list SEMICOLON stmt .)
+    SEMICOLON       reduce using rule 51 (stmt_list -> stmt_list SEMICOLON stmt .)
+
+
+state 136
+
+    (52) stmt -> NEW LPAREN variable . RPAREN
+    (66) variable -> variable . DOT ID
+    (67) variable -> variable . CARET
+    (68) variable -> variable . LBRACKET expr_list RBRACKET
+
+    RPAREN          shift and go to state 172
+    DOT             shift and go to state 100
+    CARET           shift and go to state 101
+    LBRACKET        shift and go to state 102
+
+
+state 137
+
+    (65) variable -> ID .
+
+    RPAREN          reduce using rule 65 (variable -> ID .)
+    DOT             reduce using rule 65 (variable -> ID .)
+    CARET           reduce using rule 65 (variable -> ID .)
+    LBRACKET        reduce using rule 65 (variable -> ID .)
+
+
+state 138
+
+    (66) variable -> variable DOT ID .
+
+    DOT             reduce using rule 66 (variable -> variable DOT ID .)
+    CARET           reduce using rule 66 (variable -> variable DOT ID .)
+    LBRACKET        reduce using rule 66 (variable -> variable DOT ID .)
+    ASSIGN          reduce using rule 66 (variable -> variable DOT ID .)
+    END             reduce using rule 66 (variable -> variable DOT ID .)
+    SEMICOLON       reduce using rule 66 (variable -> variable DOT ID .)
+    TIMES           reduce using rule 66 (variable -> variable DOT ID .)
+    DIVIDE          reduce using rule 66 (variable -> variable DOT ID .)
+    AND             reduce using rule 66 (variable -> variable DOT ID .)
+    PLUS            reduce using rule 66 (variable -> variable DOT ID .)
+    MINUS           reduce using rule 66 (variable -> variable DOT ID .)
+    OR              reduce using rule 66 (variable -> variable DOT ID .)
+    EQ              reduce using rule 66 (variable -> variable DOT ID .)
+    NE              reduce using rule 66 (variable -> variable DOT ID .)
+    LT              reduce using rule 66 (variable -> variable DOT ID .)
+    LE              reduce using rule 66 (variable -> variable DOT ID .)
+    GT              reduce using rule 66 (variable -> variable DOT ID .)
+    GE              reduce using rule 66 (variable -> variable DOT ID .)
+    THEN            reduce using rule 66 (variable -> variable DOT ID .)
+    DO              reduce using rule 66 (variable -> variable DOT ID .)
+    RPAREN          reduce using rule 66 (variable -> variable DOT ID .)
+    RBRACKET        reduce using rule 66 (variable -> variable DOT ID .)
+    COMMA           reduce using rule 66 (variable -> variable DOT ID .)
+    ELSE            reduce using rule 66 (variable -> variable DOT ID .)
+
+
+state 139
+
+    (68) variable -> variable LBRACKET expr_list . RBRACKET
+    (74) expr_list -> expr_list . COMMA expr
+
+    RBRACKET        shift and go to state 173
+    COMMA           shift and go to state 174
+
+
+state 140
+
+    (73) expr_list -> expr .
+
+    RBRACKET        reduce using rule 73 (expr_list -> expr .)
+    COMMA           reduce using rule 73 (expr_list -> expr .)
+    RPAREN          reduce using rule 73 (expr_list -> expr .)
+
+
+state 141
+
+    (64) assign_stmt -> variable ASSIGN expr .
+
+    END             reduce using rule 64 (assign_stmt -> variable ASSIGN expr .)
+    SEMICOLON       reduce using rule 64 (assign_stmt -> variable ASSIGN expr .)
+    ELSE            reduce using rule 64 (assign_stmt -> variable ASSIGN expr .)
+
+
+state 142
+
+    (53) stmt -> DISPOSE LPAREN variable . RPAREN
+    (66) variable -> variable . DOT ID
+    (67) variable -> variable . CARET
+    (68) variable -> variable . LBRACKET expr_list RBRACKET
+
+    RPAREN          shift and go to state 175
+    DOT             shift and go to state 100
+    CARET           shift and go to state 101
+    LBRACKET        shift and go to state 102
+
+
+state 143
+
+    (54) stmt -> ID LPAREN expr_list . RPAREN
+    (74) expr_list -> expr_list . COMMA expr
+
+    RPAREN          shift and go to state 176
+    COMMA           shift and go to state 174
+
+
+state 144
+
+    (55) stmt -> ID LPAREN RPAREN .
+
+    END             reduce using rule 55 (stmt -> ID LPAREN RPAREN .)
+    SEMICOLON       reduce using rule 55 (stmt -> ID LPAREN RPAREN .)
+    ELSE            reduce using rule 55 (stmt -> ID LPAREN RPAREN .)
+
+
+state 145
+
+    (69) if_stmt -> IF expr THEN . stmt
+    (70) if_stmt -> IF expr THEN . stmt ELSE stmt
+    (52) stmt -> . NEW LPAREN variable RPAREN
+    (53) stmt -> . DISPOSE LPAREN variable RPAREN
+    (54) stmt -> . ID LPAREN expr_list RPAREN
+    (55) stmt -> . ID LPAREN RPAREN
+    (56) stmt -> . variable
+    (57) stmt -> . assign_stmt
+    (58) stmt -> . if_stmt
+    (59) stmt -> . while_stmt
+    (60) stmt -> . write_stmt
+    (61) stmt -> . block
+    (62) stmt -> .
+    (63) stmt -> . error
+    (65) variable -> . ID
+    (66) variable -> . variable DOT ID
+    (67) variable -> . variable CARET
+    (68) variable -> . variable LBRACKET expr_list RBRACKET
+    (64) assign_stmt -> . variable ASSIGN expr
+    (69) if_stmt -> . IF expr THEN stmt
+    (70) if_stmt -> . IF expr THEN stmt ELSE stmt
+    (71) while_stmt -> . WHILE expr DO stmt
+    (72) write_stmt -> . WRITELN LPAREN expr_list RPAREN
+    (49) block -> . BEGIN block_enter stmt_list END
+
+    NEW             shift and go to state 70
+    DISPOSE         shift and go to state 72
+    ID              shift and go to state 73
+    ELSE            reduce using rule 62 (stmt -> .)
+    END             reduce using rule 62 (stmt -> .)
+    SEMICOLON       reduce using rule 62 (stmt -> .)
+    error           shift and go to state 79
+    IF              shift and go to state 80
+    WHILE           shift and go to state 81
+    WRITELN         shift and go to state 82
+    BEGIN           shift and go to state 35
+
+    stmt                           shift and go to state 177
+    variable                       shift and go to state 71
+    assign_stmt                    shift and go to state 74
+    if_stmt                        shift and go to state 75
+    while_stmt                     shift and go to state 76
+    write_stmt                     shift and go to state 77
+    block                          shift and go to state 78
+
+state 146
+
+    (76) expr -> simple_expr relop . simple_expr
+    (83) simple_expr -> . term
+    (84) simple_expr -> . simple_expr PLUS term
+    (85) simple_expr -> . simple_expr MINUS term
+    (86) simple_expr -> . simple_expr OR term
+    (87) term -> . factor
+    (88) term -> . term TIMES factor
+    (89) term -> . term DIVIDE factor
+    (90) term -> . term AND factor
+    (91) factor -> . variable
+    (92) factor -> . ID LPAREN expr_list RPAREN
+    (93) factor -> . ID LPAREN RPAREN
+    (94) factor -> . NIL
+    (95) factor -> . STRING
+    (96) factor -> . NUM_INT
+    (97) factor -> . NUM_REAL
+    (98) factor -> . TRUE
+    (99) factor -> . FALSE
+    (100) factor -> . LPAREN expr RPAREN
+    (101) factor -> . NOT factor
+    (65) variable -> . ID
+    (66) variable -> . variable DOT ID
+    (67) variable -> . variable CARET
+    (68) variable -> . variable LBRACKET expr_list RBRACKET
+
+    ID              shift and go to state 111
+    NIL             shift and go to state 113
+    STRING          shift and go to state 114
+    NUM_INT         shift and go to state 115
+    NUM_REAL        shift and go to state 116
+    TRUE            shift and go to state 117
+    FALSE           shift and go to state 118
+    LPAREN          shift and go to state 112
+    NOT             shift and go to state 119
+
+    simple_expr                    shift and go to state 178
+    term                           shift and go to state 108
+    factor                         shift and go to state 109
+    variable                       shift and go to state 110
+
+state 147
+
+    (84) simple_expr -> simple_expr PLUS . term
+    (87) term -> . factor
+    (88) term -> . term TIMES factor
+    (89) term -> . term DIVIDE factor
+    (90) term -> . term AND factor
+    (91) factor -> . variable
+    (92) factor -> . ID LPAREN expr_list RPAREN
+    (93) factor -> . ID LPAREN RPAREN
+    (94) factor -> . NIL
+    (95) factor -> . STRING
+    (96) factor -> . NUM_INT
+    (97) factor -> . NUM_REAL
+    (98) factor -> . TRUE
+    (99) factor -> . FALSE
+    (100) factor -> . LPAREN expr RPAREN
+    (101) factor -> . NOT factor
+    (65) variable -> . ID
+    (66) variable -> . variable DOT ID
+    (67) variable -> . variable CARET
+    (68) variable -> . variable LBRACKET expr_list RBRACKET
+
+    ID              shift and go to state 111
+    NIL             shift and go to state 113
+    STRING          shift and go to state 114
+    NUM_INT         shift and go to state 115
+    NUM_REAL        shift and go to state 116
+    TRUE            shift and go to state 117
+    FALSE           shift and go to state 118
+    LPAREN          shift and go to state 112
+    NOT             shift and go to state 119
+
+    term                           shift and go to state 179
+    factor                         shift and go to state 109
+    variable                       shift and go to state 110
+
+state 148
+
+    (85) simple_expr -> simple_expr MINUS . term
+    (87) term -> . factor
+    (88) term -> . term TIMES factor
+    (89) term -> . term DIVIDE factor
+    (90) term -> . term AND factor
+    (91) factor -> . variable
+    (92) factor -> . ID LPAREN expr_list RPAREN
+    (93) factor -> . ID LPAREN RPAREN
+    (94) factor -> . NIL
+    (95) factor -> . STRING
+    (96) factor -> . NUM_INT
+    (97) factor -> . NUM_REAL
+    (98) factor -> . TRUE
+    (99) factor -> . FALSE
+    (100) factor -> . LPAREN expr RPAREN
+    (101) factor -> . NOT factor
+    (65) variable -> . ID
+    (66) variable -> . variable DOT ID
+    (67) variable -> . variable CARET
+    (68) variable -> . variable LBRACKET expr_list RBRACKET
+
+    ID              shift and go to state 111
+    NIL             shift and go to state 113
+    STRING          shift and go to state 114
+    NUM_INT         shift and go to state 115
+    NUM_REAL        shift and go to state 116
+    TRUE            shift and go to state 117
+    FALSE           shift and go to state 118
+    LPAREN          shift and go to state 112
+    NOT             shift and go to state 119
+
+    term                           shift and go to state 180
+    factor                         shift and go to state 109
+    variable                       shift and go to state 110
+
+state 149
+
+    (86) simple_expr -> simple_expr OR . term
+    (87) term -> . factor
+    (88) term -> . term TIMES factor
+    (89) term -> . term DIVIDE factor
+    (90) term -> . term AND factor
+    (91) factor -> . variable
+    (92) factor -> . ID LPAREN expr_list RPAREN
+    (93) factor -> . ID LPAREN RPAREN
+    (94) factor -> . NIL
+    (95) factor -> . STRING
+    (96) factor -> . NUM_INT
+    (97) factor -> . NUM_REAL
+    (98) factor -> . TRUE
+    (99) factor -> . FALSE
+    (100) factor -> . LPAREN expr RPAREN
+    (101) factor -> . NOT factor
+    (65) variable -> . ID
+    (66) variable -> . variable DOT ID
+    (67) variable -> . variable CARET
+    (68) variable -> . variable LBRACKET expr_list RBRACKET
+
+    ID              shift and go to state 111
+    NIL             shift and go to state 113
+    STRING          shift and go to state 114
+    NUM_INT         shift and go to state 115
+    NUM_REAL        shift and go to state 116
+    TRUE            shift and go to state 117
+    FALSE           shift and go to state 118
+    LPAREN          shift and go to state 112
+    NOT             shift and go to state 119
+
+    term                           shift and go to state 181
+    factor                         shift and go to state 109
+    variable                       shift and go to state 110
+
+state 150
+
+    (77) relop -> EQ .
+
+    ID              reduce using rule 77 (relop -> EQ .)
+    NIL             reduce using rule 77 (relop -> EQ .)
+    STRING          reduce using rule 77 (relop -> EQ .)
+    NUM_INT         reduce using rule 77 (relop -> EQ .)
+    NUM_REAL        reduce using rule 77 (relop -> EQ .)
+    TRUE            reduce using rule 77 (relop -> EQ .)
+    FALSE           reduce using rule 77 (relop -> EQ .)
+    LPAREN          reduce using rule 77 (relop -> EQ .)
+    NOT             reduce using rule 77 (relop -> EQ .)
+
+
+state 151
+
+    (78) relop -> NE .
+
+    ID              reduce using rule 78 (relop -> NE .)
+    NIL             reduce using rule 78 (relop -> NE .)
+    STRING          reduce using rule 78 (relop -> NE .)
+    NUM_INT         reduce using rule 78 (relop -> NE .)
+    NUM_REAL        reduce using rule 78 (relop -> NE .)
+    TRUE            reduce using rule 78 (relop -> NE .)
+    FALSE           reduce using rule 78 (relop -> NE .)
+    LPAREN          reduce using rule 78 (relop -> NE .)
+    NOT             reduce using rule 78 (relop -> NE .)
+
+
+state 152
+
+    (79) relop -> LT .
+
+    ID              reduce using rule 79 (relop -> LT .)
+    NIL             reduce using rule 79 (relop -> LT .)
+    STRING          reduce using rule 79 (relop -> LT .)
+    NUM_INT         reduce using rule 79 (relop -> LT .)
+    NUM_REAL        reduce using rule 79 (relop -> LT .)
+    TRUE            reduce using rule 79 (relop -> LT .)
+    FALSE           reduce using rule 79 (relop -> LT .)
+    LPAREN          reduce using rule 79 (relop -> LT .)
+    NOT             reduce using rule 79 (relop -> LT .)
+
+
+state 153
+
+    (80) relop -> LE .
+
+    ID              reduce using rule 80 (relop -> LE .)
+    NIL             reduce using rule 80 (relop -> LE .)
+    STRING          reduce using rule 80 (relop -> LE .)
+    NUM_INT         reduce using rule 80 (relop -> LE .)
+    NUM_REAL        reduce using rule 80 (relop -> LE .)
+    TRUE            reduce using rule 80 (relop -> LE .)
+    FALSE           reduce using rule 80 (relop -> LE .)
+    LPAREN          reduce using rule 80 (relop -> LE .)
+    NOT             reduce using rule 80 (relop -> LE .)
+
+
+state 154
+
+    (81) relop -> GT .
+
+    ID              reduce using rule 81 (relop -> GT .)
+    NIL             reduce using rule 81 (relop -> GT .)
+    STRING          reduce using rule 81 (relop -> GT .)
+    NUM_INT         reduce using rule 81 (relop -> GT .)
+    NUM_REAL        reduce using rule 81 (relop -> GT .)
+    TRUE            reduce using rule 81 (relop -> GT .)
+    FALSE           reduce using rule 81 (relop -> GT .)
+    LPAREN          reduce using rule 81 (relop -> GT .)
+    NOT             reduce using rule 81 (relop -> GT .)
+
+
+state 155
+
+    (82) relop -> GE .
+
+    ID              reduce using rule 82 (relop -> GE .)
+    NIL             reduce using rule 82 (relop -> GE .)
+    STRING          reduce using rule 82 (relop -> GE .)
+    NUM_INT         reduce using rule 82 (relop -> GE .)
+    NUM_REAL        reduce using rule 82 (relop -> GE .)
+    TRUE            reduce using rule 82 (relop -> GE .)
+    FALSE           reduce using rule 82 (relop -> GE .)
+    LPAREN          reduce using rule 82 (relop -> GE .)
+    NOT             reduce using rule 82 (relop -> GE .)
+
+
+state 156
+
+    (88) term -> term TIMES . factor
+    (91) factor -> . variable
+    (92) factor -> . ID LPAREN expr_list RPAREN
+    (93) factor -> . ID LPAREN RPAREN
+    (94) factor -> . NIL
+    (95) factor -> . STRING
+    (96) factor -> . NUM_INT
+    (97) factor -> . NUM_REAL
+    (98) factor -> . TRUE
+    (99) factor -> . FALSE
+    (100) factor -> . LPAREN expr RPAREN
+    (101) factor -> . NOT factor
+    (65) variable -> . ID
+    (66) variable -> . variable DOT ID
+    (67) variable -> . variable CARET
+    (68) variable -> . variable LBRACKET expr_list RBRACKET
+
+    ID              shift and go to state 111
+    NIL             shift and go to state 113
+    STRING          shift and go to state 114
+    NUM_INT         shift and go to state 115
+    NUM_REAL        shift and go to state 116
+    TRUE            shift and go to state 117
+    FALSE           shift and go to state 118
+    LPAREN          shift and go to state 112
+    NOT             shift and go to state 119
+
+    factor                         shift and go to state 182
+    variable                       shift and go to state 110
+
+state 157
+
+    (89) term -> term DIVIDE . factor
+    (91) factor -> . variable
+    (92) factor -> . ID LPAREN expr_list RPAREN
+    (93) factor -> . ID LPAREN RPAREN
+    (94) factor -> . NIL
+    (95) factor -> . STRING
+    (96) factor -> . NUM_INT
+    (97) factor -> . NUM_REAL
+    (98) factor -> . TRUE
+    (99) factor -> . FALSE
+    (100) factor -> . LPAREN expr RPAREN
+    (101) factor -> . NOT factor
+    (65) variable -> . ID
+    (66) variable -> . variable DOT ID
+    (67) variable -> . variable CARET
+    (68) variable -> . variable LBRACKET expr_list RBRACKET
+
+    ID              shift and go to state 111
+    NIL             shift and go to state 113
+    STRING          shift and go to state 114
+    NUM_INT         shift and go to state 115
+    NUM_REAL        shift and go to state 116
+    TRUE            shift and go to state 117
+    FALSE           shift and go to state 118
+    LPAREN          shift and go to state 112
+    NOT             shift and go to state 119
+
+    factor                         shift and go to state 183
+    variable                       shift and go to state 110
+
+state 158
+
+    (90) term -> term AND . factor
+    (91) factor -> . variable
+    (92) factor -> . ID LPAREN expr_list RPAREN
+    (93) factor -> . ID LPAREN RPAREN
+    (94) factor -> . NIL
+    (95) factor -> . STRING
+    (96) factor -> . NUM_INT
+    (97) factor -> . NUM_REAL
+    (98) factor -> . TRUE
+    (99) factor -> . FALSE
+    (100) factor -> . LPAREN expr RPAREN
+    (101) factor -> . NOT factor
+    (65) variable -> . ID
+    (66) variable -> . variable DOT ID
+    (67) variable -> . variable CARET
+    (68) variable -> . variable LBRACKET expr_list RBRACKET
+
+    ID              shift and go to state 111
+    NIL             shift and go to state 113
+    STRING          shift and go to state 114
+    NUM_INT         shift and go to state 115
+    NUM_REAL        shift and go to state 116
+    TRUE            shift and go to state 117
+    FALSE           shift and go to state 118
+    LPAREN          shift and go to state 112
+    NOT             shift and go to state 119
+
+    factor                         shift and go to state 184
+    variable                       shift and go to state 110
+
+state 159
+
+    (92) factor -> ID LPAREN . expr_list RPAREN
+    (93) factor -> ID LPAREN . RPAREN
+    (73) expr_list -> . expr
+    (74) expr_list -> . expr_list COMMA expr
+    (75) expr -> . simple_expr
+    (76) expr -> . simple_expr relop simple_expr
+    (83) simple_expr -> . term
+    (84) simple_expr -> . simple_expr PLUS term
+    (85) simple_expr -> . simple_expr MINUS term
+    (86) simple_expr -> . simple_expr OR term
+    (87) term -> . factor
+    (88) term -> . term TIMES factor
+    (89) term -> . term DIVIDE factor
+    (90) term -> . term AND factor
+    (91) factor -> . variable
+    (92) factor -> . ID LPAREN expr_list RPAREN
+    (93) factor -> . ID LPAREN RPAREN
+    (94) factor -> . NIL
+    (95) factor -> . STRING
+    (96) factor -> . NUM_INT
+    (97) factor -> . NUM_REAL
+    (98) factor -> . TRUE
+    (99) factor -> . FALSE
+    (100) factor -> . LPAREN expr RPAREN
+    (101) factor -> . NOT factor
+    (65) variable -> . ID
+    (66) variable -> . variable DOT ID
+    (67) variable -> . variable CARET
+    (68) variable -> . variable LBRACKET expr_list RBRACKET
+
+    RPAREN          shift and go to state 186
+    ID              shift and go to state 111
+    NIL             shift and go to state 113
+    STRING          shift and go to state 114
+    NUM_INT         shift and go to state 115
+    NUM_REAL        shift and go to state 116
+    TRUE            shift and go to state 117
+    FALSE           shift and go to state 118
+    LPAREN          shift and go to state 112
+    NOT             shift and go to state 119
+
+    expr_list                      shift and go to state 185
+    expr                           shift and go to state 140
+    simple_expr                    shift and go to state 107
+    term                           shift and go to state 108
+    factor                         shift and go to state 109
+    variable                       shift and go to state 110
+
+state 160
+
+    (100) factor -> LPAREN expr . RPAREN
+
+    RPAREN          shift and go to state 187
+
+
+state 161
+
+    (101) factor -> NOT factor .
+
+    TIMES           reduce using rule 101 (factor -> NOT factor .)
+    DIVIDE          reduce using rule 101 (factor -> NOT factor .)
+    AND             reduce using rule 101 (factor -> NOT factor .)
+    PLUS            reduce using rule 101 (factor -> NOT factor .)
+    MINUS           reduce using rule 101 (factor -> NOT factor .)
+    OR              reduce using rule 101 (factor -> NOT factor .)
+    EQ              reduce using rule 101 (factor -> NOT factor .)
+    NE              reduce using rule 101 (factor -> NOT factor .)
+    LT              reduce using rule 101 (factor -> NOT factor .)
+    LE              reduce using rule 101 (factor -> NOT factor .)
+    GT              reduce using rule 101 (factor -> NOT factor .)
+    GE              reduce using rule 101 (factor -> NOT factor .)
+    THEN            reduce using rule 101 (factor -> NOT factor .)
+    DO              reduce using rule 101 (factor -> NOT factor .)
+    RBRACKET        reduce using rule 101 (factor -> NOT factor .)
+    COMMA           reduce using rule 101 (factor -> NOT factor .)
+    END             reduce using rule 101 (factor -> NOT factor .)
+    SEMICOLON       reduce using rule 101 (factor -> NOT factor .)
+    ELSE            reduce using rule 101 (factor -> NOT factor .)
+    RPAREN          reduce using rule 101 (factor -> NOT factor .)
+
+
+state 162
+
+    (71) while_stmt -> WHILE expr DO . stmt
+    (52) stmt -> . NEW LPAREN variable RPAREN
+    (53) stmt -> . DISPOSE LPAREN variable RPAREN
+    (54) stmt -> . ID LPAREN expr_list RPAREN
+    (55) stmt -> . ID LPAREN RPAREN
+    (56) stmt -> . variable
+    (57) stmt -> . assign_stmt
+    (58) stmt -> . if_stmt
+    (59) stmt -> . while_stmt
+    (60) stmt -> . write_stmt
+    (61) stmt -> . block
+    (62) stmt -> .
+    (63) stmt -> . error
+    (65) variable -> . ID
+    (66) variable -> . variable DOT ID
+    (67) variable -> . variable CARET
+    (68) variable -> . variable LBRACKET expr_list RBRACKET
+    (64) assign_stmt -> . variable ASSIGN expr
+    (69) if_stmt -> . IF expr THEN stmt
+    (70) if_stmt -> . IF expr THEN stmt ELSE stmt
+    (71) while_stmt -> . WHILE expr DO stmt
+    (72) write_stmt -> . WRITELN LPAREN expr_list RPAREN
+    (49) block -> . BEGIN block_enter stmt_list END
+
+    NEW             shift and go to state 70
+    DISPOSE         shift and go to state 72
+    ID              shift and go to state 73
+    ELSE            reduce using rule 62 (stmt -> .)
+    END             reduce using rule 62 (stmt -> .)
+    SEMICOLON       reduce using rule 62 (stmt -> .)
+    error           shift and go to state 79
+    IF              shift and go to state 80
+    WHILE           shift and go to state 81
+    WRITELN         shift and go to state 82
+    BEGIN           shift and go to state 35
+
+    stmt                           shift and go to state 188
+    variable                       shift and go to state 71
+    assign_stmt                    shift and go to state 74
+    if_stmt                        shift and go to state 75
+    while_stmt                     shift and go to state 76
+    write_stmt                     shift and go to state 77
+    block                          shift and go to state 78
+
+state 163
+
+    (72) write_stmt -> WRITELN LPAREN expr_list . RPAREN
+    (74) expr_list -> expr_list . COMMA expr
+
+    RPAREN          shift and go to state 189
+    COMMA           shift and go to state 174
+
+
+state 164
+
+    (24) sub_header -> FUNCTION ID LPAREN params RPAREN . COLON type SEMICOLON
+
+    COLON           shift and go to state 190
+
+
+state 165
+
+    (29) params -> params SEMICOLON . param_group
+    (30) param_group -> . id_list COLON type
+    (37) id_list -> . ID
+    (38) id_list -> . id_list COMMA ID
+
+    ID              shift and go to state 28
+
+    param_group                    shift and go to state 191
+    id_list                        shift and go to state 125
+
+state 166
+
+    (30) param_group -> id_list COLON . type
+    (12) type -> . ID
+    (14) type -> . ptr_start type
+    (15) type -> . STRINGTYPE
+    (16) type -> . RECORD field_decl_list END
+    (17) type -> . RECORD field_decl_list SEMICOLON END
+    (39) type -> . INTEGER
+    (40) type -> . BOOLEAN
+    (41) type -> . ARRAY LBRACKET range_list RBRACKET OF type
+    (47) type -> . REAL
+    (13) ptr_start -> . CARET
+
+    ID              shift and go to state 43
+    STRINGTYPE      shift and go to state 46
+    RECORD          shift and go to state 47
+    INTEGER         shift and go to state 48
+    BOOLEAN         shift and go to state 49
+    ARRAY           shift and go to state 50
+    REAL            shift and go to state 51
+    CARET           shift and go to state 52
+
+    type                           shift and go to state 192
+    ptr_start                      shift and go to state 45
+
+state 167
+
+    (25) sub_header -> FUNCTION ID COLON type SEMICOLON .
+
+    VAR             reduce using rule 25 (sub_header -> FUNCTION ID COLON type SEMICOLON .)
+    BEGIN           reduce using rule 25 (sub_header -> FUNCTION ID COLON type SEMICOLON .)
+
+
+state 168
+
+    (26) sub_header -> PROCEDURE ID LPAREN params RPAREN . SEMICOLON
+
+    SEMICOLON       shift and go to state 193
+
+
+state 169
+
+    (41) type -> ARRAY LBRACKET range_list RBRACKET OF . type
+    (12) type -> . ID
+    (14) type -> . ptr_start type
+    (15) type -> . STRINGTYPE
+    (16) type -> . RECORD field_decl_list END
+    (17) type -> . RECORD field_decl_list SEMICOLON END
+    (39) type -> . INTEGER
+    (40) type -> . BOOLEAN
+    (41) type -> . ARRAY LBRACKET range_list RBRACKET OF type
+    (47) type -> . REAL
+    (13) ptr_start -> . CARET
+
+    ID              shift and go to state 43
+    STRINGTYPE      shift and go to state 46
+    RECORD          shift and go to state 47
+    INTEGER         shift and go to state 48
+    BOOLEAN         shift and go to state 49
+    ARRAY           shift and go to state 50
+    REAL            shift and go to state 51
+    CARET           shift and go to state 52
+
+    type                           shift and go to state 194
+    ptr_start                      shift and go to state 45
+
+state 170
+
+    (43) range_list -> range_list COMMA range .
+
+    RBRACKET        reduce using rule 43 (range_list -> range_list COMMA range .)
+    COMMA           reduce using rule 43 (range_list -> range_list COMMA range .)
+
+
+state 171
+
+    (44) range -> bound DOTDOT bound .
+
+    RBRACKET        reduce using rule 44 (range -> bound DOTDOT bound .)
+    COMMA           reduce using rule 44 (range -> bound DOTDOT bound .)
+
+
+state 172
+
+    (52) stmt -> NEW LPAREN variable RPAREN .
+
+    END             reduce using rule 52 (stmt -> NEW LPAREN variable RPAREN .)
+    SEMICOLON       reduce using rule 52 (stmt -> NEW LPAREN variable RPAREN .)
+    ELSE            reduce using rule 52 (stmt -> NEW LPAREN variable RPAREN .)
+
+
+state 173
+
+    (68) variable -> variable LBRACKET expr_list RBRACKET .
+
+    DOT             reduce using rule 68 (variable -> variable LBRACKET expr_list RBRACKET .)
+    CARET           reduce using rule 68 (variable -> variable LBRACKET expr_list RBRACKET .)
+    LBRACKET        reduce using rule 68 (variable -> variable LBRACKET expr_list RBRACKET .)
+    ASSIGN          reduce using rule 68 (variable -> variable LBRACKET expr_list RBRACKET .)
+    END             reduce using rule 68 (variable -> variable LBRACKET expr_list RBRACKET .)
+    SEMICOLON       reduce using rule 68 (variable -> variable LBRACKET expr_list RBRACKET .)
+    TIMES           reduce using rule 68 (variable -> variable LBRACKET expr_list RBRACKET .)
+    DIVIDE          reduce using rule 68 (variable -> variable LBRACKET expr_list RBRACKET .)
+    AND             reduce using rule 68 (variable -> variable LBRACKET expr_list RBRACKET .)
+    PLUS            reduce using rule 68 (variable -> variable LBRACKET expr_list RBRACKET .)
+    MINUS           reduce using rule 68 (variable -> variable LBRACKET expr_list RBRACKET .)
+    OR              reduce using rule 68 (variable -> variable LBRACKET expr_list RBRACKET .)
+    EQ              reduce using rule 68 (variable -> variable LBRACKET expr_list RBRACKET .)
+    NE              reduce using rule 68 (variable -> variable LBRACKET expr_list RBRACKET .)
+    LT              reduce using rule 68 (variable -> variable LBRACKET expr_list RBRACKET .)
+    LE              reduce using rule 68 (variable -> variable LBRACKET expr_list RBRACKET .)
+    GT              reduce using rule 68 (variable -> variable LBRACKET expr_list RBRACKET .)
+    GE              reduce using rule 68 (variable -> variable LBRACKET expr_list RBRACKET .)
+    THEN            reduce using rule 68 (variable -> variable LBRACKET expr_list RBRACKET .)
+    DO              reduce using rule 68 (variable -> variable LBRACKET expr_list RBRACKET .)
+    RPAREN          reduce using rule 68 (variable -> variable LBRACKET expr_list RBRACKET .)
+    RBRACKET        reduce using rule 68 (variable -> variable LBRACKET expr_list RBRACKET .)
+    COMMA           reduce using rule 68 (variable -> variable LBRACKET expr_list RBRACKET .)
+    ELSE            reduce using rule 68 (variable -> variable LBRACKET expr_list RBRACKET .)
+
+
+state 174
+
+    (74) expr_list -> expr_list COMMA . expr
+    (75) expr -> . simple_expr
+    (76) expr -> . simple_expr relop simple_expr
+    (83) simple_expr -> . term
+    (84) simple_expr -> . simple_expr PLUS term
+    (85) simple_expr -> . simple_expr MINUS term
+    (86) simple_expr -> . simple_expr OR term
+    (87) term -> . factor
+    (88) term -> . term TIMES factor
+    (89) term -> . term DIVIDE factor
+    (90) term -> . term AND factor
+    (91) factor -> . variable
+    (92) factor -> . ID LPAREN expr_list RPAREN
+    (93) factor -> . ID LPAREN RPAREN
+    (94) factor -> . NIL
+    (95) factor -> . STRING
+    (96) factor -> . NUM_INT
+    (97) factor -> . NUM_REAL
+    (98) factor -> . TRUE
+    (99) factor -> . FALSE
+    (100) factor -> . LPAREN expr RPAREN
+    (101) factor -> . NOT factor
+    (65) variable -> . ID
+    (66) variable -> . variable DOT ID
+    (67) variable -> . variable CARET
+    (68) variable -> . variable LBRACKET expr_list RBRACKET
+
+    ID              shift and go to state 111
+    NIL             shift and go to state 113
+    STRING          shift and go to state 114
+    NUM_INT         shift and go to state 115
+    NUM_REAL        shift and go to state 116
+    TRUE            shift and go to state 117
+    FALSE           shift and go to state 118
+    LPAREN          shift and go to state 112
+    NOT             shift and go to state 119
+
+    expr                           shift and go to state 195
+    simple_expr                    shift and go to state 107
+    term                           shift and go to state 108
+    factor                         shift and go to state 109
+    variable                       shift and go to state 110
+
+state 175
+
+    (53) stmt -> DISPOSE LPAREN variable RPAREN .
+
+    END             reduce using rule 53 (stmt -> DISPOSE LPAREN variable RPAREN .)
+    SEMICOLON       reduce using rule 53 (stmt -> DISPOSE LPAREN variable RPAREN .)
+    ELSE            reduce using rule 53 (stmt -> DISPOSE LPAREN variable RPAREN .)
+
+
+state 176
+
+    (54) stmt -> ID LPAREN expr_list RPAREN .
+
+    END             reduce using rule 54 (stmt -> ID LPAREN expr_list RPAREN .)
+    SEMICOLON       reduce using rule 54 (stmt -> ID LPAREN expr_list RPAREN .)
+    ELSE            reduce using rule 54 (stmt -> ID LPAREN expr_list RPAREN .)
+
+
+state 177
+
+    (69) if_stmt -> IF expr THEN stmt .
+    (70) if_stmt -> IF expr THEN stmt . ELSE stmt
+
+    END             reduce using rule 69 (if_stmt -> IF expr THEN stmt .)
+    SEMICOLON       reduce using rule 69 (if_stmt -> IF expr THEN stmt .)
+    ELSE            shift and go to state 196
+
+  ! ELSE            [ reduce using rule 69 (if_stmt -> IF expr THEN stmt .) ]
+
+
+state 178
+
+    (76) expr -> simple_expr relop simple_expr .
+    (84) simple_expr -> simple_expr . PLUS term
+    (85) simple_expr -> simple_expr . MINUS term
+    (86) simple_expr -> simple_expr . OR term
+
+    THEN            reduce using rule 76 (expr -> simple_expr relop simple_expr .)
+    DO              reduce using rule 76 (expr -> simple_expr relop simple_expr .)
+    RBRACKET        reduce using rule 76 (expr -> simple_expr relop simple_expr .)
+    COMMA           reduce using rule 76 (expr -> simple_expr relop simple_expr .)
+    END             reduce using rule 76 (expr -> simple_expr relop simple_expr .)
+    SEMICOLON       reduce using rule 76 (expr -> simple_expr relop simple_expr .)
+    ELSE            reduce using rule 76 (expr -> simple_expr relop simple_expr .)
+    RPAREN          reduce using rule 76 (expr -> simple_expr relop simple_expr .)
+    PLUS            shift and go to state 147
+    MINUS           shift and go to state 148
+    OR              shift and go to state 149
+
+
+state 179
+
+    (84) simple_expr -> simple_expr PLUS term .
+    (88) term -> term . TIMES factor
+    (89) term -> term . DIVIDE factor
+    (90) term -> term . AND factor
+
+    PLUS            reduce using rule 84 (simple_expr -> simple_expr PLUS term .)
+    MINUS           reduce using rule 84 (simple_expr -> simple_expr PLUS term .)
+    OR              reduce using rule 84 (simple_expr -> simple_expr PLUS term .)
+    EQ              reduce using rule 84 (simple_expr -> simple_expr PLUS term .)
+    NE              reduce using rule 84 (simple_expr -> simple_expr PLUS term .)
+    LT              reduce using rule 84 (simple_expr -> simple_expr PLUS term .)
+    LE              reduce using rule 84 (simple_expr -> simple_expr PLUS term .)
+    GT              reduce using rule 84 (simple_expr -> simple_expr PLUS term .)
+    GE              reduce using rule 84 (simple_expr -> simple_expr PLUS term .)
+    THEN            reduce using rule 84 (simple_expr -> simple_expr PLUS term .)
+    DO              reduce using rule 84 (simple_expr -> simple_expr PLUS term .)
+    RBRACKET        reduce using rule 84 (simple_expr -> simple_expr PLUS term .)
+    COMMA           reduce using rule 84 (simple_expr -> simple_expr PLUS term .)
+    END             reduce using rule 84 (simple_expr -> simple_expr PLUS term .)
+    SEMICOLON       reduce using rule 84 (simple_expr -> simple_expr PLUS term .)
+    ELSE            reduce using rule 84 (simple_expr -> simple_expr PLUS term .)
+    RPAREN          reduce using rule 84 (simple_expr -> simple_expr PLUS term .)
+    TIMES           shift and go to state 156
+    DIVIDE          shift and go to state 157
+    AND             shift and go to state 158
+
+
+state 180
+
+    (85) simple_expr -> simple_expr MINUS term .
+    (88) term -> term . TIMES factor
+    (89) term -> term . DIVIDE factor
+    (90) term -> term . AND factor
+
+    PLUS            reduce using rule 85 (simple_expr -> simple_expr MINUS term .)
+    MINUS           reduce using rule 85 (simple_expr -> simple_expr MINUS term .)
+    OR              reduce using rule 85 (simple_expr -> simple_expr MINUS term .)
+    EQ              reduce using rule 85 (simple_expr -> simple_expr MINUS term .)
+    NE              reduce using rule 85 (simple_expr -> simple_expr MINUS term .)
+    LT              reduce using rule 85 (simple_expr -> simple_expr MINUS term .)
+    LE              reduce using rule 85 (simple_expr -> simple_expr MINUS term .)
+    GT              reduce using rule 85 (simple_expr -> simple_expr MINUS term .)
+    GE              reduce using rule 85 (simple_expr -> simple_expr MINUS term .)
+    THEN            reduce using rule 85 (simple_expr -> simple_expr MINUS term .)
+    DO              reduce using rule 85 (simple_expr -> simple_expr MINUS term .)
+    RBRACKET        reduce using rule 85 (simple_expr -> simple_expr MINUS term .)
+    COMMA           reduce using rule 85 (simple_expr -> simple_expr MINUS term .)
+    END             reduce using rule 85 (simple_expr -> simple_expr MINUS term .)
+    SEMICOLON       reduce using rule 85 (simple_expr -> simple_expr MINUS term .)
+    ELSE            reduce using rule 85 (simple_expr -> simple_expr MINUS term .)
+    RPAREN          reduce using rule 85 (simple_expr -> simple_expr MINUS term .)
+    TIMES           shift and go to state 156
+    DIVIDE          shift and go to state 157
+    AND             shift and go to state 158
+
+
+state 181
+
+    (86) simple_expr -> simple_expr OR term .
+    (88) term -> term . TIMES factor
+    (89) term -> term . DIVIDE factor
+    (90) term -> term . AND factor
+
+    PLUS            reduce using rule 86 (simple_expr -> simple_expr OR term .)
+    MINUS           reduce using rule 86 (simple_expr -> simple_expr OR term .)
+    OR              reduce using rule 86 (simple_expr -> simple_expr OR term .)
+    EQ              reduce using rule 86 (simple_expr -> simple_expr OR term .)
+    NE              reduce using rule 86 (simple_expr -> simple_expr OR term .)
+    LT              reduce using rule 86 (simple_expr -> simple_expr OR term .)
+    LE              reduce using rule 86 (simple_expr -> simple_expr OR term .)
+    GT              reduce using rule 86 (simple_expr -> simple_expr OR term .)
+    GE              reduce using rule 86 (simple_expr -> simple_expr OR term .)
+    THEN            reduce using rule 86 (simple_expr -> simple_expr OR term .)
+    DO              reduce using rule 86 (simple_expr -> simple_expr OR term .)
+    RBRACKET        reduce using rule 86 (simple_expr -> simple_expr OR term .)
+    COMMA           reduce using rule 86 (simple_expr -> simple_expr OR term .)
+    END             reduce using rule 86 (simple_expr -> simple_expr OR term .)
+    SEMICOLON       reduce using rule 86 (simple_expr -> simple_expr OR term .)
+    ELSE            reduce using rule 86 (simple_expr -> simple_expr OR term .)
+    RPAREN          reduce using rule 86 (simple_expr -> simple_expr OR term .)
+    TIMES           shift and go to state 156
+    DIVIDE          shift and go to state 157
+    AND             shift and go to state 158
+
+
+state 182
+
+    (88) term -> term TIMES factor .
+
+    TIMES           reduce using rule 88 (term -> term TIMES factor .)
+    DIVIDE          reduce using rule 88 (term -> term TIMES factor .)
+    AND             reduce using rule 88 (term -> term TIMES factor .)
+    PLUS            reduce using rule 88 (term -> term TIMES factor .)
+    MINUS           reduce using rule 88 (term -> term TIMES factor .)
+    OR              reduce using rule 88 (term -> term TIMES factor .)
+    EQ              reduce using rule 88 (term -> term TIMES factor .)
+    NE              reduce using rule 88 (term -> term TIMES factor .)
+    LT              reduce using rule 88 (term -> term TIMES factor .)
+    LE              reduce using rule 88 (term -> term TIMES factor .)
+    GT              reduce using rule 88 (term -> term TIMES factor .)
+    GE              reduce using rule 88 (term -> term TIMES factor .)
+    THEN            reduce using rule 88 (term -> term TIMES factor .)
+    DO              reduce using rule 88 (term -> term TIMES factor .)
+    RBRACKET        reduce using rule 88 (term -> term TIMES factor .)
+    COMMA           reduce using rule 88 (term -> term TIMES factor .)
+    END             reduce using rule 88 (term -> term TIMES factor .)
+    SEMICOLON       reduce using rule 88 (term -> term TIMES factor .)
+    ELSE            reduce using rule 88 (term -> term TIMES factor .)
+    RPAREN          reduce using rule 88 (term -> term TIMES factor .)
+
+
+state 183
+
+    (89) term -> term DIVIDE factor .
+
+    TIMES           reduce using rule 89 (term -> term DIVIDE factor .)
+    DIVIDE          reduce using rule 89 (term -> term DIVIDE factor .)
+    AND             reduce using rule 89 (term -> term DIVIDE factor .)
+    PLUS            reduce using rule 89 (term -> term DIVIDE factor .)
+    MINUS           reduce using rule 89 (term -> term DIVIDE factor .)
+    OR              reduce using rule 89 (term -> term DIVIDE factor .)
+    EQ              reduce using rule 89 (term -> term DIVIDE factor .)
+    NE              reduce using rule 89 (term -> term DIVIDE factor .)
+    LT              reduce using rule 89 (term -> term DIVIDE factor .)
+    LE              reduce using rule 89 (term -> term DIVIDE factor .)
+    GT              reduce using rule 89 (term -> term DIVIDE factor .)
+    GE              reduce using rule 89 (term -> term DIVIDE factor .)
+    THEN            reduce using rule 89 (term -> term DIVIDE factor .)
+    DO              reduce using rule 89 (term -> term DIVIDE factor .)
+    RBRACKET        reduce using rule 89 (term -> term DIVIDE factor .)
+    COMMA           reduce using rule 89 (term -> term DIVIDE factor .)
+    END             reduce using rule 89 (term -> term DIVIDE factor .)
+    SEMICOLON       reduce using rule 89 (term -> term DIVIDE factor .)
+    ELSE            reduce using rule 89 (term -> term DIVIDE factor .)
+    RPAREN          reduce using rule 89 (term -> term DIVIDE factor .)
+
+
+state 184
+
+    (90) term -> term AND factor .
+
+    TIMES           reduce using rule 90 (term -> term AND factor .)
+    DIVIDE          reduce using rule 90 (term -> term AND factor .)
+    AND             reduce using rule 90 (term -> term AND factor .)
+    PLUS            reduce using rule 90 (term -> term AND factor .)
+    MINUS           reduce using rule 90 (term -> term AND factor .)
+    OR              reduce using rule 90 (term -> term AND factor .)
+    EQ              reduce using rule 90 (term -> term AND factor .)
+    NE              reduce using rule 90 (term -> term AND factor .)
+    LT              reduce using rule 90 (term -> term AND factor .)
+    LE              reduce using rule 90 (term -> term AND factor .)
+    GT              reduce using rule 90 (term -> term AND factor .)
+    GE              reduce using rule 90 (term -> term AND factor .)
+    THEN            reduce using rule 90 (term -> term AND factor .)
+    DO              reduce using rule 90 (term -> term AND factor .)
+    RBRACKET        reduce using rule 90 (term -> term AND factor .)
+    COMMA           reduce using rule 90 (term -> term AND factor .)
+    END             reduce using rule 90 (term -> term AND factor .)
+    SEMICOLON       reduce using rule 90 (term -> term AND factor .)
+    ELSE            reduce using rule 90 (term -> term AND factor .)
+    RPAREN          reduce using rule 90 (term -> term AND factor .)
+
+
+state 185
+
+    (92) factor -> ID LPAREN expr_list . RPAREN
+    (74) expr_list -> expr_list . COMMA expr
+
+    RPAREN          shift and go to state 197
+    COMMA           shift and go to state 174
+
+
+state 186
+
+    (93) factor -> ID LPAREN RPAREN .
+
+    TIMES           reduce using rule 93 (factor -> ID LPAREN RPAREN .)
+    DIVIDE          reduce using rule 93 (factor -> ID LPAREN RPAREN .)
+    AND             reduce using rule 93 (factor -> ID LPAREN RPAREN .)
+    PLUS            reduce using rule 93 (factor -> ID LPAREN RPAREN .)
+    MINUS           reduce using rule 93 (factor -> ID LPAREN RPAREN .)
+    OR              reduce using rule 93 (factor -> ID LPAREN RPAREN .)
+    EQ              reduce using rule 93 (factor -> ID LPAREN RPAREN .)
+    NE              reduce using rule 93 (factor -> ID LPAREN RPAREN .)
+    LT              reduce using rule 93 (factor -> ID LPAREN RPAREN .)
+    LE              reduce using rule 93 (factor -> ID LPAREN RPAREN .)
+    GT              reduce using rule 93 (factor -> ID LPAREN RPAREN .)
+    GE              reduce using rule 93 (factor -> ID LPAREN RPAREN .)
+    THEN            reduce using rule 93 (factor -> ID LPAREN RPAREN .)
+    DO              reduce using rule 93 (factor -> ID LPAREN RPAREN .)
+    RBRACKET        reduce using rule 93 (factor -> ID LPAREN RPAREN .)
+    COMMA           reduce using rule 93 (factor -> ID LPAREN RPAREN .)
+    END             reduce using rule 93 (factor -> ID LPAREN RPAREN .)
+    SEMICOLON       reduce using rule 93 (factor -> ID LPAREN RPAREN .)
+    ELSE            reduce using rule 93 (factor -> ID LPAREN RPAREN .)
+    RPAREN          reduce using rule 93 (factor -> ID LPAREN RPAREN .)
+
+
+state 187
+
+    (100) factor -> LPAREN expr RPAREN .
+
+    TIMES           reduce using rule 100 (factor -> LPAREN expr RPAREN .)
+    DIVIDE          reduce using rule 100 (factor -> LPAREN expr RPAREN .)
+    AND             reduce using rule 100 (factor -> LPAREN expr RPAREN .)
+    PLUS            reduce using rule 100 (factor -> LPAREN expr RPAREN .)
+    MINUS           reduce using rule 100 (factor -> LPAREN expr RPAREN .)
+    OR              reduce using rule 100 (factor -> LPAREN expr RPAREN .)
+    EQ              reduce using rule 100 (factor -> LPAREN expr RPAREN .)
+    NE              reduce using rule 100 (factor -> LPAREN expr RPAREN .)
+    LT              reduce using rule 100 (factor -> LPAREN expr RPAREN .)
+    LE              reduce using rule 100 (factor -> LPAREN expr RPAREN .)
+    GT              reduce using rule 100 (factor -> LPAREN expr RPAREN .)
+    GE              reduce using rule 100 (factor -> LPAREN expr RPAREN .)
+    THEN            reduce using rule 100 (factor -> LPAREN expr RPAREN .)
+    DO              reduce using rule 100 (factor -> LPAREN expr RPAREN .)
+    RBRACKET        reduce using rule 100 (factor -> LPAREN expr RPAREN .)
+    COMMA           reduce using rule 100 (factor -> LPAREN expr RPAREN .)
+    END             reduce using rule 100 (factor -> LPAREN expr RPAREN .)
+    SEMICOLON       reduce using rule 100 (factor -> LPAREN expr RPAREN .)
+    ELSE            reduce using rule 100 (factor -> LPAREN expr RPAREN .)
+    RPAREN          reduce using rule 100 (factor -> LPAREN expr RPAREN .)
+
+
+state 188
+
+    (71) while_stmt -> WHILE expr DO stmt .
+
+    END             reduce using rule 71 (while_stmt -> WHILE expr DO stmt .)
+    SEMICOLON       reduce using rule 71 (while_stmt -> WHILE expr DO stmt .)
+    ELSE            reduce using rule 71 (while_stmt -> WHILE expr DO stmt .)
+
+
+state 189
+
+    (72) write_stmt -> WRITELN LPAREN expr_list RPAREN .
+
+    END             reduce using rule 72 (write_stmt -> WRITELN LPAREN expr_list RPAREN .)
+    SEMICOLON       reduce using rule 72 (write_stmt -> WRITELN LPAREN expr_list RPAREN .)
+    ELSE            reduce using rule 72 (write_stmt -> WRITELN LPAREN expr_list RPAREN .)
+
+
+state 190
+
+    (24) sub_header -> FUNCTION ID LPAREN params RPAREN COLON . type SEMICOLON
+    (12) type -> . ID
+    (14) type -> . ptr_start type
+    (15) type -> . STRINGTYPE
+    (16) type -> . RECORD field_decl_list END
+    (17) type -> . RECORD field_decl_list SEMICOLON END
+    (39) type -> . INTEGER
+    (40) type -> . BOOLEAN
+    (41) type -> . ARRAY LBRACKET range_list RBRACKET OF type
+    (47) type -> . REAL
+    (13) ptr_start -> . CARET
+
+    ID              shift and go to state 43
+    STRINGTYPE      shift and go to state 46
+    RECORD          shift and go to state 47
+    INTEGER         shift and go to state 48
+    BOOLEAN         shift and go to state 49
+    ARRAY           shift and go to state 50
+    REAL            shift and go to state 51
+    CARET           shift and go to state 52
+
+    type                           shift and go to state 198
+    ptr_start                      shift and go to state 45
+
+state 191
+
+    (29) params -> params SEMICOLON param_group .
+
+    RPAREN          reduce using rule 29 (params -> params SEMICOLON param_group .)
+    SEMICOLON       reduce using rule 29 (params -> params SEMICOLON param_group .)
+
+
+state 192
+
+    (30) param_group -> id_list COLON type .
+
+    RPAREN          reduce using rule 30 (param_group -> id_list COLON type .)
+    SEMICOLON       reduce using rule 30 (param_group -> id_list COLON type .)
+
+
+state 193
+
+    (26) sub_header -> PROCEDURE ID LPAREN params RPAREN SEMICOLON .
+
+    VAR             reduce using rule 26 (sub_header -> PROCEDURE ID LPAREN params RPAREN SEMICOLON .)
+    BEGIN           reduce using rule 26 (sub_header -> PROCEDURE ID LPAREN params RPAREN SEMICOLON .)
+
+
+state 194
+
+    (41) type -> ARRAY LBRACKET range_list RBRACKET OF type .
+
+    SEMICOLON       reduce using rule 41 (type -> ARRAY LBRACKET range_list RBRACKET OF type .)
+    END             reduce using rule 41 (type -> ARRAY LBRACKET range_list RBRACKET OF type .)
+    RPAREN          reduce using rule 41 (type -> ARRAY LBRACKET range_list RBRACKET OF type .)
+
+
+state 195
+
+    (74) expr_list -> expr_list COMMA expr .
+
+    RBRACKET        reduce using rule 74 (expr_list -> expr_list COMMA expr .)
+    COMMA           reduce using rule 74 (expr_list -> expr_list COMMA expr .)
+    RPAREN          reduce using rule 74 (expr_list -> expr_list COMMA expr .)
+
+
+state 196
+
+    (70) if_stmt -> IF expr THEN stmt ELSE . stmt
+    (52) stmt -> . NEW LPAREN variable RPAREN
+    (53) stmt -> . DISPOSE LPAREN variable RPAREN
+    (54) stmt -> . ID LPAREN expr_list RPAREN
+    (55) stmt -> . ID LPAREN RPAREN
+    (56) stmt -> . variable
+    (57) stmt -> . assign_stmt
+    (58) stmt -> . if_stmt
+    (59) stmt -> . while_stmt
+    (60) stmt -> . write_stmt
+    (61) stmt -> . block
+    (62) stmt -> .
+    (63) stmt -> . error
+    (65) variable -> . ID
+    (66) variable -> . variable DOT ID
+    (67) variable -> . variable CARET
+    (68) variable -> . variable LBRACKET expr_list RBRACKET
+    (64) assign_stmt -> . variable ASSIGN expr
+    (69) if_stmt -> . IF expr THEN stmt
+    (70) if_stmt -> . IF expr THEN stmt ELSE stmt
+    (71) while_stmt -> . WHILE expr DO stmt
+    (72) write_stmt -> . WRITELN LPAREN expr_list RPAREN
+    (49) block -> . BEGIN block_enter stmt_list END
+
+    NEW             shift and go to state 70
+    DISPOSE         shift and go to state 72
+    ID              shift and go to state 73
+    ELSE            reduce using rule 62 (stmt -> .)
+    END             reduce using rule 62 (stmt -> .)
+    SEMICOLON       reduce using rule 62 (stmt -> .)
+    error           shift and go to state 79
+    IF              shift and go to state 80
+    WHILE           shift and go to state 81
+    WRITELN         shift and go to state 82
+    BEGIN           shift and go to state 35
+
+    stmt                           shift and go to state 199
+    variable                       shift and go to state 71
+    assign_stmt                    shift and go to state 74
+    if_stmt                        shift and go to state 75
+    while_stmt                     shift and go to state 76
+    write_stmt                     shift and go to state 77
+    block                          shift and go to state 78
+
+state 197
+
+    (92) factor -> ID LPAREN expr_list RPAREN .
+
+    TIMES           reduce using rule 92 (factor -> ID LPAREN expr_list RPAREN .)
+    DIVIDE          reduce using rule 92 (factor -> ID LPAREN expr_list RPAREN .)
+    AND             reduce using rule 92 (factor -> ID LPAREN expr_list RPAREN .)
+    PLUS            reduce using rule 92 (factor -> ID LPAREN expr_list RPAREN .)
+    MINUS           reduce using rule 92 (factor -> ID LPAREN expr_list RPAREN .)
+    OR              reduce using rule 92 (factor -> ID LPAREN expr_list RPAREN .)
+    EQ              reduce using rule 92 (factor -> ID LPAREN expr_list RPAREN .)
+    NE              reduce using rule 92 (factor -> ID LPAREN expr_list RPAREN .)
+    LT              reduce using rule 92 (factor -> ID LPAREN expr_list RPAREN .)
+    LE              reduce using rule 92 (factor -> ID LPAREN expr_list RPAREN .)
+    GT              reduce using rule 92 (factor -> ID LPAREN expr_list RPAREN .)
+    GE              reduce using rule 92 (factor -> ID LPAREN expr_list RPAREN .)
+    THEN            reduce using rule 92 (factor -> ID LPAREN expr_list RPAREN .)
+    DO              reduce using rule 92 (factor -> ID LPAREN expr_list RPAREN .)
+    RBRACKET        reduce using rule 92 (factor -> ID LPAREN expr_list RPAREN .)
+    COMMA           reduce using rule 92 (factor -> ID LPAREN expr_list RPAREN .)
+    END             reduce using rule 92 (factor -> ID LPAREN expr_list RPAREN .)
+    SEMICOLON       reduce using rule 92 (factor -> ID LPAREN expr_list RPAREN .)
+    ELSE            reduce using rule 92 (factor -> ID LPAREN expr_list RPAREN .)
+    RPAREN          reduce using rule 92 (factor -> ID LPAREN expr_list RPAREN .)
+
+
+state 198
+
+    (24) sub_header -> FUNCTION ID LPAREN params RPAREN COLON type . SEMICOLON
+
+    SEMICOLON       shift and go to state 200
+
+
+state 199
+
+    (70) if_stmt -> IF expr THEN stmt ELSE stmt .
+
+    END             reduce using rule 70 (if_stmt -> IF expr THEN stmt ELSE stmt .)
+    SEMICOLON       reduce using rule 70 (if_stmt -> IF expr THEN stmt ELSE stmt .)
+    ELSE            reduce using rule 70 (if_stmt -> IF expr THEN stmt ELSE stmt .)
+
+
+state 200
+
+    (24) sub_header -> FUNCTION ID LPAREN params RPAREN COLON type SEMICOLON .
+
+    VAR             reduce using rule 24 (sub_header -> FUNCTION ID LPAREN params RPAREN COLON type SEMICOLON .)
+    BEGIN           reduce using rule 24 (sub_header -> FUNCTION ID LPAREN params RPAREN COLON type SEMICOLON .)
 

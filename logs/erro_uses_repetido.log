@@ -1,0 +1,15 @@
+Código de saída: 1
+
+Erro semântico (linha 2): unidade 'crt' já foi importada em 'uses'.
+
+UNIDADES (uses): crt, math
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo  offset  linha 
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

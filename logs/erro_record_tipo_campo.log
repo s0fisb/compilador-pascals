@@ -1,0 +1,17 @@
+Código de saída: 1
+
+Erro semântico (linha 10): atribuição incompatível: 'p.idade' é integer, mas a expressão é real.
+Compilação abortada no primeiro erro de tipo.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo           offset  linha 
+  Pessoa            type = Pessoa  -       3     
+  p                 Pessoa         0       7     
+  r                 real           12      7     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

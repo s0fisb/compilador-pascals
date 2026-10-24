@@ -15,10 +15,16 @@ reserved = {
     "begin": "BEGIN", "end": "END", "if": "IF", "then": "THEN", "else": "ELSE",
     "while": "WHILE", "do": "DO", "writeln": "WRITELN",
     "not": "NOT", "and": "AND", "or": "OR",
+    "boolean": "BOOLEAN", "true": "TRUE", "false": "FALSE",
+    "array": "ARRAY", "of": "OF",
+    "uses": "USES", "type": "TYPE", "record": "RECORD",
+    "function": "FUNCTION", "procedure": "PROCEDURE", "string": "STRINGTYPE",
+    "nil": "NIL", "new": "NEW", "dispose": "DISPOSE",
 }
 
 tokens = [
-    "ID", "NUM_INT", "NUM_REAL", "ASSIGN", "COLON", "SEMICOLON", "COMMA", "DOT",
+    "ID", "NUM_INT", "NUM_REAL", "STRING", "ASSIGN", "COLON", "SEMICOLON", "COMMA", "DOT", "DOTDOT",
+    "LBRACKET", "RBRACKET", "CARET",
     "LPAREN", "RPAREN", "PLUS", "MINUS", "TIMES", "DIVIDE",
     "EQ", "NE", "LT", "LE", "GT", "GE",
 ] + list(reserved.values())
@@ -29,7 +35,11 @@ t_ASSIGN = r":="
 t_COLON = r":"
 t_SEMICOLON = r";"
 t_COMMA = r","
+t_DOTDOT = r"\.\."   # o PLY ordena por tamanho da regex: ".." vence "."
 t_DOT = r"\."
+t_LBRACKET = r"\["
+t_RBRACKET = r"\]"
+t_CARET = r"\^"
 t_LPAREN = r"\("
 t_RPAREN = r"\)"
 t_PLUS = r"\+"
@@ -76,6 +86,12 @@ def t_COMMENT_UNCLOSED(t):
 
 # Números, identificadores, quebra de linha
  
+def t_STRING(t):
+    r"'([^'\n]|'')*'"
+    t.value = t.value[1:-1].replace("''", "'")      # '' dentro da string = aspas literal
+    return t
+
+
 def t_NUM_REAL(t):
     r"\d+\.\d+"
     t.value = float(t.value)

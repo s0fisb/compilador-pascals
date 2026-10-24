@@ -1,0 +1,20 @@
+Código de saída: 1
+
+Erro semântico (linha 8): 'soma' espera 2 argumento(s), mas recebeu 1.
+Erro semântico (linha 9): 'soma' espera 2 argumento(s), mas recebeu 3.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo                                 offset  linha 
+  n                 integer                              0       2     
+  soma              function(integer, integer): integer  -       3     
+[escopo 'func soma' nivel 1]
+  nome              tipo     offset  linha 
+  a                 integer  0       3     
+  b                 integer  4       3     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 2
+
+Resultado: FALHA

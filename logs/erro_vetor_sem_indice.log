@@ -1,0 +1,16 @@
+Código de saída: 1
+
+Erro semântico (linha 6): atribuição incompatível: 'n' é integer, mas a expressão é array[1..5] of integer.
+Compilação abortada no primeiro erro de tipo.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo                    offset  linha 
+  v                 array[1..5] of integer  0       3     
+  n                 integer                 20      4     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

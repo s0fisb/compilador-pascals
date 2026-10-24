@@ -1,0 +1,16 @@
+Código de saída: 1
+
+Erro semântico (linha 8): operandos incompatíveis para '+' (real e boolean); não há conversão implícita entre tipos distintos.
+Compilação abortada no primeiro erro de tipo.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo     offset  linha 
+  b                 boolean  0       3     
+  r                 real     1       4     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

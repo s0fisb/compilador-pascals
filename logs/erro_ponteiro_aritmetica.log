@@ -1,0 +1,16 @@
+Código de saída: 1
+
+Erro semântico (linha 6): operador '+' inválido para ponteiros (^integer e integer); só = e <> entre ponteiros compatíveis ou nil.
+Compilação abortada no primeiro erro de tipo.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo      offset  linha 
+  p                 ^integer  0       2     
+  n                 integer   8       3     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

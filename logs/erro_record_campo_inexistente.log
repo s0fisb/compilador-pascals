@@ -1,0 +1,19 @@
+Código de saída: 1
+
+Erro semântico (linha 10): o registro 'p' (Pessoa) não possui o campo 'peso'.
+Erro semântico (linha 11): o registro 'p' (Pessoa) não possui o campo 'altura'.
+Erro semântico (linha 12): 'n' é integer e não é um registro; não possui campo 'x'.
+Compilação abortada no primeiro erro de tipo.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo           offset  linha 
+  Pessoa            type = Pessoa  -       3     
+  p                 Pessoa         0       7     
+  n                 integer        12      8     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 3
+
+Resultado: FALHA
