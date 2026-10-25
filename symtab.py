@@ -139,8 +139,10 @@ class Symbol:
         self.scope = scope          # SymbolTable onde a entrada vive
         self.offset = None          # deslocamento relativo no escopo
         self.declared = False       # True após aparecer em um `var`
-        self.kind = "var"           # 'var' | 'type' | 'func' | 'proc'
+        self.kind = "var"           # 'var' | 'const' | 'type' | 'func' | 'proc'
         self.params = []            # tipos dos parâmetros (func/proc)
+        self.refs = []              # True para parâmetro por referência (var), alinhado a params
+        self.value = None           # valor da constante (kind == 'const')
 
     def __repr__(self):
         if not self.declared:
@@ -257,11 +259,17 @@ class ScopeManager:
             rows = []
             for s in declared:
                 if s.kind in ("func", "proc"):
-                    desc = f"{'function' if s.kind == 'func' else 'procedure'}({', '.join(map(str, s.params))})"
+                    refs = s.refs or [False] * len(s.params)
+                    plist = ", ".join(("var " if r else "") + str(t) for t, r in zip(s.params, refs))
+                    desc = f"{'function' if s.kind == 'func' else 'procedure'}({plist})"
                     if s.kind == "func":
                         desc += f": {s.type}"
                 elif s.kind == "type":
                     desc = f"type = {s.type}"
+                elif s.kind == "const":
+                    v = s.value
+                    v = ("true" if v else "false") if s.type == "boolean" else (f"'{v}'" if s.type == "string" else v)
+                    desc = f"const {s.type} = {v}"
                 else:
                     desc = str(s.type)
                 rows.append((s.name, desc, "-" if s.offset is None else s.offset, s.lineno))

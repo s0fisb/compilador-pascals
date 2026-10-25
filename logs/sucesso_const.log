@@ -1,0 +1,22 @@
+Código de saída: 0
+
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo                     offset  linha 
+  MAX               const integer = 10       -       3     
+  PI                const real = 3.14        -       4     
+  NEG               const integer = -4       -       5     
+  NOME              const string = 'Ana'     -       6     
+  ATIVO             const boolean = true     -       7     
+  OUTRO             const integer = 10       -       8     
+  v                 array[1..10] of integer  0       10    
+  i                 integer                  40      11    
+  r                 real                     44      12    
+  s                 string                   52      13    
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 0
+
+Resultado: SUCESSO

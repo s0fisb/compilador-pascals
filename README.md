@@ -30,7 +30,7 @@ Código de saída: `0` = sucesso; `1` = houve erro léxico, sintático ou semân
 | `testes/` | Programas de entrada (sucesso, erro léxico, sintático e semântico) |
 | `logs/` | Saída do compilador para cada teste |
 | `parser.out` | Tabelas LALR geradas pelo PLY (usado na análise de conflitos) |
-| `relatorio_tecnico.pdf` | Relatório técnico |
+| `relatorio_compiladores.pdf` | Relatório técnico |
 
 ## Decisões principais
 
@@ -45,12 +45,20 @@ Código de saída: `0` = sucesso; `1` = houve erro léxico, sintático ou semân
 - **`uses`:** `uses crt, math;` registra as unidades (repetição é erro) e lista no log. Não há biblioteca real por trás.
 - **`type` / `record`:** `type Pessoa = record nome: string; idade: integer end;`, aliases (`type Notas = array[1..3] of real`),
   registro anônimo em `var`, acesso `p.idade` (inclusive aninhado e combinado com `[ ]`). Verifica campo inexistente,
-  campo repetido, tipo não declarado e tipo do campo na atribuição/operadores. Registros são comparados estruturalmente.
+  campo repetido, tipo não declarado e tipo do campo na atribuição/operadores. Registros nomeados são equivalentes por nome; os anônimos, por estrutura.
 - **`string`:** tipo e literais `'texto'`; `+` concatena e `=`/`<>` comparam; misturar com outros tipos é erro.
 - **`function` / `procedure`:** parâmetros por valor, retorno por `nome := valor` dentro da função, recursão, locais em
   ambiente filho (a tabela de símbolos mostra um escopo por subprograma). Verifica número e tipo dos argumentos, tipo do
   retorno, procedimento usado como valor e função/procedimento não declarado. Chamada sem parênteses é aceita para `f` sem parâmetros.
-  Limitação: sem parâmetros `var` (por referência) e sem subprogramas aninhados.
+  Parâmetros por referência (`var x: integer`) exigem como argumento uma **variável** (inclusive `v[i]` e `p.campo`) de tipo
+  idêntico; constante, literal ou expressão é erro (o parser roda com `tracking=True` para reconhecer variável pura).
+  Limitação: sem subprogramas aninhados.
+- **`const`:** `const MAX = 10; PI = 3.14; NOME = 'Ana'; ATIVO = true; NEG = -4; OUTRO = MAX;` O tipo vem do valor; constante
+  não pode receber atribuição nem ser variável de `for` ou argumento `var`; constante inteira serve de limite de vetor
+  (`array[1..MAX]`) e, como índice, tem o valor checado contra os limites. As constantes são aceitas no escopo global.
+- **`for` / `repeat`:** `for i := a to b do ...` e `downto` (variável de controle e limites devem ser `integer`);
+  `repeat ... until cond` (condição `boolean`).
+- **`div` / `mod`:** exigem dois operandos `integer` e devolvem `integer`; `/` continua exigindo o mesmo tipo numérico nos dois lados.
 - **Ponteiros:** `^tipo`, desreferência `p^` (encadeável: `p^.prox^.valor`), `nil`, `new(p)` e `dispose(p)`.
   Ponteiros só são compatíveis com o mesmo tipo-alvo ou `nil`; aritmética e `<`/`>` em ponteiros é erro; `new`/`dispose`
   em não-ponteiro é erro. Aceita referência adiante (`PNo = ^No; No = record ... prox: PNo end`), resolvida via ponteiro
@@ -60,15 +68,13 @@ Código de saída: `0` = sucesso; `1` = houve erro léxico, sintático ou semân
 - **Tipagem forte:** `integer`, `real` e `boolean` são tipos distintos, sem nenhuma coerção entre eles.
   `boolean` é declarável (`var b : boolean`) e tem as constantes `true`/`false`; relacionais produzem `boolean`, exigido por `if`, `while`, `and`, `or` e `not`. `None` marca subexpressão
   já com erro, para não gerar mensagens em cascata.
-- **Conflitos:** mesmo com as extensões (boolean, vetor, record, uses, subprogramas), o único conflito shift/reduce é o do `else` pendente (estado 77 do `parser.out`),
-  resolvido como *shift* por precedência (`IFX < ELSE`).
-- **Modo pânico:** descarta tokens até `;` **ou `end`**. O `end` foi acrescentado porque o último
-  comando de um bloco não termina em `;` (ver `testes/sync_end.pas`).
+- **Conflitos:** mesmo com as extensões (boolean, vetor, record, uses, subprogramas, const, for, repeat, div/mod, parâmetros `var`), o conflito shift/reduce registrado é o do `else` pendente (estado 209 do `parser.out`, regras 84 e 85),
+  resolvido como *shift* por precedência (`IFX < ELSE`). O arquivo `parser.out` desta versão contém 124 regras numeradas de 0 a 123 e 247 estados numerados de 0 a 246.
+- **Modo pânico:** descarta tokens até `;`, `end` **ou `until`**. O `end` e o `until` foram acrescentados porque o último
+  comando de um bloco (ou de um `repeat`) não termina em `;` (ver `testes/sync_end.pas`).
   Se o parser voltar a falhar no mesmo token (ex.: `else` solto, que não é sincronizador), ele é
   descartado para evitar loop infinito (ver `testes/erro_else_solto.pas`).
 
 
-## Testes
 
-`sucesso_*` devem terminar com `Resultado: SUCESSO`; `erro_*` e demais, com `FALHA` e código 1.
-Os três cenários obrigatórios do enunciado são `sucesso_semantico.pas`, `erro_lexico.pas` e `erro_tipo.pas`.
+

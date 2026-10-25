@@ -1,0 +1,15 @@
+Código de saída: 1
+
+Erro semântico (linha 7): índice 9 fora dos limites [1..5] de 'v'.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo                    offset  linha 
+  K                 const integer = 9       -       3     
+  v                 array[1..5] of integer  0       5     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

@@ -18,6 +18,7 @@ lexer = None
 stream = None
 PARSER = None
 errors = []
+var_spans = {}          # (início, fim) no fonte -> Var, para saber se um argumento é uma variável pura
 units = []
 pointer_ctx = 0          # >0 enquanto se analisa o alvo de um ^ (permite referência adiante)
 forward_refs = []
@@ -27,7 +28,7 @@ semantic_errors = 0
 last_error_pos = None
 
 # Sincronizadores do modo pânico: ';' e 'end' (para o último comando do bloco, que não termina com ';')
-SYNC_TOKENS = {"SEMICOLON", "END"}
+SYNC_TOKENS = {"SEMICOLON", "END", "UNTIL"}
 
 NUMERIC = ("integer", "real")
 RELOPS = {"=", "<>", "<", "<=", ">", ">="}
@@ -61,6 +62,11 @@ class Var:
         self.plain = plain                    # True = identificador puro (sem [ ] nem .campo)
 
 
+class ArgList(list):
+    """Lista de tipos de uma expr_list, com a posição (no fonte) de cada expressão."""
+    spans = ()
+
+
 class CompilationAbort(Exception):
     pass
 
@@ -89,6 +95,11 @@ def compatible(formal, actual):
 
 def check_operands(op, t1, t2, lineno):
     if t1 is None or t2 is None:
+        return None
+    if op in ("div", "mod"):
+        if t1 == "integer" and t2 == "integer":
+            return "integer"
+        semantic_error(f"o operador '{op}' exige operandos integer (recebeu {t1} e {t2}).", lineno, fatal=True)
         return None
     if op in ("and", "or"):
         if t1 == "boolean" and t2 == "boolean":
@@ -132,6 +143,16 @@ def check_call(sym, args, lineno):
         semantic_error(f"'{sym.name}' espera {len(sym.params)} argumento(s), mas recebeu {len(args)}.", lineno)
         return sym.type if sym.kind == "func" else None
     for i, (formal, actual) in enumerate(zip(sym.params, args), 1):
+        if i <= len(sym.refs) and sym.refs[i - 1]:               # parâmetro por referência (var)
+            span = args.spans[i - 1] if len(getattr(args, "spans", ())) >= i else None
+            v = var_spans.get(span)
+            if v is None:
+                semantic_error(f"argumento {i} de '{sym.name}': parâmetro 'var' exige uma variável "
+                               f"(não aceita constante, literal nem expressão).", lineno, fatal=True)
+            if formal is not None and actual is not None and formal != actual:
+                semantic_error(f"argumento {i} de '{sym.name}': parâmetro 'var' exige tipo idêntico "
+                               f"(esperado {formal}, recebido {actual}).", lineno, fatal=True)
+            continue
         if not compatible(formal, actual):
             semantic_error(f"argumento {i} de '{sym.name}': esperado {formal}, recebido {actual}; "
                            f"não há conversão implícita.", lineno, fatal=True)
@@ -141,12 +162,12 @@ def check_call(sym, args, lineno):
 # Programa e declarações
  
 def p_program(p):
-    "program : PROGRAM ID SEMICOLON uses_opt type_opt decl_list subprogram_list block DOT"
+    "program : PROGRAM ID SEMICOLON uses_opt const_opt type_opt decl_list subprogram_list block DOT"
     p[0] = True
 
 
 def p_program_error(p):
-    "program : PROGRAM error SEMICOLON uses_opt type_opt decl_list subprogram_list block DOT"
+    "program : PROGRAM error SEMICOLON uses_opt const_opt type_opt decl_list subprogram_list block DOT"
     PARSER.errok()
 
 
@@ -172,6 +193,75 @@ def p_unit_list_one(p):
 def p_unit_list_more(p):
     "unit_list : unit_list COMMA ID"
     p[0] = p[1] + [(p[3].name, p.lineno(3))]
+
+
+# const (constantes nomeadas)
+def p_const_opt_empty(p):
+    "const_opt :"
+
+
+def p_const_opt(p):
+    "const_opt : CONST const_decl_list"
+
+
+def p_const_decl_list_one(p):
+    "const_decl_list : const_decl"
+
+
+def p_const_decl_list_more(p):
+    "const_decl_list : const_decl_list const_decl"
+
+
+def p_const_decl(p):
+    "const_decl : ID EQ const_value SEMICOLON"
+    sym, (t, val) = p[1], p[3]
+    d = symtab.declare(sym, t, p.lineno(1), kind="const")
+    if d is None:
+        semantic_error(f"'{sym.name}' declarado mais de uma vez no mesmo escopo "
+                       f"(1ª declaração na linha {sym.lineno}).", p.lineno(1))
+    else:
+        d.value = val
+
+
+def p_const_value_int(p):
+    "const_value : NUM_INT"
+    p[0] = ("integer", p[1])
+
+
+def p_const_value_real(p):
+    "const_value : NUM_REAL"
+    p[0] = ("real", p[1])
+
+
+def p_const_value_string(p):
+    "const_value : STRING"
+    p[0] = ("string", p[1])
+
+
+def p_const_value_bool(p):
+    """const_value : TRUE
+                   | FALSE"""
+    p[0] = ("boolean", p[1].lower() == "true")
+
+
+def p_const_value_neg_int(p):
+    "const_value : MINUS NUM_INT"
+    p[0] = ("integer", -p[2])
+
+
+def p_const_value_neg_real(p):
+    "const_value : MINUS NUM_REAL"
+    p[0] = ("real", -p[2])
+
+
+def p_const_value_name(p):
+    "const_value : ID"
+    sym = p[1]
+    if sym.declared and sym.kind == "const":
+        p[0] = (sym.type, sym.value)
+    else:
+        semantic_error(f"'{sym.name}' não é uma constante declarada.", p.lineno(1))
+        p[0] = (None, None)
 
 
 # type (tipos nomeados / registros)
@@ -292,10 +382,11 @@ def begin_subprogram(kind, sym, params, ret, line):
         d.kind, d.declared = kind, True
     if kind == "func" and isinstance(ret, (ArrayType, RecordType)):
         semantic_error(f"função '{sym.name}' não pode retornar vetor ou registro.", line)
-    d.params = [t for _, t, _ in params]
+    d.params = [t for _, t, _, _ in params]
+    d.refs = [r for _, _, _, r in params]
     symtab.enter_scope(name=f"{kind} {sym.name}")
     func_stack.append(d)
-    for psym, ptype, pline in params:
+    for psym, ptype, pline, _ in params:
         if symtab.declare(psym, ptype, pline) is None:
             semantic_error(f"parâmetro '{psym.name}' repetido em '{sym.name}'.", pline)
 
@@ -332,7 +423,12 @@ def p_params_more(p):
 
 def p_param_group(p):
     "param_group : id_list COLON type"
-    p[0] = [(sym, p[3], line) for sym, line in p[1]]
+    p[0] = [(sym, p[3], line, False) for sym, line in p[1]]
+
+
+def p_param_group_ref(p):
+    "param_group : VAR id_list COLON type"
+    p[0] = [(sym, p[4], line, True) for sym, line in p[2]]
 
 
 def p_decl_list_empty(p):
@@ -394,6 +490,9 @@ def p_type_array(p):
     "type : ARRAY LBRACKET range_list RBRACKET OF type"
     t = p[6]
     for lo, hi, line in reversed(p[3]):          # a última dimensão é a mais interna
+        if lo is None or hi is None:             # limite inválido já reportado: sem cascata
+            t = None
+            break
         if lo > hi:
             semantic_error(f"limites inválidos no vetor: {lo}..{hi} (inferior > superior).", line)
         t = ArrayType(lo, hi, t)
@@ -418,6 +517,17 @@ def p_range(p):
 def p_bound_pos(p):
     "bound : NUM_INT"
     p[0] = p[1]
+
+
+def p_bound_const(p):
+    "bound : ID"
+    sym = p[1]
+    if sym.declared and sym.kind == "const" and sym.type == "integer":
+        p[0] = sym.value
+    else:
+        semantic_error(f"limite de vetor deve ser inteiro literal ou constante inteira ('{sym.name}' não é).",
+                       p.lineno(1))
+        p[0] = None
 
 
 def p_bound_neg(p):
@@ -540,6 +650,8 @@ def p_assign_stmt(p):
         semantic_error(f"variável '{var.symbol.name}' usada em atribuição sem declaração.", var.lineno)
     elif kind == "type":
         semantic_error(f"'{var.symbol.name}' é um tipo e não pode receber atribuição.", var.lineno)
+    elif kind == "const" and var.plain:
+        semantic_error(f"'{var.symbol.name}' é uma constante e não pode receber atribuição.", var.lineno)
     elif kind in ("func", "proc") and not (kind == "func" and var.plain and func_stack and func_stack[-1] is var.symbol):
         semantic_error(f"não é possível atribuir a '{var.symbol.name}': só se atribui ao nome da função "
                        f"dentro do seu próprio corpo.", var.lineno)
@@ -621,6 +733,36 @@ def p_while_stmt(p):
     check_condition("while", p[2], p.lineno(1))
 
 
+def p_stmt_for_repeat(p):
+    """stmt : for_stmt
+            | repeat_stmt"""
+    p[0] = None
+
+
+def p_for_stmt(p):
+    """for_stmt : FOR ID ASSIGN expr TO expr DO stmt
+                | FOR ID ASSIGN expr DOWNTO expr DO stmt"""
+    sym, line = p[2], p.lineno(1)
+    if not sym.declared:
+        semantic_error(f"variável de controle '{sym.name}' do 'for' usada sem declaração.", line)
+    elif sym.kind != "var":
+        semantic_error(f"'{sym.name}' não pode ser variável de controle do 'for' "
+                       f"({'constante' if sym.kind == 'const' else sym.kind}).", line)
+    elif sym.type != "integer":
+        semantic_error(f"a variável de controle '{sym.name}' do 'for' deve ser integer (é {sym.type}).",
+                       line, fatal=True)
+    for nome, t in (("inicial", p[4]), ("final", p[6])):
+        if t is not None and t != "integer":
+            semantic_error(f"o valor {nome} do 'for' deve ser integer (recebeu {t}).", line, fatal=True)
+    p[0] = None
+
+
+def p_repeat_stmt(p):
+    "repeat_stmt : REPEAT stmt_list UNTIL expr"
+    check_condition("repeat", p[4], p.lineno(3))
+    p[0] = None
+
+
 def p_write_stmt(p):
     "write_stmt : WRITELN LPAREN expr_list RPAREN"
     for t in p[3]:
@@ -631,12 +773,16 @@ def p_write_stmt(p):
 
 def p_expr_list_one(p):
     "expr_list : expr"
-    p[0] = [p[1]]
+    a = ArgList([p[1]])
+    a.spans = [p.lexspan(1)]
+    p[0] = a
 
 
 def p_expr_list_more(p):
     "expr_list : expr_list COMMA expr"
-    p[0] = p[1] + [p[3]]
+    a = ArgList(list(p[1]) + [p[3]])
+    a.spans = list(p[1].spans) + [p.lexspan(3)]
+    p[0] = a
 
 
  
@@ -685,6 +831,8 @@ def p_term_factor(p):
 def p_term_binary(p):
     """term : term TIMES factor
             | term DIVIDE factor
+            | term DIV factor
+            | term MOD factor
             | term AND factor"""
     p[0] = check_operands(p[2].lower(), p[1], p[3], p.lineno(2))
 
@@ -704,7 +852,11 @@ def p_factor_var(p):
         semantic_error(f"o procedimento '{v.symbol.name}' não retorna valor e não pode ser usado em expressão.",
                        v.lineno, fatal=True)
         p[0] = None
+    elif v.plain and v.symbol.kind == "const":
+        p[0] = ConstInt(v.symbol.value) if v.symbol.type == "integer" else v.symbol.type
     else:
+        if v.symbol.kind == "var":
+            var_spans[p.lexspan(1)] = v                       # argumento var só aceita variável pura
         p[0] = v.type
 
 
@@ -812,6 +964,7 @@ def run_file(path):
     symtab = ScopeManager()
     errors, syntax_errors, semantic_errors = [], 0, 0
     units.clear()
+    var_spans.clear()
     forward_refs.clear()
     pointer_ctx = 0
     func_stack.clear()
@@ -822,7 +975,7 @@ def run_file(path):
     stream = TokenStream(lexer)
     PARSER = yacc.yacc(start=start, debug=True, write_tables=False, errorlog=yacc.NullLogger())
     try:
-        PARSER.parse(source, lexer=lexer, tokenfunc=stream.getNextToken)
+        PARSER.parse(source, lexer=lexer, tokenfunc=stream.getNextToken, tracking=True)
         for fr in forward_refs:                      # alvos de ponteiro que nunca foram declarados
             if not fr.resolved():
                 semantic_error(f"tipo '{fr.sym.name}' (alvo de ponteiro) não declarado.", fr.lineno)

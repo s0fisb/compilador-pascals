@@ -1,0 +1,15 @@
+Código de saída: 1
+
+Erro semântico (linha 4): 'MAX' declarado mais de uma vez no mesmo escopo (1ª declaração na linha 3).
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo                offset  linha 
+  MAX               const integer = 10  -       3     
+  n                 integer             0       6     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

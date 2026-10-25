@@ -20,6 +20,8 @@ reserved = {
     "uses": "USES", "type": "TYPE", "record": "RECORD",
     "function": "FUNCTION", "procedure": "PROCEDURE", "string": "STRINGTYPE",
     "nil": "NIL", "new": "NEW", "dispose": "DISPOSE",
+    "div": "DIV", "mod": "MOD", "for": "FOR", "to": "TO", "downto": "DOWNTO",
+    "repeat": "REPEAT", "until": "UNTIL", "const": "CONST",
 }
 
 tokens = [

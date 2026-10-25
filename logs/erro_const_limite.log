@@ -1,0 +1,15 @@
+Código de saída: 1
+
+Erro semântico (linha 5): limite de vetor deve ser inteiro literal ou constante inteira ('PI' não é).
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo               offset  linha 
+  PI                const real = 3.14  -       3     
+  v                 None               0       5     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

@@ -1,0 +1,18 @@
+Código de saída: 1
+
+Erro semântico (linha 7): argumento 1 de 'inc': parâmetro 'var' exige uma variável (não aceita constante, literal nem expressão).
+Compilação abortada no primeiro erro de tipo.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo                    offset  linha 
+  inc               procedure(var integer)  -       2     
+[escopo 'proc inc' nivel 1]
+  nome              tipo     offset  linha 
+  x                 integer  0       2     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA
