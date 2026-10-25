@@ -23,6 +23,7 @@ units = []
 pointer_ctx = 0          # >0 enquanto se analisa o alvo de um ^ (permite referência adiante)
 forward_refs = []
 func_stack = []        # subprogramas em análise (para permitir "f := valor" dentro de f)
+case_stack = []        # um contexto (tipo do seletor e rótulos já vistos) por case em análise
 syntax_errors = 0
 semantic_errors = 0
 last_error_pos = None
@@ -763,6 +764,90 @@ def p_repeat_stmt(p):
     p[0] = None
 
 
+def p_case_head(p):
+    "case_head : CASE expr OF"
+    t = p[2]
+    if t is not None and t not in ("integer", "boolean"):
+        semantic_error(f"a expressão do 'case' deve ser ordinal (integer ou boolean), mas é {t}.",
+                       p.lineno(1), fatal=True)
+    case_stack.append({"type": None if t is None else str(t), "seen": {}})
+
+
+def p_stmt_case(p):
+    "stmt : case_stmt"
+    p[0] = None
+
+
+def p_case_stmt(p):
+    """case_stmt : case_head case_list END
+                 | case_head case_list SEMICOLON END
+                 | case_head case_list case_else END
+                 | case_head case_list SEMICOLON case_else END"""
+    case_stack.pop()
+    p[0] = None
+
+
+def p_case_else(p):
+    """case_else : ELSE stmt
+                 | ELSE stmt SEMICOLON"""
+    p[0] = None
+
+
+def p_case_list_one(p):
+    "case_list : case_item"
+    p[0] = None
+
+
+def p_case_list_more(p):
+    "case_list : case_list SEMICOLON case_item"
+    p[0] = None
+
+
+def p_case_item(p):
+    "case_item : case_labels stmt"
+    p[0] = None
+
+
+def p_case_item_error(p):
+    "case_item : error"
+    PARSER.errok()
+    print("Recuperação sintática: análise retomada no sincronizador.")
+    p[0] = None
+
+
+def p_case_labels(p):
+    "case_labels : label_list COLON"
+    ctx = case_stack[-1]
+    sel = ctx["type"]
+    for (t, val), line in p[1]:
+        if t is None or sel is None:
+            continue
+        if t != sel:
+            semantic_error(f"o rótulo do 'case' é {t}, mas a expressão é {sel}; "
+                           f"não há conversão implícita.", line, fatal=True)
+        shown = str(val).lower() if t == "boolean" else val
+        if val in ctx["seen"]:
+            semantic_error(f"rótulo {shown} repetido no 'case' (1ª ocorrência na linha {ctx['seen'][val]}).", line)
+        else:
+            ctx["seen"][val] = line
+    p[0] = None
+
+
+def p_label_list_one(p):
+    "label_list : case_label"
+    p[0] = [p[1]]
+
+
+def p_label_list_more(p):
+    "label_list : label_list COMMA case_label"
+    p[0] = p[1] + [p[3]]
+
+
+def p_case_label(p):
+    "case_label : const_value"
+    p[0] = (p[1], p.lineno(1))
+
+
 def p_write_stmt(p):
     "write_stmt : WRITELN LPAREN expr_list RPAREN"
     for t in p[3]:
@@ -968,6 +1053,7 @@ def run_file(path):
     forward_refs.clear()
     pointer_ctx = 0
     func_stack.clear()
+    case_stack.clear()
     last_error_pos = None
     with open(path, encoding="utf-8") as source_file:
         source = source_file.read()
