@@ -1,0 +1,16 @@
+Código de saída: 1
+
+Erro semântico (linha 8): 'm' não é uma constante declarada.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo     offset  linha 
+  n                 integer  0       3     
+  m                 integer  4       3     
+  y                 integer  8       3     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

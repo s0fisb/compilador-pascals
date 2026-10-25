@@ -1,0 +1,16 @@
+Código de saída: 0
+
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo               offset  linha 
+  LIMITE            const integer = 4  -       3     
+  op                integer            0       5     
+  total             integer            4       5     
+  ativo             boolean            8       6     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 0
+
+Resultado: SUCESSO
