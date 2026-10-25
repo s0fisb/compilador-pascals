@@ -1,0 +1,17 @@
+Código de saída: 1
+
+Erro semântico (linha 8): o operador 'div' exige operandos integer (recebeu integer e real).
+Compilação abortada no primeiro erro de tipo.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo     offset  linha 
+  a                 integer  0       3     
+  q                 integer  4       3     
+  x                 real     8       4     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

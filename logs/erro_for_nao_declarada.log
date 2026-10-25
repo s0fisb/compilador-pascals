@@ -1,0 +1,14 @@
+Código de saída: 1
+
+Erro semântico (linha 4): variável 'k' usada sem declaração.
+Erro semântico (linha 3): variável de controle 'k' do 'for' usada sem declaração.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo  offset  linha 
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 2
+
+Resultado: FALHA

@@ -1,0 +1,40 @@
+Código de saída: 0
+
+
+UNIDADES (uses): crt, math
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo                        offset  linha 
+  Pessoa            type = Pessoa               -       4     
+  Notas             type = array[1..3] of real  -       9     
+  p                 Pessoa                      0       11    
+  q                 Pessoa                      20      11    
+  n                 array[1..3] of real         40      12    
+  total             real                        64      13    
+  i                 integer                     72      14    
+  dobro             function(integer): integer  -       16    
+  media             function(real, real): real  -       21    
+  fat               function(integer): integer  -       26    
+  mostra            procedure(Pessoa, string)   -       31    
+[escopo 'func dobro' nivel 1]
+  nome              tipo     offset  linha 
+  x                 integer  0       16    
+[escopo 'func media' nivel 1]
+  nome              tipo  offset  linha 
+  a                 real  0       21    
+  b                 real  8       21    
+[escopo 'func fat' nivel 1]
+  nome              tipo     offset  linha 
+  k                 integer  0       26    
+[escopo 'proc mostra' nivel 1]
+  nome              tipo     offset  linha 
+  r                 Pessoa   0       31    
+  t                 string   20      31    
+  aux               integer  28      33    
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 0
+
+Resultado: SUCESSO

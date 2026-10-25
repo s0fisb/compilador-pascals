@@ -1,0 +1,19 @@
+Código de saída: 1
+
+Erro semântico (linha 9): argumento 1 de 'inc': parâmetro 'var' exige tipo idêntico (esperado integer, recebido real).
+Compilação abortada no primeiro erro de tipo.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo                    offset  linha 
+  r                 real                    0       2     
+  inc               procedure(var integer)  -       3     
+[escopo 'proc inc' nivel 1]
+  nome              tipo     offset  linha 
+  x                 integer  0       3     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

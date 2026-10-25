@@ -5,8 +5,8 @@ Erro sintático [linha 2, coluna 7]: token inesperado INTEGER ('integer').
 
 TABELA DE SIMBOLOS
 [escopo 'global' nivel 0]
-  nome              tipo     offset  linha 
-  y                 real     0       3     
+  nome              tipo  offset  linha 
+  y                 real  0       3     
 
 Erros léxicos: 0
 Erros sintáticos: 1

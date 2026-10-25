@@ -1,0 +1,16 @@
+Código de saída: 1
+
+Erro semântico (linha 6): atribuição incompatível: 'q' é ^real, mas a expressão é ^integer.
+Compilação abortada no primeiro erro de tipo.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo      offset  linha 
+  p                 ^integer  0       2     
+  q                 ^real     8       3     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

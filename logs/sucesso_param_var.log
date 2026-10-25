@@ -1,0 +1,33 @@
+Código de saída: 0
+
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo                                 offset  linha 
+  Pessoa            type = Pessoa                        -       3     
+  a                 integer                              0       8     
+  b                 integer                              4       8     
+  v                 array[1..3] of integer               8       9     
+  p                 Pessoa                               20      10    
+  r                 real                                 32      11    
+  troca             procedure(var integer, var integer)  -       13    
+  dobra             procedure(var real, integer)         -       21    
+  soma_e_zera       function(var integer): integer       -       27    
+[escopo 'proc troca' nivel 1]
+  nome              tipo     offset  linha 
+  x                 integer  0       13    
+  y                 integer  4       13    
+  t                 integer  8       14    
+[escopo 'proc dobra' nivel 1]
+  nome              tipo     offset  linha 
+  z                 real     0       21    
+  k                 integer  8       21    
+[escopo 'func soma_e_zera' nivel 1]
+  nome              tipo     offset  linha 
+  n                 integer  0       27    
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 0
+
+Resultado: SUCESSO

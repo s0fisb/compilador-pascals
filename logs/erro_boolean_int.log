@@ -1,0 +1,16 @@
+Código de saída: 1
+
+Erro semântico (linha 7): atribuição incompatível: 'b' é boolean, mas a expressão é integer.
+Compilação abortada no primeiro erro de tipo.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo     offset  linha 
+  b                 boolean  0       3     
+  n                 integer  1       4     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

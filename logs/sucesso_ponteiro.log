@@ -1,0 +1,18 @@
+Código de saída: 0
+
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo        offset  linha 
+  PNo               type = ^No  -       3     
+  No                type = No   -       4     
+  ini               ^No         0       9     
+  aux               ^No         8       9     
+  pi                ^integer    16      10    
+  n                 integer     24      11    
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 0
+
+Resultado: SUCESSO

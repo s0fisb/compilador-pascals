@@ -1,0 +1,15 @@
+Código de saída: 1
+
+Erro semântico (linha 5): atribuição incompatível: 'pi^' é integer, mas a expressão é real.
+Compilação abortada no primeiro erro de tipo.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo      offset  linha 
+  pi                ^integer  0       2     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

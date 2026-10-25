@@ -1,0 +1,16 @@
+Código de saída: 1
+
+Erro semântico (linha 7): operandos incompatíveis para '+' (string e integer); não há conversão implícita entre tipos distintos.
+Compilação abortada no primeiro erro de tipo.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo     offset  linha 
+  s                 string   0       2     
+  n                 integer  8       3     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

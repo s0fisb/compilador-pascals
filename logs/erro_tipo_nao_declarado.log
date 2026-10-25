@@ -1,0 +1,15 @@
+Código de saída: 1
+
+Erro semântico (linha 2): tipo 'Pessoa' não declarado.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo     offset  linha 
+  x                 None     0       2     
+  n                 integer  0       3     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

@@ -1,0 +1,16 @@
+Código de saída: 0
+
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo     offset  linha 
+  ok                boolean  0       3     
+  fim               boolean  1       3     
+  n                 integer  2       4     
+  r                 real     6       5     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 0
+
+Resultado: SUCESSO

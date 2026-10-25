@@ -1,0 +1,18 @@
+Código de saída: 1
+
+Erro sintático [linha 7, coluna 14]: token inesperado SEMICOLON (';').
+Recuperação sintática: análise retomada no sincronizador.
+Erro sintático [linha 11, coluna 10]: token inesperado PLUS ('+').
+    [modo pânico] 1 token(s) descartado(s).
+Recuperação sintática: análise retomada no sincronizador.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo     offset  linha 
+  n                 integer  0       3     
+
+Erros léxicos: 0
+Erros sintáticos: 2
+Erros semânticos: 0
+
+Resultado: FALHA
