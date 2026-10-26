@@ -1,0 +1,21 @@
+Código de saída: 1
+
+Erro semântico (linha 14): variável 'escondida' usada sem declaração.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo         offset  linha 
+  t                 integer      0       3     
+  externo           procedure()  -       5     
+[escopo 'proc externo' nivel 1]
+  nome              tipo         offset  linha 
+  interno           procedure()  -       6     
+[escopo 'proc interno' nivel 2]
+  nome              tipo     offset  linha 
+  escondida         integer  0       8     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

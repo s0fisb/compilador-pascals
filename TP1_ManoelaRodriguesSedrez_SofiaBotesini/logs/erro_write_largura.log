@@ -1,13 +1,12 @@
 Código de saída: 1
 
-Erro semântico (linha 7): a expressão do 'case' deve ser ordinal (integer ou boolean), mas é real.
+Erro semântico (linha 6): a largura/casas decimais no write deve ser integer (recebeu real).
 Compilação abortada no primeiro erro de tipo.
 
 TABELA DE SIMBOLOS
 [escopo 'global' nivel 0]
   nome              tipo     offset  linha 
-  x                 real     0       3     
-  y                 integer  8       4     
+  n                 integer  0       3     
 
 Erros léxicos: 0
 Erros sintáticos: 0

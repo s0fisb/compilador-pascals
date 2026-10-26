@@ -1,0 +1,17 @@
+Código de saída: 0
+
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo                    offset  linha 
+  n                 integer                 0       3     
+  x                 real                    4       4     
+  c                 char                    12      5     
+  nome              string                  13      6     
+  v                 array[1..3] of integer  21      7     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 0
+
+Resultado: SUCESSO

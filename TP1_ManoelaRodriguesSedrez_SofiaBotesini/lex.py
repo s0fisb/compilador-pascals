@@ -13,7 +13,8 @@ import ply.lex as lex
 reserved = {
     "program": "PROGRAM", "var": "VAR", "integer": "INTEGER", "real": "REAL",
     "begin": "BEGIN", "end": "END", "if": "IF", "then": "THEN", "else": "ELSE",
-    "while": "WHILE", "do": "DO", "writeln": "WRITELN",
+    "while": "WHILE", "do": "DO", "writeln": "WRITELN", "write": "WRITE",
+    "read": "READ", "readln": "READLN", "char": "CHARTYPE",
     "not": "NOT", "and": "AND", "or": "OR",
     "boolean": "BOOLEAN", "true": "TRUE", "false": "FALSE",
     "array": "ARRAY", "of": "OF",
@@ -57,6 +58,8 @@ t_GT = r">"
 
 t_ignore = " \t\r"
 
+MAXINT = 2147483647      # maior integer representável (integer ocupa 4 bytes, ver symtab.WIDTH)
+
 def find_column(data, lexpos):
     #coluna (base 1) de lexpos dentro de sua linha
     last_nl = data.rfind("\n", 0, lexpos)
@@ -74,6 +77,22 @@ def t_COMMENT_LINE(t):
 def t_COMMENT_BLOCK(t):
     r"\{[^}]*\}"
     t.lexer.lineno += t.value.count("\n") # comentário pode ocupar várias linhas
+
+
+def t_COMMENT_PAREN(t):
+    r"\(\*(.|\n)*?\*\)"
+    # formato clássico do Pascal-S: (* ... *) (antes de LPAREN, que é regra-string)
+    t.lexer.lineno += t.value.count("\n")
+
+
+def t_COMMENT_PAREN_UNCLOSED(t):
+    r"\(\*(.|\n)*"
+    # só chega aqui se NÃO existe '*)' depois do '(*'
+    col = find_column(t.lexer.lexdata, t.lexpos)
+    msg = f"Erro Léxico [linha {t.lexer.lineno}, coluna {col}]: comentário '(*' não fechado."
+    print(msg)
+    t.lexer.errors.append(msg)
+    t.lexer.lineno += t.value.count("\n")
 
 
 def t_COMMENT_UNCLOSED(t):
@@ -103,6 +122,11 @@ def t_NUM_REAL(t):
 def t_NUM_INT(t):
     r"\d+"
     t.value = int(t.value)
+    if t.value > MAXINT:
+        # aviso (não é erro): o valor não cabe em um integer de 4 bytes
+        col = find_column(t.lexer.lexdata, t.lexpos)
+        print(f"Aviso [linha {t.lexer.lineno}, coluna {col}]: literal inteiro {t.value} "
+              f"excede maxint ({MAXINT}).")
     return t
 
 

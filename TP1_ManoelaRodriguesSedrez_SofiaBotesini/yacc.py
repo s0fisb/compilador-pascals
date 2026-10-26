@@ -3,7 +3,7 @@ Uso: python yacc.py testes/sucesso_semantico.pas
 """
 import sys
 import ply.yacc as yacc
-from lex import tokens, build_lexer, find_column
+from lex import tokens, build_lexer, find_column, MAXINT
 from symtab import ScopeManager, ArrayType, RecordType, PointerType, ForwardRef, Symbol
 
 start = "program"
@@ -32,7 +32,23 @@ last_error_pos = None
 SYNC_TOKENS = {"SEMICOLON", "END", "UNTIL"}
 
 NUMERIC = ("integer", "real")
+ORDINAL = ("integer", "char", "boolean")
 RELOPS = {"=", "<>", "<", "<=", ">", ">="}
+
+# Funções padrão do Pascal-S: nome -> (tipos aceitos no argumento, tipo do resultado).
+# Resultado None = mesmo tipo do argumento. Um subprograma declarado com o mesmo nome tem prioridade.
+STD_FUNCS = {
+    "abs": (NUMERIC, None), "sqr": (NUMERIC, None),
+    "sqrt": (NUMERIC, "real"), "sin": (NUMERIC, "real"), "cos": (NUMERIC, "real"),
+    "exp": (NUMERIC, "real"), "ln": (NUMERIC, "real"), "arctan": (NUMERIC, "real"),
+    "odd": (("integer",), "boolean"),
+    "succ": (ORDINAL, None), "pred": (ORDINAL, None),
+    "round": (("real",), "integer"), "trunc": (("real",), "integer"),   # únicas conversões real -> integer
+    "ord": (ORDINAL, "integer"), "chr": (("integer",), "char"),
+}
+
+# Tipos que read/readln conseguem ler
+READABLE = ("integer", "real", "char", "string")
 
 class TokenStream:
     #fonte de tokens do parser (getNextToken sob demanda) com 'pushback'
@@ -86,21 +102,32 @@ def semantic_error(message, lineno=None, fatal=False):
 # Tipos: 'integer', 'real', 'boolean' (todos distintos, sem coerção). None = subexpressão que já gerou erro
 # (não gera mensagens em cascata).
 def compatible(formal, actual):
-    """Compatibilidade de atribuição/argumento: tipos idênticos, ou nil para qualquer ponteiro."""
+    """Compatibilidade de atribuição/argumento: tipos idênticos, nil para qualquer ponteiro, ou char em string."""
     if formal is None or actual is None:
         return True
     if formal == actual:
         return True
+    if formal == "string" and actual == "char":
+        return True                            # 'a' é char, mas pode ser guardado em string
     return isinstance(formal, PointerType) and actual == "nil"
 
 
 def check_operands(op, t1, t2, lineno):
     if t1 is None or t2 is None:
         return None
+    if "string" in (t1, t2) and "char" in (t1, t2):
+        t1 = t2 = "string"                     # concatenar/comparar string com 'c'
     if op in ("div", "mod"):
         if t1 == "integer" and t2 == "integer":
             return "integer"
         semantic_error(f"o operador '{op}' exige operandos integer (recebeu {t1} e {t2}).", lineno, fatal=True)
+        return None
+    if op == "/":
+        # Pascal-S: '/' é sempre a divisão real; para inteiros usa-se 'div'
+        if t1 == "real" and t2 == "real":
+            return "real"
+        semantic_error(f"o operador '/' exige operandos real (recebeu {t1} e {t2}); "
+                       f"para dividir inteiros use 'div'.", lineno, fatal=True)
         return None
     if op in ("and", "or"):
         if t1 == "boolean" and t2 == "boolean":
@@ -119,6 +146,8 @@ def check_operands(op, t1, t2, lineno):
         return None
     if t1 == "boolean" and op in ("=", "<>"):
         return "boolean"                       # igualdade entre booleanos é permitida
+    if t1 == "char" and op in RELOPS:
+        return "boolean"                       # chars são ordenados (ord)
     if t1 == "string":
         if op == "+":
             return "string"                    # concatenação
@@ -127,7 +156,7 @@ def check_operands(op, t1, t2, lineno):
     if t1 not in NUMERIC:
         semantic_error(f"o operador '{op}' exige operandos numéricos (recebeu {t1} e {t2}).", lineno, fatal=True)
         return None
-    return "boolean" if op in RELOPS else t1       # '/' mantém o tipo dos operandos
+    return "boolean" if op in RELOPS else t1
 
 
 def check_condition(kw, t, lineno):
@@ -158,6 +187,31 @@ def check_call(sym, args, lineno):
             semantic_error(f"argumento {i} de '{sym.name}': esperado {formal}, recebido {actual}; "
                            f"não há conversão implícita.", lineno, fatal=True)
     return sym.type if sym.kind == "func" else None
+
+
+def check_std_call(sym, args, lineno):
+    """Valida chamada de função padrão (abs, sqrt, ord, ...); devolve o tipo do resultado."""
+    name = sym.name.casefold()
+    accepted, result = STD_FUNCS[name]
+    if len(args) != 1:
+        semantic_error(f"a função padrão '{sym.name}' espera 1 argumento, mas recebeu {len(args)}.", lineno)
+        return result
+    t = args[0]
+    if t is None:
+        return result
+    if t not in accepted:
+        semantic_error(f"a função padrão '{sym.name}' exige argumento {' ou '.join(accepted)} "
+                       f"(recebeu {t}).", lineno, fatal=True)
+        return None
+    return result if result is not None else str(t)    # str(): succ(3) não é mais a constante 3
+
+
+def is_std_func(sym):
+    return not sym.declared and sym.name.casefold() in STD_FUNCS
+
+
+def is_maxint(sym):
+    return not sym.declared and sym.name.casefold() == "maxint"
 
 
 # Programa e declarações
@@ -236,7 +290,7 @@ def p_const_value_real(p):
 
 def p_const_value_string(p):
     "const_value : STRING"
-    p[0] = ("string", p[1])
+    p[0] = ("char" if len(p[1]) == 1 else "string", p[1])     # 'a' é char
 
 
 def p_const_value_bool(p):
@@ -260,6 +314,8 @@ def p_const_value_name(p):
     sym = p[1]
     if sym.declared and sym.kind == "const":
         p[0] = (sym.type, sym.value)
+    elif is_maxint(sym):
+        p[0] = ("integer", MAXINT)
     else:
         semantic_error(f"'{sym.name}' não é uma constante declarada.", p.lineno(1))
         p[0] = (None, None)
@@ -368,7 +424,8 @@ def p_subprogram_list_more(p):
 
 
 def p_subprogram(p):
-    "subprogram : sub_header decl_list block SEMICOLON"
+    "subprogram : sub_header const_opt type_opt decl_list subprogram_list block SEMICOLON"
+    # subprogram_list aqui = subprogramas aninhados, no ambiente do subprograma externo
     symtab.exit_scope()                       # sai do ambiente do subprograma
     func_stack.pop()
 
@@ -487,6 +544,11 @@ def p_type_boolean(p):
     p[0] = "boolean"
 
 
+def p_type_char(p):
+    "type : CHARTYPE"
+    p[0] = "char"
+
+
 def p_type_array(p):
     "type : ARRAY LBRACKET range_list RBRACKET OF type"
     t = p[6]
@@ -525,6 +587,8 @@ def p_bound_const(p):
     sym = p[1]
     if sym.declared and sym.kind == "const" and sym.type == "integer":
         p[0] = sym.value
+    elif is_maxint(sym):
+        p[0] = MAXINT
     else:
         semantic_error(f"limite de vetor deve ser inteiro literal ou constante inteira ('{sym.name}' não é).",
                        p.lineno(1))
@@ -585,7 +649,9 @@ def p_stmt_call(p):
             | ID LPAREN RPAREN"""
     sym = p[1]
     args = p[3] if len(p) == 5 else []
-    if not sym.declared:
+    if is_std_func(sym):
+        check_std_call(sym, args, p.lineno(1))
+    elif not sym.declared:
         semantic_error(f"'{sym.name}' chamado sem declaração.", p.lineno(1))
     else:
         check_call(sym, args, p.lineno(1))
@@ -620,7 +686,8 @@ def p_stmt_while(p):
 
 
 def p_stmt_write(p):
-    "stmt : write_stmt"
+    """stmt : write_stmt
+            | read_stmt"""
     p[0] = None
 
 
@@ -767,8 +834,8 @@ def p_repeat_stmt(p):
 def p_case_head(p):
     "case_head : CASE expr OF"
     t = p[2]
-    if t is not None and t not in ("integer", "boolean"):
-        semantic_error(f"a expressão do 'case' deve ser ordinal (integer ou boolean), mas é {t}.",
+    if t is not None and t not in ORDINAL:
+        semantic_error(f"a expressão do 'case' deve ser ordinal (integer, char ou boolean), mas é {t}.",
                        p.lineno(1), fatal=True)
     case_stack.append({"type": None if t is None else str(t), "seen": {}})
 
@@ -825,7 +892,7 @@ def p_case_labels(p):
         if t != sel:
             semantic_error(f"o rótulo do 'case' é {t}, mas a expressão é {sel}; "
                            f"não há conversão implícita.", line, fatal=True)
-        shown = str(val).lower() if t == "boolean" else val
+        shown = str(val).lower() if t == "boolean" else (f"'{val}'" if t == "char" else val)
         if val in ctx["seen"]:
             semantic_error(f"rótulo {shown} repetido no 'case' (1ª ocorrência na linha {ctx['seen'][val]}).", line)
         else:
@@ -849,11 +916,64 @@ def p_case_label(p):
 
 
 def p_write_stmt(p):
-    "write_stmt : WRITELN LPAREN expr_list RPAREN"
-    for t in p[3]:
+    """write_stmt : WRITE LPAREN write_args RPAREN
+                  | WRITELN LPAREN write_args RPAREN
+                  | WRITELN"""
+    name = p[1].lower()
+    for t in (p[3] if len(p) == 5 else []):
         if isinstance(t, (ArrayType, RecordType, PointerType)) or t == "nil":
-            semantic_error(f"writeln não aceita valor do tipo {t}; escreva campos ou elementos escalares.", p.lineno(1))
+            semantic_error(f"{name} não aceita valor do tipo {t}; escreva campos ou elementos escalares.", p.lineno(1))
     p[0] = None
+
+
+def p_write_args_one(p):
+    "write_args : write_arg"
+    p[0] = [p[1]]
+
+
+def p_write_args_more(p):
+    "write_args : write_args COMMA write_arg"
+    p[0] = p[1] + [p[3]]
+
+
+def p_write_arg(p):
+    """write_arg : expr
+                 | expr COLON expr
+                 | expr COLON expr COLON expr"""
+    # x:w = largura do campo; x:w:d = casas decimais (só para real)
+    for i in range(3, len(p), 2):
+        if p[i] is not None and p[i] != "integer":
+            semantic_error(f"a largura/casas decimais no write deve ser integer (recebeu {p[i]}).",
+                           p.lineno(i - 1), fatal=True)
+    if len(p) == 6 and p[1] is not None and p[1] != "real":
+        semantic_error(f"casas decimais (x:w:d) só se aplicam a real (recebeu {p[1]}).", p.lineno(4), fatal=True)
+    p[0] = p[1]
+
+
+def p_read_stmt(p):
+    """read_stmt : READ LPAREN read_args RPAREN
+                 | READLN LPAREN read_args RPAREN
+                 | READLN"""
+    name = p[1].lower()
+    for v in (p[3] if len(p) == 5 else []):
+        if not v.symbol.declared:
+            semantic_error(f"variável '{v.symbol.name}' usada em {name} sem declaração.", v.lineno)
+        elif v.symbol.kind != "var":
+            semantic_error(f"'{v.text}' não é variável e não pode ser lido por {name}.", v.lineno)
+        elif v.type is not None and v.type not in READABLE:
+            semantic_error(f"{name} não lê valor do tipo {v.type} ('{v.text}'); "
+                           f"só integer, real, char ou string.", v.lineno, fatal=True)
+    p[0] = None
+
+
+def p_read_args_one(p):
+    "read_args : variable"
+    p[0] = [p[1]]
+
+
+def p_read_args_more(p):
+    "read_args : read_args COMMA variable"
+    p[0] = p[1] + [p[3]]
 
 
 def p_expr_list_one(p):
@@ -942,7 +1062,9 @@ def p_term_binary(p):
 def p_factor_var(p):
     "factor : variable"
     v = p[1]
-    if not v.symbol.declared:
+    if v.plain and is_maxint(v.symbol):
+        p[0] = ConstInt(MAXINT)
+    elif not v.symbol.declared:
         semantic_error(f"variável '{v.symbol.name}' usada sem declaração.", v.lineno)
         p[0] = None
     elif v.symbol.kind == "type":
@@ -967,7 +1089,9 @@ def p_factor_call(p):
               | ID LPAREN RPAREN"""
     sym = p[1]
     args = p[3] if len(p) == 5 else []
-    if not sym.declared:
+    if is_std_func(sym):
+        p[0] = check_std_call(sym, args, p.lineno(1))
+    elif not sym.declared:
         semantic_error(f"função '{sym.name}' chamada sem declaração.", p.lineno(1))
         p[0] = None
     elif sym.kind == "proc":
@@ -985,7 +1109,7 @@ def p_factor_nil(p):
 
 def p_factor_string(p):
     "factor : STRING"
-    p[0] = "string"
+    p[0] = "char" if len(p[1]) == 1 else "string"     # 'a' é char
 
 
 def p_factor_int(p):

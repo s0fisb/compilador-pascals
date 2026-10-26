@@ -1,0 +1,15 @@
+Código de saída: 1
+
+Erro semântico (linha 8): o rótulo do 'case' é integer, mas a expressão é char; não há conversão implícita.
+Compilação abortada no primeiro erro de tipo.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo  offset  linha 
+  c                 char  0       3     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

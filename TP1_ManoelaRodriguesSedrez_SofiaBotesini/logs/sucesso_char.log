@@ -1,0 +1,17 @@
+Código de saída: 0
+
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo              offset  linha 
+  INICIAL           const char = 'A'  -       3     
+  c                 char              0       5     
+  d                 char              1       5     
+  n                 integer           2       6     
+  s                 string            6       7     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 0
+
+Resultado: SUCESSO
