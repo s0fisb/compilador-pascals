@@ -1,0 +1,15 @@
+Código de saída: 1
+
+Erro Léxico [linha 5, coluna 11]: comentário '(*' não fechado.
+Erro sintático [linha 8, coluna 1]: fim inesperado do arquivo.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo     offset  linha 
+  a                 integer  0       3     
+
+Erros léxicos: 1
+Erros sintáticos: 1
+Erros semânticos: 0
+
+Resultado: FALHA

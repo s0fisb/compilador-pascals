@@ -1,0 +1,33 @@
+Código de saída: 0
+
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo                offset  linha 
+  total             integer             0       3     
+  externo           procedure(integer)  -       5     
+[escopo 'proc externo' nivel 1]
+  nome              tipo                        offset  linha 
+  n                 integer                     0       5     
+  PASSO             const integer = 2           -       7     
+  Par               type = Par                  -       9     
+  acc               integer                     4       11    
+  p                 Par                         8       12    
+  soma              procedure(integer)          -       14    
+  dobro             function(integer): integer  -       19    
+[escopo 'proc soma' nivel 2]
+  nome              tipo     offset  linha 
+  k                 integer  0       14    
+[escopo 'func dobro' nivel 2]
+  nome              tipo                        offset  linha 
+  k                 integer                     0       19    
+  id                function(integer): integer  -       20    
+[escopo 'func id' nivel 3]
+  nome              tipo     offset  linha 
+  m                 integer  0       20    
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 0
+
+Resultado: SUCESSO

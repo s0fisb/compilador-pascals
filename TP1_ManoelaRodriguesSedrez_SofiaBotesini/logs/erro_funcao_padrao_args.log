@@ -1,0 +1,14 @@
+Código de saída: 1
+
+Erro semântico (linha 5): a função padrão 'abs' espera 1 argumento, mas recebeu 2.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo     offset  linha 
+  i                 integer  0       3     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

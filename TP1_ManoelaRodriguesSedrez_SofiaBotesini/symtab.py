@@ -10,7 +10,7 @@ Repositório central de atributos:
 """
 
 # Largura em bytes de cada tipo e usada para calcular offset
-WIDTH = {"integer": 4, "real": 8, "boolean": 1, "string": 8}
+WIDTH = {"integer": 4, "real": 8, "boolean": 1, "char": 1, "string": 8}
 
 
 class ArrayType:
@@ -134,7 +134,7 @@ class Symbol:
 
     def __init__(self, name, var_type=None, lineno=0, scope=None):
         self.name = name            # lexema
-        self.type = var_type        # 'integer' | 'real' | 'boolean' | None (ainda sem declaração)
+        self.type = var_type        # 'integer' | 'real' | 'boolean' | 'char' | ... | None (ainda sem declaração)
         self.lineno = lineno        # linha da declaração (ou do 1° uso, se não declarado)
         self.scope = scope          # SymbolTable onde a entrada vive
         self.offset = None          # deslocamento relativo no escopo
@@ -268,7 +268,7 @@ class ScopeManager:
                     desc = f"type = {s.type}"
                 elif s.kind == "const":
                     v = s.value
-                    v = ("true" if v else "false") if s.type == "boolean" else (f"'{v}'" if s.type == "string" else v)
+                    v = ("true" if v else "false") if s.type == "boolean" else (f"'{v}'" if s.type in ("string", "char") else v)
                     desc = f"const {s.type} = {v}"
                 else:
                     desc = str(s.type)
