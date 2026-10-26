@@ -901,6 +901,23 @@ def p_simple_expr_term(p):
     p[0] = p[1]
 
 
+def p_simple_expr_sign(p):
+    """simple_expr : PLUS term
+                   | MINUS term"""
+    # Sinal unário, como no Pascal padrão: fica no início de simple_expr,
+    # então -a * b é lido como -(a * b). O tipo do operando é mantido.
+    t = p[2]
+    if t is None:
+        p[0] = None
+    elif t not in NUMERIC:
+        semantic_error(f"o sinal '{p[1]}' exige operando numérico (recebeu {t}).", p.lineno(1), fatal=True)
+        p[0] = None
+    elif p[1] == "-" and getattr(t, "const", None) is not None:
+        p[0] = ConstInt(-t.const)               # -3 continua constante (checagem de índice)
+    else:
+        p[0] = t
+
+
 def p_simple_expr_binary(p):
     """simple_expr : simple_expr PLUS term
                    | simple_expr MINUS term
