@@ -74,6 +74,8 @@ O que segue faz parte do Pascal-S de Wirth (1975).
 - **`function` / `procedure`:** parâmetros por valor, retorno por `nome := valor` dentro da função, recursão, locais em
   ambiente filho (a tabela de símbolos mostra um escopo por subprograma). Verifica número e tipo dos argumentos, tipo do
   retorno, procedimento usado como valor e função/procedimento não declarado. Chamada sem parênteses é aceita para `f` sem parâmetros.
+  Função (do usuário ou padrão) usada como comando (`dobro(3);`, `sqrt(2.0);`) é erro: no Pascal-S uma função só aparece
+  dentro de expressão (ver `testes/erro_funcao_como_comando.pas`).
   Parâmetros por referência (`var x: integer`) exigem como argumento uma **variável** (inclusive `v[i]` e `p.campo`) de tipo
   idêntico; constante, literal ou expressão é erro (o parser roda com `tracking=True` para reconhecer variável pura).
 - **Subprogramas aninhados:** cada subprograma pode ter seus próprios `const`, `type`, `var` e subprogramas internos
@@ -105,9 +107,9 @@ O que segue faz parte do Pascal-S de Wirth (1975).
   seletor, separados por vírgula; rótulo repetido é erro. `;` antes do `else` e antes do `end` é opcional, e o braço pode ser
   vazio ou um bloco `begin ... end`. Não há intervalos (`1..5`). O `else` de um `if` sem `else` dentro de um braço casa com
   esse `if` (mesma regra do `else` pendente).
-- **Operadores aritméticos:** `+`, `-`, `*` exigem o mesmo tipo numérico nos dois lados e mantêm o tipo. `/` é **sempre** a
-  divisão real: só aceita operandos `real` e devolve `real` (`1 / 2` é erro; use `1 div 2`). `div` e `mod` exigem dois
-  operandos `integer` e devolvem `integer`.
+- **Operadores aritméticos:** `+`, `-`, `*` e `/` exigem o mesmo tipo numérico nos dois lados e mantêm o tipo (`integer / integer` é `integer`,
+  `real / real` é `real`; `integer / real` é erro, sem coerção). `div` e `mod` exigem dois operandos `integer` e
+  devolvem `integer`.
 - **Sinal unário (`-a`, `+a`):** como no Pascal padrão, o sinal fica no início de `simple_expr` (`simple_expr : MINUS term`), então `-a * b` é `-(a * b)` e `b - -a` é erro sintático (escreva `b - (-a)`). O operando deve ser `integer` ou `real` e o tipo é mantido; `-3` continua constante para a checagem de índice (ver `testes/sucesso_menos_unario.pas` e `testes/erro_menos_unario.pas`).
 
 ## Extensões fora do Pascal-S

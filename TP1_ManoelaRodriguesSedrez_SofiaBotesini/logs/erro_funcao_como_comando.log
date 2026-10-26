@@ -1,0 +1,20 @@
+Código de saída: 1
+
+Erro semântico (linha 11): a função 'dobro' devolve um valor e não pode ser usada como comando (use-a em uma expressão, por exemplo x := dobro(...)).
+Erro semântico (linha 12): a função padrão 'sqrt' devolve um valor e não pode ser usada como comando (use-a em uma expressão, por exemplo x := sqrt(...)).
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo                        offset  linha 
+  x                 integer                     0       2     
+  r                 real                        4       3     
+  dobro             function(integer): integer  -       4     
+[escopo 'func dobro' nivel 1]
+  nome              tipo     offset  linha 
+  n                 integer  0       4     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 2
+
+Resultado: FALHA

@@ -1,16 +1,19 @@
 Código de saída: 1
 
-Erro semântico (linha 6): atribuição incompatível: 'x_1' é integer, mas a expressão é real.
-Compilação abortada no primeiro erro de tipo.
+Erro Léxico [linha 10, coluna 3]: caractere ilegal '$'.
+Erro Léxico [linha 10, coluna 5]: caractere ilegal '#'.
+Erro Léxico [linha 10, coluna 7]: caractere ilegal '!'.
+Erro Léxico [linha 13, coluna 1]: comentário '{' não fechado.
 
 TABELA DE SIMBOLOS
 [escopo 'global' nivel 0]
   nome              tipo     offset  linha 
   x_1               integer  0       4     
   Y                 integer  4       4     
+  taxa2             real     8       5     
 
-Erros léxicos: 0
+Erros léxicos: 4
 Erros sintáticos: 0
-Erros semânticos: 1
+Erros semânticos: 0
 
 Resultado: FALHA

@@ -122,13 +122,6 @@ def check_operands(op, t1, t2, lineno):
             return "integer"
         semantic_error(f"o operador '{op}' exige operandos integer (recebeu {t1} e {t2}).", lineno, fatal=True)
         return None
-    if op == "/":
-        # Pascal-S: '/' é sempre a divisão real; para inteiros usa-se 'div'
-        if t1 == "real" and t2 == "real":
-            return "real"
-        semantic_error(f"o operador '/' exige operandos real (recebeu {t1} e {t2}); "
-                       f"para dividir inteiros use 'div'.", lineno, fatal=True)
-        return None
     if op in ("and", "or"):
         if t1 == "boolean" and t2 == "boolean":
             return "boolean"
@@ -651,11 +644,21 @@ def p_stmt_call(p):
     args = p[3] if len(p) == 5 else []
     if is_std_func(sym):
         check_std_call(sym, args, p.lineno(1))
+        func_as_statement(sym, p.lineno(1), padrao=True)
     elif not sym.declared:
         semantic_error(f"'{sym.name}' chamado sem declaração.", p.lineno(1))
     else:
         check_call(sym, args, p.lineno(1))
+        if sym.kind == "func":
+            func_as_statement(sym, p.lineno(1))
     p[0] = None
+
+
+def func_as_statement(sym, lineno, padrao=False):
+    """Pascal-S: função devolve valor e só pode aparecer dentro de uma expressão, nunca como comando."""
+    quem = "a função padrão" if padrao else "a função"
+    semantic_error(f"{quem} '{sym.name}' devolve um valor e não pode ser usada como comando "
+                   f"(use-a em uma expressão, por exemplo x := {sym.name}(...)).", lineno)
 
 
 def p_stmt_bare(p):
@@ -665,6 +668,8 @@ def p_stmt_bare(p):
         semantic_error(f"'{v.symbol.name}' usado como comando sem declaração.", v.lineno)
     elif v.plain and v.symbol.kind in ("func", "proc"):
         check_call(v.symbol, [], v.lineno)       # chamada sem parênteses
+        if v.symbol.kind == "func":
+            func_as_statement(v.symbol, v.lineno)
     else:
         semantic_error(f"'{v.text}' não é um comando válido (esperado atribuição ou chamada).", v.lineno)
     p[0] = None

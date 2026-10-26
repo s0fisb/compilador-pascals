@@ -1,13 +1,13 @@
 Código de saída: 1
 
-Erro semântico (linha 7): o operador '/' exige operandos real (recebeu integer e integer); para dividir inteiros use 'div'.
+Erro semântico (linha 6): o operador '/' exige operandos numéricos (recebeu boolean e boolean).
 Compilação abortada no primeiro erro de tipo.
 
 TABELA DE SIMBOLOS
 [escopo 'global' nivel 0]
   nome              tipo     offset  linha 
-  a                 integer  0       3     
-  x                 real     4       4     
+  p                 boolean  0       3     
+  q                 boolean  1       3     
 
 Erros léxicos: 0
 Erros sintáticos: 0
