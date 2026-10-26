@@ -58,6 +58,10 @@ Código de saída: `0` = sucesso; `1` = houve erro léxico, sintático ou semân
   (`array[1..MAX]`) e, como índice, tem o valor checado contra os limites. As constantes são aceitas no escopo global.
 - **`for` / `repeat`:** `for i := a to b do ...` e `downto` (variável de controle e limites devem ser `integer`);
   `repeat ... until cond` (condição `boolean`).
+- **`case`:** `case expr of rótulos: comando; ... [else comando] end`. O seletor deve ser `integer` ou `boolean`; os rótulos são constantes
+  (literais, negativos, `true`/`false` ou constantes nomeadas) do mesmo tipo do seletor, separados por vírgula; rótulo repetido é erro.
+  `;` antes do `else` e antes do `end` é opcional, e o braço pode ser vazio ou um bloco `begin ... end`. Não há intervalos (`1..5`).
+  O `else` de um `if` sem `else` dentro de um braço casa com esse `if` (mesma regra do `else` pendente).
 - **`div` / `mod`:** exigem dois operandos `integer` e devolvem `integer`; `/` continua exigindo o mesmo tipo numérico nos dois lados.
 - **Ponteiros:** `^tipo`, desreferência `p^` (encadeável: `p^.prox^.valor`), `nil`, `new(p)` e `dispose(p)`.
   Ponteiros só são compatíveis com o mesmo tipo-alvo ou `nil`; aritmética e `<`/`>` em ponteiros é erro; `new`/`dispose`
@@ -68,13 +72,11 @@ Código de saída: `0` = sucesso; `1` = houve erro léxico, sintático ou semân
 - **Tipagem forte:** `integer`, `real` e `boolean` são tipos distintos, sem nenhuma coerção entre eles.
   `boolean` é declarável (`var b : boolean`) e tem as constantes `true`/`false`; relacionais produzem `boolean`, exigido por `if`, `while`, `and`, `or` e `not`. `None` marca subexpressão
   já com erro, para não gerar mensagens em cascata.
-- **Conflitos:** mesmo com as extensões (boolean, vetor, record, uses, subprogramas, const, for, repeat, div/mod, parâmetros `var`), o conflito shift/reduce registrado é o do `else` pendente (estado 209 do `parser.out`, regras 84 e 85),
-  resolvido como *shift* por precedência (`IFX < ELSE`). O arquivo `parser.out` desta versão contém 124 regras numeradas de 0 a 123 e 247 estados numerados de 0 a 246.
+- **Conflitos:** mesmo com as extensões (boolean, vetor, record, uses, subprogramas, const, for, repeat, case, div/mod, parâmetros `var`), o conflito shift/reduce registrado é o do `else` pendente (estado 228 do `parser.out`, regras 84 e 85),
+  resolvido como *shift* por precedência (`IFX < ELSE`). O arquivo `parser.out` desta versão contém 140 regras numeradas de 0 a 139 e 274 estados numerados de 0 a 273.
 - **Modo pânico:** descarta tokens até `;`, `end` **ou `until`**. O `end` e o `until` foram acrescentados porque o último
   comando de um bloco (ou de um `repeat`) não termina em `;` (ver `testes/sync_end.pas`).
   Se o parser voltar a falhar no mesmo token (ex.: `else` solto, que não é sincronizador), ele é
   descartado para evitar loop infinito (ver `testes/erro_else_solto.pas`).
-
-
 
 

@@ -21,7 +21,7 @@ reserved = {
     "function": "FUNCTION", "procedure": "PROCEDURE", "string": "STRINGTYPE",
     "nil": "NIL", "new": "NEW", "dispose": "DISPOSE",
     "div": "DIV", "mod": "MOD", "for": "FOR", "to": "TO", "downto": "DOWNTO",
-    "repeat": "REPEAT", "until": "UNTIL", "const": "CONST",
+    "repeat": "REPEAT", "until": "UNTIL", "const": "CONST", "case": "CASE",
 }
 
 tokens = [

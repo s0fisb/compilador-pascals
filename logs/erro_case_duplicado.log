@@ -1,0 +1,15 @@
+Código de saída: 1
+
+Erro semântico (linha 9): rótulo 2 repetido no 'case' (1ª ocorrência na linha 7).
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo     offset  linha 
+  n                 integer  0       3     
+  y                 integer  4       3     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA

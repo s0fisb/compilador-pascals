@@ -1,0 +1,16 @@
+Código de saída: 1
+
+Erro semântico (linha 10): atribuição incompatível: 'n' é integer, mas a expressão é real.
+Compilação abortada no primeiro erro de tipo.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo     offset  linha 
+  n                 integer  0       3     
+  r                 real     4       4     
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 1
+
+Resultado: FALHA
