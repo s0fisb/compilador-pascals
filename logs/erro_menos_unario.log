@@ -1,0 +1,19 @@
+Código de saída: 1
+
+Erro sintático [linha 6, coluna 12]: token inesperado MINUS ('-').
+    [modo pânico] 1 token(s) descartado(s).
+Recuperação sintática: análise retomada no sincronizador.
+Erro semântico (linha 7): atribuição incompatível: 'a' é integer, mas a expressão é real.
+Compilação abortada no primeiro erro de tipo.
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo     offset  linha 
+  a                 integer  0       3     
+  ok                boolean  4       4     
+
+Erros léxicos: 0
+Erros sintáticos: 1
+Erros semânticos: 1
+
+Resultado: FALHA

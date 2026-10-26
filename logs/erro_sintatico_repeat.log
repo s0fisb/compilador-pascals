@@ -2,7 +2,7 @@ Código de saída: 1
 
 Erro sintático [linha 7, coluna 14]: token inesperado SEMICOLON (';').
 Recuperação sintática: análise retomada no sincronizador.
-Erro sintático [linha 11, coluna 10]: token inesperado PLUS ('+').
+Erro sintático [linha 11, coluna 10]: token inesperado TIMES ('*').
     [modo pânico] 1 token(s) descartado(s).
 Recuperação sintática: análise retomada no sincronizador.
 
