@@ -1,0 +1,34 @@
+Código de saída: 0
+
+
+TABELA DE SIMBOLOS
+[escopo 'global' nivel 0]
+  nome              tipo                        offset  linha 
+  total             integer                     0       3     
+  taxa              real                        4       4     
+  x                 integer                     12      5     
+  acumula           procedure(integer)          -       7     
+  media             function(real, real): real  -       15    
+  externo           procedure()                 -       23    
+[escopo 'proc acumula' nivel 1]
+  nome              tipo     offset  linha 
+  n                 integer  0       7     
+  parcial           integer  4       9     
+[escopo 'func media' nivel 1]
+  nome              tipo  offset  linha 
+  a                 real  0       15    
+  b                 real  8       15    
+  x                 real  16      17    
+[escopo 'proc externo' nivel 1]
+  nome              tipo         offset  linha 
+  base              integer      0       25    
+  interno           procedure()  -       27    
+[escopo 'proc interno' nivel 2]
+  nome              tipo     offset  linha 
+  extra             integer  0       29    
+
+Erros léxicos: 0
+Erros sintáticos: 0
+Erros semânticos: 0
+
+Resultado: SUCESSO

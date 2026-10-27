@@ -1,6 +1,4 @@
 """
-symtab.py - Tabela de Símbolos do compilador Pascal-S.
-
 Repositório central de atributos:
   * cada identificador vira UM objeto Symbol; o token ID carrega uma
     REFERÊNCIA a esse objeto (ponteiro), não a string;
@@ -215,8 +213,8 @@ class ScopeManager:
     # usado pelo LEXER (token ID -> ponteiro)
     def lookup_or_install(self, name, lineno):
         #Devolve a entrada de `name`; se não existir, cria uma entrada
-        #ainda NÃO declarada no escopo atual (a Aula 3 chama isso de
-        #'instalar' o lexema). O parser decide depois se é erro.
+        #ainda NÃO declarada no escopo atual 
+        #('instalar' o lexema). O parser decide depois se é erro.
         sym = self.top.lookup(name)
         if sym is None:
             sym = Symbol(name, None, lineno, self.top)

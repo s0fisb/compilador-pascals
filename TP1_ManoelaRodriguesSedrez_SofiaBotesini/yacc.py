@@ -1,5 +1,5 @@
 """Parser LALR(1) e verificador semântico Pascal-S usando PLY
-Uso: python yacc.py testes/sucesso_semantico.pas
+Uso: python3 yacc.py testes/sucesso_semantico.pas
 """
 import sys
 import ply.yacc as yacc
